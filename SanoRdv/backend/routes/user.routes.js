@@ -1,6 +1,6 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-import { register } from '../controllers/user.controller.js';
+import { register, login, logout } from '../controllers/user.controller.js';
 
 const router = express.Router();
 
@@ -24,5 +24,13 @@ router.post(
   },
   register
 );
-
+router.post(
+  '/login',
+  [
+    body('email').isEmail().withMessage('Email ou ID invalide'),
+    body('motDePasse').notEmpty().withMessage('Le mot de passe est obligatoire'),
+  ],
+  login
+);
+router.post('/logout', logout);
 export default router;
