@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 import User from '../models/user.model.js';
+import { generateIna } from '../utils/generateIna.js'; 
 
 // Fonction d'inscription
 export const register = async (req, res) => {
@@ -23,6 +24,16 @@ export const register = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(motDePasse, saltRounds);
 
+    // Générer un ina unique
+    let ina;
+    let inaExists = true;
+    while (inaExists) {
+      ina = generateIna();
+      // Vérifier que l'ina n'existe pas déjà dans la base
+      const existingIna = await User.findOne({ ina });
+      if (!existingIna) inaExists = false;
+    }
+
     // Créer le nouvel utilisateur
     const newUser = new User({
       nom,
@@ -31,12 +42,13 @@ export const register = async (req, res) => {
       telephone,
       motDePasse: hashedPassword,
       dateNaissance,
+      ina,
     });
 
     // Sauvegarder en base de données
     await newUser.save();
 
-    res.status(201).json({ message: 'Utilisateur créé avec succès', userId: newUser._id });
+    res.status(201).json({ message: 'Utilisateur créé avec succès', userId: newUser._id, ina });
   } catch (error) {
     console.error('Erreur lors de l’inscription:', error);
     res.status(500).json({ message: 'Erreur serveur' });

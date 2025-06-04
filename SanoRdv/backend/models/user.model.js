@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     lowercase: true,
     trim: true,
+    unique: true,  // souvent nécessaire pour éviter doublons
   },
   telephone: {
     type: String,
@@ -24,7 +25,7 @@ const userSchema = new mongoose.Schema({
   },
   motDePasse: {
     type: String,
-    required: false, 
+    required: false, // tu peux mettre true si c’est obligatoire
   },
   dateNaissance: {
     type: Date,
@@ -39,6 +40,12 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  ID: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  }
 });
 
 const User = mongoose.model('User', userSchema);
