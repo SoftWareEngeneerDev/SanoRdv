@@ -3,8 +3,9 @@ import { validationResult } from 'express-validator';
 import User from '../models/user.model.js';
 import { generateIna } from '../utils/generateIna.js';
 import jwt from 'jsonwebtoken';
+import { blacklistToken } from '../middlewares/auth.middleware.js'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ta_clef_secrete'; // Sécurité : à placer dans un fichier .env
+const JWT_SECRET = process.env.JWT_SECRET || 'ta_clef_secrete'; 
 
 // ✅ Fonction d'inscription
 export const register = async (req, res) => {
@@ -52,7 +53,7 @@ export const register = async (req, res) => {
   }
 };
 
-// ✅ Fonction de connexion (email OU ina accepté)
+// ✅ Fonction de connexion
 export const login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -60,11 +61,11 @@ export const login = async (req, res) => {
   }
 
   try {
-    const { identifiant, motDePasse } = req.body;
+    const { UserID, motDePasse } = req.body; // Assure-toi que c'est 'motDePasse' dans Postman/Frontend
 
-    // Trouver l'utilisateur par email ou INE (ina)
+    // Trouver l'utilisateur par email ou ID
     const user = await User.findOne({
-      $or: [{ email: identifiant }, { ID: identifiant }]
+      $or: [{ email: UserID }, { ID: UserID }]
     });
 
     if (!user) {
@@ -92,5 +93,22 @@ export const login = async (req, res) => {
 
 // ✅ Fonction de déconnexion
 export const logout = (req, res) => {
-  res.status(200).json({ message: 'Déconnexion réussie, supprime le token côté client' });
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Aucun token fourni' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    // Blacklister le token — cette fonction doit gérer le stockage du token blacklisté
+    blacklistToken(token);
+
+    return res.status(200).json({ message: 'Déconnexion réussie. Le token est invalidé.' });
+  } catch (error) {
+    console.error('Erreur lors du blacklistage du token:', error);
+    return res.status(500).json({ message: 'Erreur serveur lors de la déconnexion.' });
+  }
 };
+
