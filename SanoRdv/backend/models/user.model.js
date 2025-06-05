@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     lowercase: true,
     trim: true,
-    unique: true,  // souvent nécessaire pour éviter doublons
+    unique: true,
   },
   telephone: {
     type: String,
@@ -25,20 +25,20 @@ const userSchema = new mongoose.Schema({
   },
   motDePasse: {
     type: String,
-    required: false, // tu peux mettre true si c’est obligatoire
+    required: false,
+  },
+  confirmationMotDePasse: {
+    type: String,
+    required: false,
   },
   dateNaissance: {
     type: Date,
     required: false,
   },
-  role: {
+  sex: {
     type: String,
-    enum: ['patient'],
-    default: 'patient',
-  },
-  dateInscription: {
-    type: Date,
-    default: Date.now,
+    enum: ['masculin', 'féminin', 'autre'],
+    required: false,
   },
   ID: {
     type: String,

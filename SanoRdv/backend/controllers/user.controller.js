@@ -5,7 +5,10 @@ import { generateIna } from '../utils/generateIna.js';
 import jwt from 'jsonwebtoken';
 import { blacklistToken } from '../middlewares/auth.middleware.js'
 
+
+
 const JWT_SECRET = process.env.JWT_SECRET || 'ta_clef_secrete'; 
+
 
 // ✅ Fonction d'inscription
 export const register = async (req, res) => {
@@ -15,7 +18,21 @@ export const register = async (req, res) => {
   }
 
   try {
-    const { nom, prenom, email, telephone, motDePasse, dateNaissance } = req.body;
+    const {
+      nom,
+      prenom,
+      email,
+      telephone,
+      motDePasse,
+      confirmationMotDePasse,
+      dateNaissance,
+      sex,
+    } = req.body;
+
+    // Vérification mot de passe = confirmation
+    if (motDePasse !== confirmationMotDePasse) {
+      return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -25,7 +42,7 @@ export const register = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(motDePasse, saltRounds);
 
-    // Générer un INE (ina) unique
+    // Générer un ID unique
     let ID;
     let IDExists = true;
     while (IDExists) {
@@ -41,6 +58,7 @@ export const register = async (req, res) => {
       telephone,
       motDePasse: hashedPassword,
       dateNaissance,
+      sex,
       ID,
     });
 
@@ -52,6 +70,7 @@ export const register = async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
+
 
 // ✅ Fonction de connexion
 export const login = async (req, res) => {

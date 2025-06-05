@@ -8,12 +8,19 @@ const router = express.Router();
 router.post(
   '/register',
   [
-    body('nom').notEmpty().withMessage('Le nom est obligatoire'),
-    body('prenom').notEmpty().withMessage('Le prénom est obligatoire'),
-    body('email').isEmail().withMessage('Email invalide'),
-    body('telephone').notEmpty().withMessage('Le téléphone est obligatoire'),
-    body('motDePasse').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères'),
-    body('dateNaissance').optional().isISO8601().toDate().withMessage('Date de naissance invalide'),
+  body('nom').notEmpty().withMessage('Le nom est requis'),
+  body('prenom').notEmpty().withMessage('Le prénom est requis'),
+  body('email').isEmail().withMessage('Email invalide'),
+  body('telephone').notEmpty().withMessage('Téléphone requis'),
+  body('motDePasse').isLength({ min: 6 }).withMessage('Le mot de passe doit faire au moins 6 caractères'),
+  body('confirmationMotDePasse').custom((value, { req }) => {
+    if (value !== req.body.motDePasse) {
+      throw new Error('Les mots de passe ne correspondent pas');
+    }
+    return true;
+  }),
+  body('sex').optional().isIn(['masculin', 'féminin', 'autre']).withMessage('Sexe invalide'),
+  body('dateNaissance').optional().isISO8601().toDate().withMessage('Date de naissance invalide'),
   ],
   (req, res, next) => {
     // Valide les erreurs ici
