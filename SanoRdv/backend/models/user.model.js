@@ -14,9 +14,9 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
     lowercase: true,
     trim: true,
-    unique: true,
   },
   telephone: {
     type: String,
@@ -45,7 +45,17 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-  }
+  },
+  resetCode: {
+    type: String,
+    required: false,
+  },
+  resetCodeExpire: {
+    type: Date,
+    required: false,
+  },
+}, {
+  timestamps: true // Pour garder trace des dates de création/modification
 });
 
 const User = mongoose.model('User', userSchema);

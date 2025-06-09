@@ -41,39 +41,33 @@ transporter.verify((error, success) => {
 });
 
 // Fonction pour envoyer l'email d'activation
-export const sendActivationEmail = async (to, token) => {
-  const url = `${process.env.FRONTEND_URL}/activate/${token}`;
-  
+export const sendINEEmail = async (to, ine, prenom, nom) => {
   try {
-    console.log(`Attempting to send activation email to: ${to}`);
+    console.log(`Tentative d'envoi de mail avec INE à : ${to}`);
+    
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Bienvenue sur notre plateforme, ${prenom} ${nom} !</h2>
+        <p>Votre inscription a bien été prise en compte.</p>
+        <p>Voici votre Identifiant National Élève (INE) :</p>
+        <p style="font-size: 1.5em; font-weight: bold; text-align: center; margin: 20px 0;">${ine}</p>
+        <p>Merci de conserver précieusement cet identifiant, il vous sera utile pour vos démarches.</p>
+        <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+        <p>Cordialement,<br>L'équipe SanoRdv</p>
+      </div>
+    `;
     
     const info = await transporter.sendMail({
       from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
       to,
-      subject: 'Activation de compte',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Activation de votre compte</h2>
-          <p>Bonjour,</p>
-          <p>Merci de vous être inscrit sur notre plateforme. Pour activer votre compte, veuillez cliquer sur le lien ci-dessous :</p>
-          <p style="text-align: center; margin: 30px 0;">
-            <a href="${url}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-              Activer mon compte
-            </a>
-          </p>
-          <p>Si le bouton ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :</p>
-          <p style="word-break: break-all; color: #666;">${url}</p>
-          <p>Ce lien expirera dans 24 heures.</p>
-          <p>Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.</p>
-          <p>Cordialement,<br>L'équipe SanoRdv</p>
-        </div>
-      `
+      subject: 'Votre Identifiant National Élève (INE)',
+      html: htmlContent
     });
     
-    console.log('Email activation envoyé avec succès:', info.messageId);
+    console.log('Email INE envoyé avec succès:', info.messageId);
     return info;
   } catch (error) {
-    console.error('Erreur détaillée dans sendActivationEmail:', {
+    console.error('Erreur dans sendINEEmail:', {
       message: error.message,
       code: error.code,
       command: error.command,
@@ -84,39 +78,33 @@ export const sendActivationEmail = async (to, token) => {
 };
 
 // Fonction pour envoyer l'email de réinitialisation de mot de passe
-export const sendResetPasswordEmail = async (to, token) => {
-  const url = `${process.env.FRONTEND_URL}/reset-password/${token}`;
-  
+export const sendResetPasswordEmail = async (to, resetcode) => {
   try {
-    console.log(`Attempting to send password reset email to: ${to}`);
-    
+    console.log(`Tentative d'envoi du code de réinitialisation à : ${to}`);
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Réinitialisation de votre mot de passe</h2>
+        <p>Bonjour,</p>
+        <p>Vous avez demandé la réinitialisation de votre mot de passe. Voici votre code de réinitialisation à 6 chiffres :</p>
+        <p style="font-size: 24px; font-weight: bold; text-align: center; margin: 30px 0;">${resetcode}</p>
+        <p>Ce code expirera dans 60 minutes.</p>
+        <p>Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email.</p>
+        <p>Cordialement,<br>L'équipe SanoRdv</p>
+      </div>
+    `;
+
     const info = await transporter.sendMail({
       from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
       to,
       subject: 'Réinitialisation de mot de passe',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Réinitialisation de votre mot de passe</h2>
-          <p>Bonjour,</p>
-          <p>Vous avez demandé la réinitialisation de votre mot de passe. Pour procéder, veuillez cliquer sur le lien ci-dessous :</p>
-          <p style="text-align: center; margin: 30px 0;">
-            <a href="${url}" style="background-color: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-              Réinitialiser mon mot de passe
-            </a>
-          </p>
-          <p>Si le bouton ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :</p>
-          <p style="word-break: break-all; color: #666;">${url}</p>
-          <p>Ce lien expirera dans 1 heure.</p>
-          <p>Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email.</p>
-          <p>Cordialement,<br>L'équipe SanoRdv</p>
-        </div>
-      `
+      html: htmlContent
     });
-    
-    console.log('Email réinitialisation envoyé avec succès:', info.messageId);
+
+    console.log('Email de réinitialisation envoyé avec succès:', info.messageId);
     return info;
   } catch (error) {
-    console.error('Erreur détaillée dans sendResetPasswordEmail:', {
+    console.error('Erreur dans sendResetPasswordEmail:', {
       message: error.message,
       code: error.code,
       command: error.command,

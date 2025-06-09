@@ -4,8 +4,8 @@ import {
   register,
   login,
   logout,
-  activateAccount,
   forgotPassword,
+  verifyResetCode,
   resetPassword
 } from '../controllers/user.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
@@ -32,9 +32,7 @@ router.post(
   ],
   (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ erreurs: errors.array() });
-    }
+    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
     next();
   },
   register
@@ -58,51 +56,59 @@ router.post(
   ],
   (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ erreurs: errors.array() });
-    }
+    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
     next();
   },
   login
 );
 
-// ✅ Déconnexion
+// ✅ Déconnexion (authentifié)
 router.post('/logout', authenticate, logout);
 
-// ✅ Activation de compte
-router.get('/activate/:token', activateAccount);
-
-// ✅ Mot de passe oublié
+// ✅ Mot de passe oublié (envoi du code)
 router.post(
   '/forgot-password',
   [body('email').isEmail().withMessage("Email invalide")],
   (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ erreurs: errors.array() });
-    }
+    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
     next();
   },
   forgotPassword
 );
 
-// ✅ Réinitialisation de mot de passe
+// ✅ Vérification du code de réinitialisation
 router.post(
-  '/reset-password/:token',
+  '/verify-reset-code',
   [
-    body('nouveauMotDePasse').isLength({ min: 6 }).withMessage("Mot de passe trop court"),
-    body('confirmationMotDePasse').custom((value, { req }) => {
-      if (value !== req.body.nouveauMotDePasse) {
-        throw new Error("Les mots de passe ne correspondent pas");
-      }
-      return true;
-    }),
+    body('resetCode').notEmpty().withMessage('Code requis'),
   ],
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ erreurs: errors.array() });
     }
+    next();
+  },
+  verifyResetCode
+);
+
+// ✅ Réinitialisation du mot de passe avec code validé
+router.post(
+  '/reset-password',
+  [
+    // Suppression de la validation email ici, on ne veut que le code + mot de passe
+    body('motDePasse').isLength({ min: 6 }).withMessage('Le mot de passe doit faire au moins 6 caractères'),
+    body('confirmationMotDePasse').custom((value, { req }) => {
+      if (value !== req.body.motDePasse) {
+        throw new Error('Les mots de passe ne correspondent pas');
+      }
+      return true;
+    }),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
     next();
   },
   resetPassword
