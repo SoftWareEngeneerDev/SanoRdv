@@ -4,6 +4,7 @@ import {
   register,
   login,
   logout,
+
   forgotPassword,
   verifyResetCode,
   resetPassword

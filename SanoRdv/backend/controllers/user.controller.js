@@ -78,9 +78,6 @@ export const login = async (req, res) => {
     if (!user || !(await bcrypt.compare(motDePasse, user.motDePasse)))
       return res.status(400).json({ message: "Identifiant ou mot de passe incorrect" });
 
-    if (!user.isActive)
-      return res.status(403).json({ message: 'Votre compte n’est pas encore activé.' });
-
     const payload = { userId: user._id, role: user.role };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 
