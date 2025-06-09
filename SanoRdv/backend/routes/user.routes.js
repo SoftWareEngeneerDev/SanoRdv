@@ -38,7 +38,7 @@ router.post(
   register
 );
 
-// ✅ Connexion
+//  Connexion
 router.post(
   '/login',
   [
@@ -62,10 +62,10 @@ router.post(
   login
 );
 
-// ✅ Déconnexion (authentifié)
+//  Déconnexion (authentifié)
 router.post('/logout', authenticate, logout);
 
-// ✅ Mot de passe oublié (envoi du code)
+//  Mot de passe oublié (envoi du code)
 router.post(
   '/forgot-password',
   [body('email').isEmail().withMessage("Email invalide")],

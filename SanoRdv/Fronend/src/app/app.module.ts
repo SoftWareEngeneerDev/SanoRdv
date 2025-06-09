@@ -8,11 +8,12 @@ import { LayoutModule } from './layout/layout.module';
 @NgModule({
   declarations: [
     AppComponent,
-    LayoutModule
+
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    LayoutModule
   ],
   providers: [],
   bootstrap: [AppComponent]
