@@ -49,7 +49,7 @@ export const sendINEEmail = async (to, ine, prenom, nom) => {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Bienvenue sur notre plateforme, ${prenom} ${nom} !</h2>
         <p>Votre inscription a bien été prise en compte.</p>
-        <p>Voici votre Identifiant National Élève (INE) :</p>
+        <p>Voici votre Identifiant de Prise de Rendez-vous médicale (INE) :</p>
         <p style="font-size: 1.5em; font-weight: bold; text-align: center; margin: 20px 0;">${ine}</p>
         <p>Merci de conserver précieusement cet identifiant, il vous sera utile pour vos démarches.</p>
         <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
@@ -60,7 +60,7 @@ export const sendINEEmail = async (to, ine, prenom, nom) => {
     const info = await transporter.sendMail({
       from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
       to,
-      subject: 'Votre Identifiant National Élève (INE)',
+      subject: 'Votre Idententifiant de Prise de rendez-vous médicale (INE)',
       html: htmlContent
     });
     
