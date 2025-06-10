@@ -63,7 +63,7 @@ export const register = async (req, res) => {
 };
 
 
-// ✅ Connexion
+//  Connexion
 export const login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
@@ -88,7 +88,7 @@ export const login = async (req, res) => {
   }
 };
 
-// ✅ Déconnexion
+//  Déconnexion
 export const logout = async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer '))
@@ -105,7 +105,7 @@ export const logout = async (req, res) => {
   }
 };
 
-// ✅ Étape 1 : Demander un code de réinitialisation
+//  Étape 1 : Demander un code de réinitialisation
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -137,7 +137,7 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-// ✅ Étape 2 : Vérifier le code envoyé par email
+//  Étape 2 : Vérifier le code envoyé par email
 export const verifyResetCode = async (req, res) => {
   let { resetCode } = req.body;
 
@@ -169,7 +169,7 @@ export const verifyResetCode = async (req, res) => {
   }
 };
 
-// ✅ Étape 3 : Réinitialiser le mot de passe
+//  Étape 3 : Réinitialiser le mot de passe
 export const resetPassword = async (req, res) => {
   const { motDePasse, confirmationMotDePasse } = req.body;
   const authHeader = req.headers.authorization;

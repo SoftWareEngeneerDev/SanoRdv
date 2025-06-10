@@ -13,7 +13,7 @@ import { authenticate } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-// ✅ Inscription
+//  Inscription
 router.post(
   '/register',
   [
@@ -78,7 +78,7 @@ router.post(
   forgotPassword
 );
 
-// ✅ Vérification du code de réinitialisation
+//  Vérification du code de réinitialisation
 router.post(
   '/verify-reset-code',
   [
@@ -94,7 +94,7 @@ router.post(
   verifyResetCode
 );
 
-// ✅ Réinitialisation du mot de passe avec code validé
+//  Réinitialisation du mot de passe avec code validé
 router.post(
   '/reset-password',
   [
