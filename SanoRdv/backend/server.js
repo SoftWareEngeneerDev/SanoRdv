@@ -1,7 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import userRoute from './routes/user.routes.js';
+import userRoutes from './routes/user.routes.js';
+import patientRoute from './routes/patient.routes.js';  // <-- importer
+import medecinRoutes from './routes/medecin.routes.js'; // <-- importer
+
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -20,7 +23,10 @@ const port = process.env.PORT || 3000;
   app.use(cors());
   app.use(express.json());
 
-  app.use('/api/users', userRoute);
+  app.use('/api/auth', patientRoute);
+  app.use('/api/auth', medecinRoutes);
+  
+  app.use('/api/auth', userRoutes);
 
   app.listen(port, () => {
     console.log(`Serveur démarré sur http://localhost:${port}`);

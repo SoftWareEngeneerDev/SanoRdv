@@ -2,10 +2,14 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ta_clef_secrete';
 
-// Set en mémoire (temporaire — à migrer vers Redis ou base persistante en prod)
+// Stockage temporaire en mémoire des tokens invalidés (blacklist)
+// À migrer vers Redis ou une base persistante en production
 const blacklistedTokens = new Set();
 
-// 🔐 Middleware de vérification
+/**
+ * Middleware d'authentification JWT
+ * Vérifie la présence et la validité du token JWT dans le header Authorization
+ */
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -21,7 +25,7 @@ export const authenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // injecter les infos décodées dans req pour les routes suivantes
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
@@ -31,7 +35,10 @@ export const authenticate = (req, res, next) => {
   }
 };
 
-// 🔓 Fonction pour blacklister un token (utilisée dans logout)
+/**
+ * Ajoute un token à la blacklist (à appeler par exemple lors d’un logout)
+ * @param {string} token - Token JWT à invalider
+ */
 export const blacklistToken = (token) => {
   blacklistedTokens.add(token);
 };

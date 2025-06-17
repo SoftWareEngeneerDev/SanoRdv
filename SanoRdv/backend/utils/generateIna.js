@@ -1,4 +1,3 @@
-// utils/generateIna.js
 export function generateIna() {
   const now = new Date();
   const datePart = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
