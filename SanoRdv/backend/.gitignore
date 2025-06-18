@@ -47,3 +47,5 @@ test-output/
 # Git files
 .git/
 .gitignore
+/Frontend/
+/backend.zip
