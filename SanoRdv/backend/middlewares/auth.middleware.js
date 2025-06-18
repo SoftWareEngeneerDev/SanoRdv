@@ -2,11 +2,10 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ta_clef_secrete';
 
-// Set en mémoire (temporaire — à migrer vers Redis ou base persistante en prod)
+// Blacklist temporaire en mémoire (à changer en prod)
 const blacklistedTokens = new Set();
 
-// 🔐 Middleware de vérification
-export const authenticate = (req, res, next) => {
+export const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -24,6 +23,7 @@ export const authenticate = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
+    console.error('Erreur JWT :', err.message);
     if (err.name === 'TokenExpiredError') {
       return res.status(401).json({ message: 'Session expirée' });
     }
@@ -31,7 +31,6 @@ export const authenticate = (req, res, next) => {
   }
 };
 
-// 🔓 Fonction pour blacklister un token (utilisée dans logout)
 export const blacklistToken = (token) => {
   blacklistedTokens.add(token);
 };
