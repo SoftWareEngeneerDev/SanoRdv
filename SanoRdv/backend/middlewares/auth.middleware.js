@@ -1,43 +1,48 @@
 import jwt from 'jsonwebtoken';
 
+// 🔐 Clé secrète pour signer les JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'ta_clef_secrete';
 
-// Stockage temporaire en mémoire des tokens invalidés (blacklist)
-// À migrer vers Redis ou une base persistante en production
+// 🧠 Blacklist temporaire en mémoire (utiliser Redis en prod pour la persistance)
 const blacklistedTokens = new Set();
 
 /**
- * Middleware d'authentification JWT
- * Vérifie la présence et la validité du token JWT dans le header Authorization
+ * ✅ Middleware d'authentification
+ * Vérifie le token JWT dans le header "Authorization"
  */
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
+  // 🛑 Vérifie la présence du header et du format "Bearer token"
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Token manquant ou invalide' });
+    return res.status(401).json({ message: '⚠️ Token manquant ou mal formaté' });
   }
 
   const token = authHeader.split(' ')[1];
 
+  // 🚫 Vérifie si le token est blacklisté (ex: après déconnexion)
   if (blacklistedTokens.has(token)) {
-    return res.status(401).json({ message: 'Session expirée ou déconnectée' });
+    return res.status(401).json({ message: '🚫 Session expirée ou utilisateur déconnecté' });
   }
 
   try {
+    // ✅ Vérification du token
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // injecter les infos décodées dans req pour les routes suivantes
+    req.user = decoded; // ⬅️ Infos utiles injectées dans la requête
     next();
   } catch (err) {
+    // 🕒 Token expiré
     if (err.name === 'TokenExpiredError') {
-      return res.status(401).json({ message: 'Session expirée' });
+      return res.status(401).json({ message: '⏳ Session expirée' });
     }
-    return res.status(403).json({ message: 'Token invalide' });
+    // ❌ Token invalide
+    return res.status(403).json({ message: '❌ Token invalide' });
   }
 };
 
 /**
- * Ajoute un token à la blacklist (à appeler par exemple lors d’un logout)
- * @param {string} token - Token JWT à invalider
+ * 🔒 Fonction pour invalider un token (ex: au logout)
+ * @param {string} token - Le token JWT à invalider
  */
 export const blacklistToken = (token) => {
   blacklistedTokens.add(token);

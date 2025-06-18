@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || 'Application de gestion de rdv médical';
-const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:3000/api/auth/login';
+const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:4200/login';
 
 /**
  * Crée un transporteur nodemailer selon les variables d'environnement (Gmail, SMTP ou Ethereal)
@@ -13,7 +13,7 @@ const createTransport = () => {
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS, // mot de passe d'application Gmail
+        pass: process.env.GMAIL_PASS,
       },
     });
   }
@@ -43,12 +43,14 @@ const createTransport = () => {
 
 /**
  * Génère le contenu HTML de l'email contenant les identifiants
+ * @param {string} prenom - Prénom de l'admin
+ * @param {string} nom - Nom de l'admin
  * @param {string} IDadmin - Nom d'utilisateur
- * @param {string} password - Mot de passe
+ * @param {string} motDePasse - Mot de passe
  * @param {string} email - Adresse email de l'admin
  * @returns {string} Contenu HTML de l'email
  */
-const createEmailTemplate = (IDadmin, password, email) => `
+const createEmailTemplate = (prenom, nom, IDadmin, motDePasse, email) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -81,11 +83,11 @@ const createEmailTemplate = (IDadmin, password, email) => `
       <h1>🏥 SanoRdv - Identifiants Administrateur</h1>
     </div>
     <div class="content">
-      <h2>Bonjour Administrateur,</h2>
+      <h2>Bonjour ${prenom} ${nom},</h2>
       <p>Votre compte a été créé avec succès. Voici vos identifiants :</p>
       <div class="credentials">
         <p><strong>Nom d'utilisateur :</strong> <code>${IDadmin} ou ${email}</code></p>
-        <p><strong>Mot de passe :</strong> <code>${password}</code></p>
+        <p><strong>Mot de passe :</strong> <code>${motDePasse}</code></p>
       </div>
       <div class="warning">
         <h4>⚠️ Important :</h4>
@@ -96,7 +98,7 @@ const createEmailTemplate = (IDadmin, password, email) => `
           <li>Activez l'authentification à deux facteurs si disponible.</li>
         </ul>
       </div>
-     <p style="text-align: center; color: green;">
+      <p style="text-align: center; color: green;">
         <a href="${ADMIN_URL}" class="btn" target="_blank" rel="noopener noreferrer">Se connecter</a>
       </p>
     </div>
@@ -112,11 +114,13 @@ const createEmailTemplate = (IDadmin, password, email) => `
 /**
  * Envoie un email contenant les identifiants administrateur
  * @param {string} adminEmail - Adresse email du destinataire
+ * @param {string} prenom - Prénom de l'admin
+ * @param {string} nom - Nom de l'admin
  * @param {string} IDadmin - Nom d'utilisateur
- * @param {string} password - Mot de passe généré
+ * @param {string} motDePasse - Mot de passe généré
  * @returns {Promise<{success: boolean, messageId?: string, message: string}>}
  */
-export const sendAdminCredentials = async (adminEmail, IDadmin, password) => {
+export const sendAdminCredentials = async (adminEmail, prenom, nom, IDadmin, motDePasse) => {
   try {
     const transporter = createTransport();
 
@@ -124,17 +128,17 @@ export const sendAdminCredentials = async (adminEmail, IDadmin, password) => {
       from: process.env.SMTP_FROM || `"${MAIL_FROM_NAME}" <noreply@sanoRdv.com>`,
       to: adminEmail,
       subject: '🔐 SanoRdv - Identifiants Administrateur',
-      html: createEmailTemplate(IDadmin, password, adminEmail),
+      html: createEmailTemplate(prenom, nom, IDadmin, motDePasse, adminEmail),
       text: `
 SanoRdv - Identifiants Administrateur
 
-Bonjour,
+Bonjour ${prenom} ${nom},
 
 Votre compte administrateur a été créé.
 
 Identifiants :
 - Nom d'utilisateur : ${IDadmin} ou ${adminEmail}
-- Mot de passe : ${password}
+- Mot de passe : ${motDePasse}
 
 IMPORTANT : Changez ce mot de passe dès votre première connexion.
 

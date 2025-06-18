@@ -1,13 +1,22 @@
-const Admin = require('../models/admin.model');
+import Admin from '../models/admin.model.js';
 
-exports.verifyAdminExists = async (req, res, next) => {
+/**
+ * 🛡️ Middleware pour empêcher la création de plusieurs comptes admin
+ * Vérifie si un administrateur existe déjà dans la base.
+ */
+export const verifyAdminExists = async (req, res, next) => {
   try {
-    const admin = await Admin.findOne({ role: 'admin' });
-    if (admin) {
-      return res.status(400).json({ message: 'Un admin existe déjà' });
+    const existingAdmin = await Admin.findOne({ role: 'admin' });
+
+    if (existingAdmin) {
+      return res.status(400).json({
+        message: '❌ Un administrateur existe déjà. Création d’un second refusée.'
+      });
     }
-    next();
+
+    next(); // ✅ Aucun admin trouvé, on passe à la suite
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Erreur lors de la vérification de l\'admin:', error);
+    res.status(500).json({ message: 'Erreur serveur lors de la vérification de l\'admin' });
   }
 };

@@ -20,7 +20,11 @@ const port = process.env.PORT || 3000;
     process.exit(1);
   }
 
-  app.use(cors());
+  app.use(cors({
+    origin: 'http://localhost:4200', // ou '*' en dev
+    credentials: true,
+  }));
+
   app.use(express.json());
 
   app.use('/api/auth', patientRoute);

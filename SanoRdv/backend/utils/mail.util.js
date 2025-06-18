@@ -54,7 +54,7 @@ export const sendINEEmail = async (to, ine, prenom, nom) => {
   try {
     console.log(`Tentative d'envoi de mail avec INE à : ${to}`);
     
-    const loginUrl = `${process.env.FRONTEND_URL}/api/auth/login`;
+    const loginUrl = `${process.env.FRONTEND_URL}/login`;
 
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

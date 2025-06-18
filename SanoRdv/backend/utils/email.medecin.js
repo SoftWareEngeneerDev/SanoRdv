@@ -37,7 +37,7 @@ const createTransporter = () => {
 
 // Template HTML pour l'email (ajout de numeroIdentification)
 const createEmailTemplate = (email, password, username, numeroIdentification) => {
-  const loginUrl = process.env.ADMIN_URL || 'http://localhost:3000/admin';
+  const loginUrl = process.env.ADMIN_URL || 'http://localhost:4200/login';
 
   return `
 <!DOCTYPE html>

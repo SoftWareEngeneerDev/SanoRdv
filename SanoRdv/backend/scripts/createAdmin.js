@@ -1,10 +1,14 @@
-// scripts/createAdmin.js
+// ===============================
+// 📁 scripts/createAdmin.js
+// ===============================
+
 import 'dotenv/config';
 import mongoose from 'mongoose';
+import readline from 'readline';
 import { createDefaultAdmin, listAdmins } from '../controllers/admin.controller.js';
 import { testEmailConfig } from '../utils/email.admin.js';
 
-// 🎨 Fonctions pour l'affichage coloré
+// 🎨 Affichage coloré pour terminal
 const colors = {
   reset: '\x1b[0m',
   red: '\x1b[31m',
@@ -13,7 +17,6 @@ const colors = {
   blue: '\x1b[34m',
   magenta: '\x1b[35m',
   cyan: '\x1b[36m',
-  white: '\x1b[37m'
 };
 
 const log = {
@@ -25,165 +28,131 @@ const log = {
   separator: () => console.log(`${colors.magenta}${'='.repeat(60)}${colors.reset}`)
 };
 
-// 🔧 Fonction principale
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const ask = (question) => new Promise(resolve => rl.question(question, resolve));
+
+// 🔧 Fonction principale d'initialisation
 async function initializeAdmin() {
   try {
-    log.title('INITIALISATION ADMINISTRATEUR SANO RDV');
+    log.title('INITIALISATION DES ADMINISTRATEURS SANO RDV');
     log.separator();
-    
-    // 1. Connexion à MongoDB
-    log.info('Connexion à MongoDB...');
+
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/sanoRdv';
-    
+    log.info('Connexion à MongoDB...');
     await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
-    
     log.success('Connexion MongoDB établie');
-    
-    // 2. Tester la configuration email (optionnel)
-    log.info('Test configuration email...');
+
+    log.info('Vérification de la configuration email...');
     const emailTest = await testEmailConfig();
     if (emailTest.success) {
       log.success('Configuration email valide');
     } else {
-      log.warning(`Configuration email: ${emailTest.message}`);
-      log.info('Les identifiants seront affichés dans la console uniquement');
+      log.warning(`Email invalide: ${emailTest.message}`);
     }
-    
-    // 3. Vérifier les admins existants
-    log.info('Vérification des administrateurs existants...');
+
     const adminsList = await listAdmins();
-    
     if (adminsList.count > 0) {
-      log.warning(`${adminsList.count} administrateur(s) déjà présent(s):`);
+      log.warning(`${adminsList.count} administrateur(s) déjà existant(s):`);
       adminsList.admins.forEach(admin => {
-        console.log(`   - ${admin.username} (${admin.email}) - Créé le ${admin.createdAt.toLocaleDateString()}`);
+        console.log(`   - ${admin.IDadmin} (${admin.email})`);
       });
     }
-    
-    // 4. Créer nouvel admin
-    log.info('Création du nouvel administrateur...');
-    
-    const adminEmail = process.env.ADMIN_EMAIL || null;
-    const adminPassword = process.env.ADMIN_PASSWORD || null;
-    
-    if (!adminEmail) {
-      log.warning('⚠️ ADMIN_EMAIL non défini dans les variables d\'environnement.');
-    }
-    
-    const result = await createDefaultAdmin(adminEmail, adminPassword);
-    
-    if (result.success) {
+
+    let again = true;
+    while (again) {
       log.separator();
-      log.success('ADMINISTRATEUR CRÉÉ AVEC SUCCÈS !');
-      log.separator();
-      
-      console.log(`${colors.white}📋 INFORMATIONS ADMINISTRATEUR:${colors.reset}`);
-      console.log(`   🆔 ID: ${result.admin.id}`);
-      console.log(`   👤 Username: ${colors.cyan}${result.admin.username}${colors.reset}`);
-      console.log(`   📧 Email: ${colors.cyan}${result.admin.email}${colors.reset}`);
-      console.log(`   🔑 Password: ${colors.yellow}${result.admin.password}${colors.reset}`);
-      console.log(`   📅 Créé le: ${result.admin.createdAt.toLocaleString()}`);
-      
-      if (result.emailSent) {
-        log.success('Email avec identifiants envoyé');
+      const firstName = await ask('👤 Prénom: ');
+      const lastName = await ask('👤 Nom: ');
+      const email = await ask('📧 Email: ');
+      const password = await ask('🔑 Mot de passe: ');
+
+      const result = await createDefaultAdmin({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim(),
+        password: password.trim()
+      });
+
+      if (result.success) {
+        log.success('Administrateur créé avec succès !');
+        console.log(`   🆔 ID MongoDB: ${result.admin._id}`);
+        console.log(`   👤 IDadmin: ${colors.cyan}${result.admin.IDadmin}${colors.reset}`);
+        console.log(`   📧 Email: ${result.admin.email}`);
+        console.log(`   🔑 Password: ${colors.yellow}${password.trim()}${colors.reset}`);
+        console.log(`   📅 Créé le: ${new Date(result.admin.createdAt).toLocaleString()}`);
+        if (result.emailSent) {
+          log.success('Email envoyé avec succès');
+        } else {
+          log.warning('Email non envoyé');
+        }
       } else {
-        log.warning('Email non envoyé - Sauvegardez ces identifiants !');
+        log.warning(`Erreur: ${result.message}`);
+        if (result.admin) {
+          console.log(`   Administrateur existant: ${result.admin.IDadmin} (${result.admin.email})`);
+        }
       }
-      
-      log.separator();
-      console.log(`${colors.red}⚠️  IMPORTANT:${colors.reset}`);
-      console.log(`   • Sauvegardez ces identifiants en lieu sûr`);
-      console.log(`   • Changez le mot de passe dès la première connexion`);
-      console.log(`   • Ne partagez jamais ces informations`);
-      log.separator();
-      
-    } else {
-      log.warning(result.message);
-      if (result.admin) {
-        console.log(`   Administrateur existant: ${result.admin.username} (${result.admin.email})`);
-      }
+
+      const next = await ask('\nAjouter un autre administrateur ? (o/n): ');
+      again = next.trim().toLowerCase() === 'o';
     }
-    
+
   } catch (error) {
     log.error(`Erreur fatale: ${error.message}`);
     console.error(error.stack);
-    process.exit(1);
   } finally {
-    // Fermer la connexion MongoDB
-    if (mongoose.connection.readyState === 1) {
-      await mongoose.connection.close();
-      log.info('Connexion MongoDB fermée');
-    }
+    rl.close();
+    await mongoose.connection.close();
+    log.info('Connexion MongoDB fermée');
   }
 }
 
-// 🎬 Gestion des arguments de ligne de commande
+// 🎬 Gestion en CLI
 const args = process.argv.slice(2);
-
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`
-${colors.cyan}🏥 SanoRdv - Création Administrateur${colors.reset}
+${colors.cyan}🏥 SanoRdv - Création Administrateurs${colors.reset}
 
 Usage: node scripts/createAdmin.js [options]
 
 Options:
   --help, -h     Afficher cette aide
-  --force, -f    Forcer la création même si un admin existe
   --list, -l     Lister les admins existants uniquement
 
-Variables d'environnement requises:
-  MONGODB_URI    URI de connexion MongoDB
-  ADMIN_EMAIL    Email de l'administrateur (optionnel)
-  ADMIN_PASSWORD Mot de passe de l'administrateur (optionnel)
-  
-Variables d'environnement email (optionnelles):
-  GMAIL_USER     Utilisateur Gmail
-  GMAIL_PASS     Mot de passe d'application Gmail
-  ou
-  SMTP_HOST      Serveur SMTP
-  SMTP_PORT      Port SMTP
-  SMTP_USER      Utilisateur SMTP
-  SMTP_PASS      Mot de passe SMTP
+Variables d'environnement :
+  MONGODB_URI    URI MongoDB
+  GMAIL_USER     Email Gmail
+  GMAIL_PASS     App Password Gmail
 
-Exemple:
+⚙️ Lancement standard :
   node scripts/createAdmin.js
-  `);
+`);
   process.exit(0);
-}
-
-if (args.includes('--list') || args.includes('-l')) {
-  // Mode liste uniquement
-  async function listOnly() {
-    try {
-      await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sanoRdv');
-      const adminsList = await listAdmins();
-      
-      log.title('LISTE DES ADMINISTRATEURS');
-      log.separator();
-      
-      if (adminsList.count === 0) {
-        log.warning('Aucun administrateur trouvé');
-      } else {
-        console.log(`${colors.green}${adminsList.count} administrateur(s) trouvé(s):${colors.reset}`);
-        adminsList.admins.forEach((admin, index) => {
-          console.log(`\n${index + 1}. ${colors.cyan}${admin.username}${colors.reset}`);
-          console.log(`   📧 Email: ${admin.email}`);
-          console.log(`   📅 Créé: ${admin.createdAt.toLocaleString()}`);
-          console.log(`   🔄 Modifié: ${admin.updatedAt.toLocaleString()}`);
-          console.log(`   ✅ Actif: ${admin.isActive ? 'Oui' : 'Non'}`);
-        });
-      }
-    } catch (error) {
-      log.error(`Erreur: ${error.message}`);
-    } finally {
-      await mongoose.connection.close();
+} else if (args.includes('--list') || args.includes('-l')) {
+  (async () => {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sanoRdv');
+    const adminsList = await listAdmins();
+    log.title('LISTE DES ADMINISTRATEURS');
+    log.separator();
+    if (adminsList.count === 0) {
+      log.warning('Aucun administrateur trouvé.');
+    } else {
+      adminsList.admins.forEach((admin, index) => {
+        console.log(`\n${index + 1}. ${colors.cyan}${admin.IDadmin}${colors.reset}`);
+        console.log(`   📧 Email: ${admin.email}`);
+        console.log(`   📅 Créé: ${new Date(admin.createdAt).toLocaleString()}`);
+        console.log(`   🔄 Modifié: ${new Date(admin.updatedAt).toLocaleString()}`);
+        console.log(`   ✅ Actif: ${admin.isActive ? 'Oui' : 'Non'}`);
+      });
     }
-  }
-  listOnly();
+    await mongoose.connection.close();
+  })();
 } else {
-  // Mode création normale
   initializeAdmin();
 }

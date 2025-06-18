@@ -9,23 +9,40 @@ const router = express.Router();
 router.post(
   '/login',
   [
+    // ✅ Validation du champ UserID
     body('UserID')
+      .notEmpty().withMessage('L\'identifiant (UserID) est requis.')
       .custom((value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const numericRegex = /^\d+$/;
-        const ineRegex = /^INE-\d{8}-\d{6}$/;
-        if (!emailRegex.test(value) && !numericRegex.test(value) && !ineRegex.test(value)) {
-          throw new Error('Email, ID numérique ou INE requis');
+        const numericRegex = /^\d{4,}$/;
+        const ineRegex = /^(INE[-_]?)?\d{4,}$/i;
+        const systemIDRegex = /^(admin|MED|patient)[-_]\w+$/i;
+
+        if (
+          !emailRegex.test(value) &&
+          !numericRegex.test(value) &&
+          !ineRegex.test(value) &&
+          !systemIDRegex.test(value)
+        ) {
+          throw new Error('Identifiant invalide : Email, ID numérique, INE ou ID système requis');
         }
+
         return true;
       }),
-    body('motDePasse').notEmpty().withMessage('Le mot de passe est obligatoire'),
+
+    // ✅ Validation du mot de passe
+    body('motDePasse')
+      .notEmpty().withMessage('Le mot de passe est obligatoire.')
+      .isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères.'),
   ],
   (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ erreurs: errors.array() });
+    }
 
-    login(req, res); //  on délègue au contrôleur
+    // ✅ Si tout est bon, délégation au contrôleur
+    login(req, res);
   }
 );
 

@@ -10,6 +10,7 @@ const router = express.Router();
 /* ==========================================================================
    📌 INSCRIPTION
    ========================================================================== */
+
 router.post(
   '/register',
   [
@@ -37,8 +38,12 @@ router.post(
       .withMessage('Date de naissance invalide'),
   ],
   (req, res, next) => {
+    console.log('Requête /register reçue avec:', req.body);
+
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ erreurs: errors.array() });
+    }
     next();
   },
   register
