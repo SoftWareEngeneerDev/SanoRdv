@@ -1,10 +1,34 @@
-
 import Medecin from '../models/medecin.model.js';
 import Rendezvous from '../models/RendezVous.js';
 
+export const ajouterDisponibilite = async (req, res) => {
+  try {
+    const medecinId = req.user.id;
+    const { date, slots } = req.body;
+
+    const medecin = await Medecin.findById(medecinId);
+    if (!medecin) return res.status(404).json({ message: 'Médecin non trouvé' });
+
+    const existing = medecin.availability.find(av => av.date === date);
+    if (existing) {
+      if (Array.isArray(slots)) {
+        existing.slots = [...new Set([...existing.slots, ...slots])];
+      }
+    } else {
+      medecin.availability.push({ date, slots });
+    }
+
+    await medecin.save();
+    res.status(200).json({ message: 'Disponibilité ajoutée avec succès', availability: medecin.availability });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
 export const supprimerDisponibilite = async (req, res) => {
   try {
-    const { medecinId } = req.params;
+    const medecinId = req.user.id;
     const { date, slot } = req.body;
 
     const medecin = await Medecin.findById(medecinId);
@@ -32,7 +56,7 @@ export const supprimerDisponibilite = async (req, res) => {
 
 export const obtenirDisponibilitesFiltrees = async (req, res) => {
   try {
-    const { medecinId } = req.params;
+    const medecinId = req.user.id;
     const { date } = req.query;
 
     const medecin = await Medecin.findById(medecinId);
@@ -41,36 +65,16 @@ export const obtenirDisponibilitesFiltrees = async (req, res) => {
     const jour = medecin.availability.find(av => av.date === date);
     if (!jour) return res.status(200).json({ date, availableSlots: [] });
 
-    const rdvs = await Rendezvous.find({ medecin: medecinId, date, status: { $ne: 'cancelled' } });
+    const rdvs = await Rendezvous.find({
+      medecin: medecinId,
+      date,
+      status: { $ne: 'cancelled' }
+    });
+
     const dejaPris = rdvs.map(r => r.time);
     const disponibles = jour.slots.filter(s => !dejaPris.includes(s));
 
     res.status(200).json({ date, availableSlots: disponibles });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Erreur serveur' });
-  }
-};
-
-export const ajouterDisponibilite = async (req, res) => {
-  try {
-    const { medecinId } = req.params;
-    const { date, slots } = req.body;
-
-    const medecin = await Medecin.findById(medecinId);
-    if (!medecin) return res.status(404).json({ message: 'Médecin non trouvé' });
-
-    const existing = medecin.availability.find(av => av.date === date);
-    if (existing) {
-      if (Array.isArray(slots)) {
-        existing.slots = [...new Set([...existing.slots, ...slots])];
-      }
-    } else {
-      medecin.availability.push({ date, slots });
-    }
-
-    await medecin.save();
-    res.status(200).json({ message: 'Disponibilité ajoutée avec succès', availability: medecin.availability });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Erreur serveur' });

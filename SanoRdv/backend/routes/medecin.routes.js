@@ -4,8 +4,8 @@ import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-router.post('/:medecinId/disponibilites', authMiddleware, ajouterDisponibilite);
-router.delete('/:medecinId/disponibilites', authMiddleware, supprimerDisponibilite);
-router.get('/:medecinId/disponibilites', obtenirDisponibilitesFiltrees);
+router.post('/disponibilites', authMiddleware, ajouterDisponibilite);
+router.delete('/disponibilites', authMiddleware, supprimerDisponibilite);
+router.get('/disponibilites', obtenirDisponibilitesFiltrees);
 
 export default router;

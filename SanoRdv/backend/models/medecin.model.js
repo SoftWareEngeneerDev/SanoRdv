@@ -1,3 +1,5 @@
+// modèle Medecin
+
 import mongoose from 'mongoose';
 
 const DisponibiliteSchema = new mongoose.Schema({
