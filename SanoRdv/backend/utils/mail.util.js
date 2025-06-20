@@ -37,10 +37,10 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
   tls: {
-      rejectUnauthorized: false
-    },
-  debug: true,
-  logger: true,
+    rejectUnauthorized: false, // Permet de ne pas vérifier les certificats (utile en développement)
+  },
+  debug: true,  // Active les logs pour afficher les échanges avec le serveur SMTP
+  logger: true, // Active également le log des informations pour plus de visibilité
 });
 
 // Vérification de la connexion SMTP au démarrage

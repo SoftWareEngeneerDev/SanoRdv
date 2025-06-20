@@ -16,7 +16,7 @@ const createTransport = () => {
         pass: process.env.GMAIL_PASS,
       },
       tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false // Permet de désactiver les vérifications de certificat (utile pour le dev)
       },
     });
   }
@@ -31,7 +31,7 @@ const createTransport = () => {
         pass: process.env.SMTP_PASS,
       },
       tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false // Permet de désactiver les vérifications de certificat (utile pour le dev)
       },
     });
   }
@@ -45,7 +45,7 @@ const createTransport = () => {
       pass: 'ethereal.pass',
     },
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false // Permet de désactiver les vérifications de certificat (utile pour le dev)
     },
   });
 };

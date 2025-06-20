@@ -8,7 +8,7 @@ import userRoutes from './routes/user.routes.js';
 import patientRoutes from './routes/patient.routes.js';
 import medecinRoutes from './routes/medecin.routes.js';
 import specialiteRoutes from './routes/specialite.routes.js';
-import creneauRouter  from './routes/creneau.routes.js';
+import creneauRouter from './routes/creneau.routes.js';  // Importation de creneauRouter
 
 dotenv.config();
 
@@ -19,9 +19,9 @@ const port = process.env.PORT || 3000;
   try {
     // Connexion à la base de données MongoDB
     await connectDB();
-    console.log(' Base de données connectée avec succès');
+    console.log('✅ Base de données connectée avec succès');
   } catch (error) {
-    console.error(' Erreur de connexion à la base de données:', error);
+    console.error('❌ Erreur de connexion à la base de données:', error);
     process.exit(1);
   }
 
@@ -39,8 +39,8 @@ const port = process.env.PORT || 3000;
   app.use('/api/auth', userRoutes);
   app.use('/api/auth', patientRoutes);
   app.use('/api/auth', medecinRoutes);
-  app.use('/api/spec ialites', specialiteRoutes);
-  app.use('/api/creneaux', creneauRouter);
+  app.use('/api/specialites', specialiteRoutes);
+  app.use('/api/creneaux', creneauRouter);  // Assurez-vous que cette route est incluse
 
   // Route "health check" pour tester si serveur tourne
   app.get('/api/health', (req, res) => {
@@ -60,7 +60,7 @@ const port = process.env.PORT || 3000;
 
   // Démarrage du serveur
   const server = app.listen(port, () => {
-    console.log(` Serveur démarré sur http://localhost:${port}`);
+    console.log(`🚀 Serveur démarré sur http://localhost:${port}`);
   });
 
   // Gestion propre des arrêts du serveur (SIGTERM)
