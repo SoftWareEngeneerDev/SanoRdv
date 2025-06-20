@@ -38,13 +38,6 @@ const port = process.env.PORT || 3000;
   app.use('/api/specialites', specialiteRoutes);
   app.use('/api/recherche', systemeDeRechercheRoutes);
 
-  app.get('/api/health', (req, res) => {
-    res.status(200).json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-    });
-  });
-
   // Gestion 404
   app.use((req, res) => {
     res.status(404).json({
