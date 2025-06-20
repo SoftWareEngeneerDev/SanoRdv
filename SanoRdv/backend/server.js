@@ -8,6 +8,7 @@ import userRoutes from './routes/user.routes.js';
 import patientRoutes from './routes/patient.routes.js';
 import medecinRoutes from './routes/medecin.routes.js';
 import specialiteRoutes from './routes/specialite.routes.js';
+import creneauRouter from './routes/creneau.routes.js';  // Importation de creneauRouter
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ const port = process.env.PORT || 3000;
   app.use('/api/auth', patientRoutes);
   app.use('/api/auth', medecinRoutes);
   app.use('/api/specialites', specialiteRoutes);
+  app.use('/api/creneaux', creneauRouter);  // Assurez-vous que cette route est incluse
 
   // Route "health check" pour tester si serveur tourne
   app.get('/api/health', (req, res) => {
