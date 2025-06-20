@@ -6,7 +6,7 @@ import { validationResult } from 'express-validator';
 import Patient from '../models/patient.model.js';
 import { generateIna } from '../utils/generateIna.js';
 import { sendINEEmail, sendResetPasswordEmail } from '../utils/mail.util.js';
-import { rechercherMedecins } from './SystemeDeRecherche.controller.js';
+
 
 dotenv.config();
 
