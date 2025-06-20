@@ -5,7 +5,7 @@ import { sendMedecinCredentials } from '../utils/email.medecin.js';
 import Medecin from '../models/medecin.model.js';
 import dotenv from 'dotenv';
 import Patient from '../models/patient.model.js';
-
+import mongoose from 'mongoose';
 
 dotenv.config();
 

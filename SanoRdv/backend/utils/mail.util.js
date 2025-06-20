@@ -60,7 +60,7 @@ export const sendINEEmail = async (to, ine, prenom, nom) => {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>Bienvenue sur notre plateforme, ${prenom} ${nom} !</h2>
         <p>Votre inscription a bien été prise en compte.</p>
-        <p>Voici votre Identifiant de Prise de Rendez-vous médicale (INE) :</p>
+        <p>Voici votre Identifiant de connexion (ID) :</p>
         <p style="font-size: 1.5em; font-weight: bold; text-align: center; margin: 20px 0;">${ine}</p>
         <p>Merci de conserver précieusement cet identifiant, il vous sera utile pour vos démarches.</p>
         <p style="text-align: center; margin-top: 30px;">
