@@ -2,42 +2,90 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-// const creneauSchema = new Schema({
-//   debut: { type: String, required: true }, // Format "HH:MM"
-//   fin: { type: String, required: true },
-//   statut: { type: String, enum: ['libre', 'réservé', 'bloqué'], default: 'libre' },
-//   rendezVousId: { type: Schema.Types.ObjectId, ref: 'RendezVous', default: null }
-// });
-
 const agendaSchema = new Schema({
-  medecinId: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Medecin', 
-    required: true 
+  // Identifiant personnalisé (au lieu de _id)
+  idAgenda: {
+    type: Schema.Types.ObjectId,
+    default: () => new mongoose.Types.ObjectId(), // Génération automatique
+    unique: true
   },
-  date: { 
-    type: Date, 
-    required: true,
+
+  // Référence obligatoire au médecin
+  idMedecin: {
+    type: Schema.Types.ObjectId,
+    ref: 'Medecin',
+    required: [true, 'L\'identifiant du médecin est obligatoire'],
     validate: {
-      validator: (date) => date >= new Date(),
-      message: "La date doit être dans le futur"
+      validator: async function(id) {
+        const medecin = await mongoose.model('Medecin').findById(id);
+        return medecin !== null;
+      },
+      message: 'Le médecin spécifié n\'existe pas'
     }
   },
-  creneaux: [creneauSchema], // Liste des créneaux horaires
-  lieu: { type: String, required: true }
-}, { timestamps: true });
 
-// Méthode pour ajouter un créneau
-agendaSchema.methods.ajouterCreneau = function(debut, fin) {
-  this.creneaux.push({ debut, fin });
-  return this.save();
-};
+  DateJour: {
+    type: Date,
+    required: [true, 'La date est obligatoire'],
+    validate: {
+      validator: function(date) {
+        return date >= new Date().setHours(0, 0, 0, 0);
+      },
+      message: 'La date doit être aujourd\'hui ou dans le futur'
+    },
+    get: (date) => date.toISOString().split('T')[0]
+  },
 
-// Méthode pour vérifier la disponibilité
-agendaSchema.methods.estDisponible = function(debut, fin) {
-  return this.creneaux.some(
-    c => c.debut === debut && c.fin === fin && c.statut === 'libre'
-  );
-};
+  motif: {
+    type: String,
+    maxlength: [500, 'Le motif ne doit pas dépasser 500 caractères'],
+    default: null
+  },
 
-module.exports = mongoose.model('Agenda', agendaSchema);
+  Lieu: {
+    type: String,
+    required: [true, 'Le lieu est obligatoire'],
+    enum: {
+      values: ['Cabinet A', 'Cabinet B', 'En ligne'],
+      message: 'Lieu non valide'
+    }
+  },
+
+  Statut: {
+    type: String,
+    enum: ['actif', 'inactif', 'complet'],
+    default: 'actif',
+    set: (statut) => statut.toLowerCase()
+  }
+}, { 
+  timestamps: true,
+  toJSON: { 
+    virtuals: true,
+    getters: true,
+    transform: (doc, ret) => {
+      ret.id = ret.idAgenda; // Alias pour la compatibilité
+      delete ret._id;        // Supprime _id par défaut
+      delete ret.__v;
+      return ret;
+    }
+  }
+});
+
+// Index composite
+agendaSchema.index({ idMedecin: 1, DateJour: 1 }, { unique: true });
+
+// Virtual Populate
+agendaSchema.virtual('creneaux', {
+  ref: 'Creneau',
+  localField: 'idAgenda',  // Maintenant lié à idAgenda au lieu de _id
+  foreignField: 'agendaId'
+});
+
+// Middleware de suppression
+agendaSchema.pre('deleteOne', { document: true }, async function(next) {
+  await mongoose.model('Creneau').deleteMany({ agendaId: this.idAgenda });
+  next();
+});
+
+export default mongoose.model('Agenda', agendaSchema);
+// export default mongoose.model('Admin', adminSchema);
