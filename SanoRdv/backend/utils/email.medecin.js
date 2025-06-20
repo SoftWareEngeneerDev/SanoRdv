@@ -97,7 +97,7 @@ const createEmailTemplate = (email, password, username, numeroIdentification) =>
 };
 
 // Fonction d'envoi de l'email avec identifiants
-export const sendAdminCredentials = async (email, username, password, numeroIdentification) => {
+export const sendMedecinCredentials = async (email, username, password, numeroIdentification) => {
   try {
     const transporter = createTransporter();
 

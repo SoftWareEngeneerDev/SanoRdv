@@ -6,6 +6,7 @@ import { validationResult } from 'express-validator';
 import Patient from '../models/patient.model.js';
 import { generateIna } from '../utils/generateIna.js';
 import { sendINEEmail, sendResetPasswordEmail } from '../utils/mail.util.js';
+import { rechercherMedecins } from './SystemeDeRecherche.js';
 
 dotenv.config();
 
@@ -129,3 +130,4 @@ export const register = async (req, res) => {
   }
 };
 
+// Fonction de rechercherMedecins
