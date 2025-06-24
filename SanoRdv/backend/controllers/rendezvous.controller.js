@@ -1,6 +1,6 @@
 import RendezVous from '../models/rendezvous.model.js';
 import Creneau from '../models/creneau.model.js';
-import { notifierRendezVous } from '../utils/notification.util.js'; // ✅ Nouveau module pour gérer les notifications
+import { notifierRendezVous } from '../utils/notification.util.js';
 
 /**
  * Prendre un rendez-vous (avec réservation de créneau)
@@ -9,44 +9,47 @@ export const prendreRendezVous = async (req, res) => {
   try {
     const { patientId, medecinId, date, time, creneauId, prenom, nom, email } = req.body;
 
-    // Vérification des champs requis
     if (!patientId || !medecinId || !date || !time || !creneauId) {
       return res.status(400).json({ message: 'Tous les champs sont requis.' });
     }
 
-    // Vérifie que le créneau est encore libre
+    const dateObj = new Date(date);
+
+    // Vérifier que le créneau est disponible
     const creneau = await Creneau.findById(creneauId);
     if (!creneau || creneau.statut !== 'libre') {
       return res.status(400).json({ message: 'Ce créneau n\'est plus disponible.' });
     }
 
-    // Vérifie s’il n’existe pas déjà un RDV à cette date/heure pour le médecin
+    // Vérifier s’il n’y a pas de doublon de rendez-vous
     const existe = await RendezVous.findOne({
       medecin: medecinId,
-      date,
+      date: dateObj,
       time,
       status: { $ne: 'annulé' }
     });
+
     if (existe) {
       return res.status(400).json({ message: 'Ce créneau est déjà réservé.' });
     }
 
-    // Création du rendez-vous
+    // Créer le rendez-vous
     const nouveauRDV = new RendezVous({
       patient: patientId,
       medecin: medecinId,
-      date,
+      date: dateObj,
       time,
       status: 'confirmé',
     });
+
     await nouveauRDV.save();
 
-    // Mise à jour du créneau
+    // Marquer le créneau comme réservé
     creneau.statut = 'réservé';
     creneau.rendezVousId = nouveauRDV._id;
     await creneau.save();
 
-    // Notification (facultative, via service centralisé)
+    // Notification centralisée (ex. : mail ou SMS)
     await notifierRendezVous('confirmation', {
       email: email || 'patient@example.com',
       ine: nouveauRDV._id.toString(),
@@ -77,11 +80,9 @@ export const annulerRendezVous = async (req, res) => {
       return res.status(404).json({ message: 'Rendez-vous non trouvé' });
     }
 
-    // Mise à jour du statut
     rdv.status = 'annulé';
     await rdv.save();
 
-    // Libération du créneau
     const creneau = await Creneau.findOne({ rendezVousId: rdv._id });
     if (creneau) {
       creneau.statut = 'libre';
@@ -89,7 +90,6 @@ export const annulerRendezVous = async (req, res) => {
       await creneau.save();
     }
 
-    // Notification (facultative)
     await notifierRendezVous('annulation', {
       email: 'patient@example.com',
       ine: rdv._id.toString(),

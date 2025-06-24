@@ -12,7 +12,7 @@ const RendezVousSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String,
+    type: date,
     required: true,
   },
   time: {
@@ -23,7 +23,9 @@ const RendezVousSchema = new mongoose.Schema({
     type: String,
     enum: ['confirmed', 'cancelled'],
     default: 'confirmed',
-  },
+  }
+}, {
+  timestamps: true // 👈 Important pour createdAt
 });
 
 RendezVousSchema.index({ medecin: 1, date: 1, time: 1 }, { unique: true });

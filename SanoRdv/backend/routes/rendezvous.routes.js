@@ -5,7 +5,7 @@ import { authMiddleware } from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 // ✅ Créer un rendez-vous (authentification requise)
-router.post('/rendezvous', authMiddleware, prendreRendezVous);
+router.post('/rendezvous', prendreRendezVous);
 
 // ✅ Annuler un rendez-vous (authentification requise)
 router.put('/rendezvous/:id/annuler', authMiddleware, annulerRendezVous);
