@@ -1,84 +1,67 @@
-// models/Creneau.js
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
-
 const creneauSchema = new Schema({
-  // Clé primaire personnalisée
-  idCreneau: {
-    type: String,
-    unique: true, // S'assurer qu'il soit unique
-    required: [true, 'L\'idCreneau est obligatoire'],
-    default: () => new mongoose.Types.ObjectId().toString() // Génère une valeur unique pour idCreneau
-  },
-
-  // Clé étrangère vers l'agenda parent (obligatoire)
-  agendaId: {
+  agenda: {
     type: Schema.Types.ObjectId,
     ref: 'Agenda',
     required: [true, 'Un créneau doit être lié à un agenda'],
-    index: true // Index pour optimiser les requêtes
+    index: true,
   },
-
-  // Heure de début (format HH:MM)
   debut: {
-    type: String,
+    type: Date,
     required: [true, 'L\'heure de début est obligatoire'],
-    match: [/^([01]\d|2[0-3]):[0-5]\d$/, 'Format HH:MM invalide'],
-    set: (h) => h.replace(/^(\d):/, '0$1:') // Normalise 9:00 → 09:00
   },
-
-  // Heure de fin
   fin: {
-    type: String,
+    type: Date,
     required: [true, 'L\'heure de fin est obligatoire'],
     validate: {
-      validator: function(v) { 
-        return v > this.debut; // Valide que fin > début
+      validator: function (v) {
+        return v > this.debut;
       },
-      message: 'L\'heure de fin doit être après l\'heure de début'
-    }
+      message: 'L\'heure de fin doit être après l\'heure de début',
+    },
   },
-
-  // Statut du créneau
   statut: {
     type: String,
     enum: ['libre', 'réservé', 'bloqué'],
-    default: 'libre'
+    default: 'libre',
   },
-
-  // Référence optionnelle au rendez-vous
-  rendezVousId: {
+  rendezVous: {
     type: Schema.Types.ObjectId,
     ref: 'RendezVous',
-    default: null
-  }
-}, { 
-//   _id: false, // Empêche Mongoose de générer l'ID par défaut (_id)
-  timestamps: true // Ajoute createdAt et updatedAt automatiquement
+    default: null,
+  },
+}, {
+  timestamps: true,
 });
 
-// Middleware : Empêche les créneaux qui se chevauchent
-creneauSchema.pre('save', async function(next) {
-  const chevauchement = await this.constructor.findOne({
-    agendaId: this.agendaId,
-    $or: [
-      { debut: { $lt: this.fin }, fin: { $gt: this.debut } }
-    ],
-    idCreneau: { $ne: this.idCreneau } // Ignore le document actuel lors des updates
-  });
 
+// Middleware : empêcher les chevauchements de créneaux dans le même agenda
+creneauSchema.pre('save', async function (next) {
+  const chevauchement = await this.constructor.findOne({
+    agenda: this.agenda,
+    _id: { $ne: this._id },
+    $or: [
+      { debut: { $lt: this.fin, $gte: this.debut } },
+      { fin: { $gt: this.debut, $lte: this.fin } },
+      { debut: { $lte: this.debut }, fin: { $gte: this.fin } },
+    ],
+  });
   if (chevauchement) {
-    throw new Error(`Ce créneau chevauche un autre créneau (${chevauchement.debut}-${chevauchement.fin})`);
+    return next(new Error(`Ce créneau chevauche un autre créneau (${chevauchement.debut.toISOString()} - ${chevauchement.fin.toISOString()})`));
   }
   next();
 });
 
-// Index composé pour des requêtes optimisées
-creneauSchema.index({ agendaId: 1, debut: 1, fin: 1 }, { unique: true });
 
-// Méthode pour vérifier la disponibilité
-creneauSchema.methods.estDisponible = function() {
+// Méthode d'instance pour durée en minutes
+creneauSchema.methods.dureeMinutes = function () {
+  return (this.fin - this.debut) / (1000 * 60);
+};
+// Vérifie si disponible
+creneauSchema.methods.estDisponible = function () {
   return this.statut === 'libre';
 };
 
-export default mongoose.model('Creneau', creneauSchema);
+const Creneau = mongoose.model('Creneau', creneauSchema);
+export default Creneau;

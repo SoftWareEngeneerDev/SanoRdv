@@ -1,113 +1,152 @@
 // import Creneau from './models/creneau.model.js';
 import Creneau from '../models/creneau.model.js';  // Import du modèle Creneau
 
-// Fonction pour ajouter un créneau
-export async function AjouterCreneau(req, res) {
+// ------------Fonction pour ajouter un créneau---------------------------
+export const AjouterCreneau = async (req, res) => {
   try {
-    // Créer un nouveau créneau à partir des données envoyées dans la requête
+    const { agenda, debut, fin, statut, rendezVous } = req.body;
+
+    // Validation de la durée (30 minutes exactement)
+    const dureeMs = new Date(fin) - new Date(debut);
+    if (dureeMs !== 30 * 60 * 1000) {
+      return res.status(400).json({ 
+        message: 'La durée du créneau doit être exactement de 30 minutes' 
+      });
+    }
+
     const nouveauCreneau = new Creneau({
-      agendaId: req.body.agendaId,  // Agenda associé
-      debut: req.body.debut,        // Heure de début
-      fin: req.body.fin,            // Heure de fin
-      statut: req.body.statut || 'libre', // Statut par défaut 'libre'
-      rendezVousId: req.body.rendezVousId || null // Rendez-vous associé, facultatif
+      agenda,
+      debut: new Date(debut),
+      fin: new Date(fin),
+      statut: statut || 'libre',
+      rendezVous: rendezVous || null
     });
 
-    // Sauvegarder le créneau dans la base de données
     await nouveauCreneau.save();
-
-    // Retourner une réponse avec succès
-    res.status(201).json({ message: 'Créneau ajouté avec succès', data: nouveauCreneau });
+    res.status(201).json(nouveauCreneau);
   } catch (error) {
-    // Gérer les erreurs
-    res.status(400).json({ message: 'Erreur lors de l\'ajout du créneau', error: error.message });
+    if (error.message.includes('chevauche')) {
+      res.status(409).json({ message: error.message });
+    } else {
+      res.status(400).json({ 
+        message: error.message || 'Erreur lors de la création du créneau' 
+      });
+    }
   }
-}
+};
 
 
 
 
+//---------------------Fonction pour modifier un créneau--------------------
 
-//---------------------------------
-
-// Fonction pour modifier un créneau
-export async function ModifierCreneau(req, res) {
+// 
+export const ModifierCreneau = async (req, res) => {
   try {
-    // Trouver le créneau à modifier avec son ID
-    const creneau = await Creneau.findById(req.params.idCreneau);
+    const { id } = req.params;
+    const updates = req.body;
+
+    // Bloque la modification si le créneau est réservé
+    const creneauExist = await Creneau.findById(id);
+    if (!creneauExist) {
+      return res.status(404).json({ message: 'Créneau non trouvé' });
+    }
+
+    if (creneauExist.statut === 'réservé') {
+      return res.status(403).json({ 
+        message: 'Impossible de modifier un créneau réservé' 
+      });
+    }
+
+    // Validation durée 30min si fin/debut modifiés
+    if (updates.debut || updates.fin) {
+      const fin = updates.fin ? new Date(updates.fin) : creneauExist.fin;
+      const debut = updates.debut ? new Date(updates.debut) : creneauExist.debut;
+      if ((fin - debut) !== 30 * 60 * 1000) {
+        return res.status(400).json({ 
+          message: 'La durée doit rester de 30 minutes' 
+        });
+      }
+    }
+
+    const creneau = await Creneau.findByIdAndUpdate(
+      id, 
+      updates, 
+      { new: true, runValidators: true }
+    );
+    
+    res.status(200).json(creneau);
+  } catch (error) {
+    res.status(400).json({ 
+      message: error.message || 'Erreur lors de la modification du créneau' 
+    });
+  }
+};
+
+
+
+
+//-------------------------Fonction pour supprimer un créneau-------------------
+
+export const SupprimerCreneau = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const creneau = await Creneau.findById(id);
+
     if (!creneau) {
       return res.status(404).json({ message: 'Créneau non trouvé' });
     }
 
-    // Mettre à jour les champs du créneau avec les nouvelles données envoyées dans la requête
-    creneau.debut = req.body.debut || creneau.debut;
-    creneau.fin = req.body.fin || creneau.fin;
-    creneau.statut = req.body.statut || creneau.statut;
-    creneau.rendezVousId = req.body.rendezVousId || creneau.rendezVousId;
+    if (creneau.statut === 'réservé') {
+      return res.status(403).json({ 
+        message: 'Impossible de supprimer un créneau réservé' 
+      });
+    }
 
-    // Sauvegarder les modifications dans la base de données
-    await creneau.save();
-
-    // Retourner une réponse avec succès
-    res.status(200).json({ message: 'Créneau modifié avec succès', data: creneau });
+    await Creneau.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Créneau supprimé avec succès' });
   } catch (error) {
-    // Gérer les erreurs
-    res.status(400).json({ message: 'Erreur lors de la modification du créneau', error: error.message });
+    res.status(400).json({ 
+      message: error.message || 'Erreur lors de la suppression du créneau' 
+    });
   }
-}
+};
 
 
 
+//---------------- Fonction pour afficher tous les créneaux -----------
 
-//---------------------------------------------
-
-// Fonction pour supprimer un créneau
-export async function SupprimerCreneau(req, res) {
+export const AfficherCreneau = async (req, res) => {
   try {
-    // Trouver et supprimer le créneau avec son ID
-    const creneau = await Creneau.findByIdAndDelete(req.params.idCreneau);
+    const { id } = req.params;
+    const creneau = await Creneau.findById(id)
+      .populate('agenda', 'nom')
+      .populate('rendezVous', 'patient motif');
+
     if (!creneau) {
       return res.status(404).json({ message: 'Créneau non trouvé' });
     }
 
-    // Retourner une réponse avec succès
-    res.status(200).json({ message: 'Créneau supprimé avec succès', data: creneau });
+    // Formatage pour la réponse
+    const response = {
+      ...creneau.toObject(),
+      debut: creneau.debut.toISOString(),
+      fin: creneau.fin.toISOString(),
+      duree: creneau.dureeMinutes(),
+      estDisponible: creneau.estDisponible()
+    };
+
+    res.status(200).json(response);
   } catch (error) {
-    // Gérer les erreurs
-    res.status(400).json({ message: 'Erreur lors de la suppression du créneau', error: error.message });
+    res.status(400).json({ 
+      message: error.message || 'Erreur lors de la récupération du créneau' 
+    });
   }
-}
-
-//---------------------------------------
-// Fonction pour afficher tous les créneaux
-export async function AfficheCreneau(req, res) {
-  try {
-    // Optionnel : tu peux ajouter des filtres pour les créneaux, par exemple par agendaId
-    const filters = {};
-    if (req.query.agendaId) {
-      filters.agendaId = req.query.agendaId;  // Filtrer par agendaId si spécifié dans la requête
-    }
-
-    // Récupérer tous les créneaux qui correspondent aux filtres
-    const creneaux = await Creneau.find(filters);
-
-    // Vérifier s'il y a des créneaux
-    if (creneaux.length === 0) {
-      return res.status(404).json({ success: false, message: 'Aucun créneau trouvé' });
-    }
-
-    // Retourner les créneaux en réponse
-    res.status(200).json({ success: true, data: creneaux });
-  } catch (error) {
-    // Gérer les erreurs
-    res.status(400).json({ success: false, message: 'Erreur lors de l\'affichage des créneaux', error: error.message });
-  }
-}
-
+};
 
 export default {
   AjouterCreneau,
   ModifierCreneau,
   SupprimerCreneau,
-  AfficheCreneau
+  AfficherCreneau
 };
