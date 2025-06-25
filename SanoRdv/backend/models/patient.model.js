@@ -58,6 +58,11 @@ const patientSchema = new mongoose.Schema({
   resetCode: {
     type: String,
   },
+  photo: {
+    type: String,
+    required: false,
+    trim: true,
+  },
   resetCodeExpire: {
     type: Date,
   },
@@ -69,6 +74,7 @@ const patientSchema = new mongoose.Schema({
   lockUntil: {
     type: Date,
   },
+  isActive: { type: Boolean, default: true },
   // Rôle
   role: {
     type: String,

@@ -191,17 +191,7 @@ router.post(
         }
         return true;
       }),
-    
-    body('resetCode')
-      .notEmpty()
-      .withMessage('Le code de réinitialisation est obligatoire')
-      .trim(),
-    
-    body('email')
-      .optional()
-      .isEmail()
-      .withMessage('Format d\'email invalide')
-      .normalizeEmail()
+  
   ],
   (req, res, next) => {
     const errors = validationResult(req);
@@ -234,53 +224,5 @@ router.get('/validate-token', authenticate, (req, res) => {
   });
 });
 
-/* ==========================================================================
-    ROUTE GET /me - PROFIL UTILISATEUR ACTUEL (optionnelle)
-   ========================================================================== */
-router.get('/me', authenticate, async (req, res) => {
-  try {
-    // Récupérer les informations utilisateur depuis le token
-    const { userId, role } = req.user;
-    
-    // Importer les modèles (à adapter selon votre structure)
-    const models = {
-      admin: (await import('../models/admin.model.js')).default,
-      medecin: (await import('../models/medecin.model.js')).default,
-      patient: (await import('../models/patient.model.js')).default
-    };
-    
-    const UserModel = models[role];
-    if (!UserModel) {
-      return res.status(400).json({ 
-        message: 'Rôle invalide',
-        error: 'INVALID_ROLE'
-      });
-    }
-    
-    const user = await UserModel.findById(userId).select('-motDePasse -password');
-    
-    if (!user) {
-      return res.status(404).json({ 
-        message: 'Utilisateur non trouvé',
-        error: 'USER_NOT_FOUND'
-      });
-    }
-    
-    res.status(200).json({
-      message: 'Profil utilisateur récupéré',
-      user: {
-        ...user.toObject(),
-        role
-      }
-    });
-    
-  } catch (error) {
-    console.error('❌ Erreur récupération profil:', error);
-    res.status(500).json({ 
-      message: 'Erreur lors de la récupération du profil',
-      error: 'SERVER_ERROR'
-    });
-  }
-});
 
 export default router;

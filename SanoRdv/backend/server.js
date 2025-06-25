@@ -3,13 +3,15 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import dotenv from 'dotenv';
 
-// Import des routes
+// Importation des routes
 import userRoutes from './routes/user.routes.js';
 import patientRoutes from './routes/patient.routes.js';
-import medecinRoutes from './routes/medecin.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import specialiteRoutes from './routes/specialite.routes.js';
-import creneauRouter from './routes/creneau.routes.js';  // Importation de creneauRouter
+import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
+import creneauRouter from './routes/creneau.routes.js';
 
+// Configuration des variables d'environnement
 dotenv.config();
 
 const app = express();
@@ -17,40 +19,33 @@ const port = process.env.PORT || 3000;
 
 (async () => {
   try {
-    // Connexion à la base de données MongoDB
+    // Connexion à la base de données
     await connectDB();
-    console.log('✅ Base de données connectée avec succès');
+    console.log(' Base de données connectée avec succès');
   } catch (error) {
-    console.error('❌ Erreur de connexion à la base de données:', error);
-    process.exit(1);
+    console.error(' Erreur de connexion à la base de données:', error);
+    process.exit(1); // Arrêt de l'application en cas d'erreur
   }
 
-  // Middleware CORS - config pour autoriser ton frontend
+  // Configuration CORS
   app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    origin: process.env.FRONTEND_URL || 'http://localhost:4200',
     credentials: true,
   }));
 
-  // Middlewares pour parser le corps des requêtes JSON et URL-encodé
+  // Middleware pour parser le JSON
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Montage des routes
-  app.use('/api/auth', userRoutes);
-  app.use('/api/auth', patientRoutes);
-  app.use('/api/auth', medecinRoutes);
-  app.use('/api/specialites', specialiteRoutes);
-  app.use('/api/creneaux', creneauRouter);  // Assurez-vous que cette route est incluse
+  // Définition des routes
+  app.use('/api/auth', userRoutes);        // Routes pour les utilisateurs
+  app.use('/api/auth', patientRoutes);     // Routes pour les patients
+  app.use('/api/auth', adminRoutes);       // Routes pour les administrateurs
+  app.use('/api/specialites', specialiteRoutes); // Routes pour les spécialités
+  app.use('/api/recherche', systemeDeRechercheRoutes); // Système de recherche
+  app.use('/api/creneaux', creneauRouter); // Routes pour les créneaux horaires
 
-  // Route "health check" pour tester si serveur tourne
-  app.get('/api/health', (req, res) => {
-    res.status(200).json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-    });
-  });
-
-  // Middleware gestion des erreurs 404 (endpoint non trouvé)
+  // Gestion des erreurs 404 (Route non trouvée)
   app.use((req, res) => {
     res.status(404).json({
       success: false,
@@ -60,13 +55,13 @@ const port = process.env.PORT || 3000;
 
   // Démarrage du serveur
   const server = app.listen(port, () => {
-    console.log(`🚀 Serveur démarré sur http://localhost:${port}`);
+    console.log(` Serveur démarré sur http://localhost:${port}`);
   });
 
-  // Gestion propre des arrêts du serveur (SIGTERM)
+  // Gestion propre de l'arrêt du processus
   process.on('SIGTERM', () => {
     server.close(() => {
-      console.log('Process terminated');
+      console.log('Processus terminé');
       process.exit(0);
     });
   });

@@ -7,6 +7,7 @@ import { sanitizeInput, handleError } from '../utils/helpers.js';
 import { sendResetPasswordEmail } from '../utils/mail.util.js';
 import NodeCache from 'node-cache';
 
+
 // Cache pour les codes de réinitialisation
 const codeCache = new NodeCache({ 
   stdTTL: 25 * 60, // 25 minutes de durée de vie par défaut
@@ -227,6 +228,7 @@ const updateUser = async (userId, role, updateData) => {
 /**
  * CONNEXION
  */
+
 export const login = async (req, res) => {
   try {
     const { UserID, motDePasse } = req.body;
@@ -271,6 +273,14 @@ export const login = async (req, res) => {
 
     console.log(`✅ Utilisateur trouvé: ${role} - ${user.nom} ${user.prenom}`);
 
+    // Vérifier si le compte est actif
+    if (user.isActive=== false || user.isActives === 'disabled') {
+      console.log('❌ Compte désactivé');
+      return res.status(403).json({ 
+        message: "Ce compte est désactivé. Contactez l'administrateur.",
+        error: "ACCOUNT_DISABLED"
+      });
+    }
     // Vérifier si le compte est verrouillé
     if (user.lockUntil && user.lockUntil > Date.now()) {
       const remainingTime = Math.ceil((user.lockUntil - Date.now()) / 60000);
