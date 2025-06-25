@@ -7,7 +7,6 @@ import Patient from '../models/patient.model.js';
 import { generateIna } from '../utils/generateIna.js';
 import { sendINEEmail, sendResetPasswordEmail } from '../utils/mail.util.js';
 
-
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -130,4 +129,67 @@ export const register = async (req, res) => {
   }
 };
 
-// Fonction de rechercherMedecins
+// Contrôleur pour récupérer les informations de base du patient
+export const getPatientBasicInfo = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    
+    // Récupérer seulement nom, prénom et email du patient
+    const patient = await Patient.findById(patientId)
+      .select('nom prenom email')
+      .lean();
+    
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient non trouvé'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        nom: patient.nom,
+        prenom: patient.prenom,
+        email: patient.email
+      }
+    });
+    
+  } catch (error) {
+    console.error('Erreur lors de la récupération des informations patient:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur lors de la récupération des informations'
+    });
+  }
+};
+
+// Alternative avec destructuring
+export const getPatientInfo = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    
+    const patient = await Patient.findById(patientId, 'nom prenom email');
+    
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient introuvable'
+      });
+    }
+    
+    const { nom, prenom, email } = patient;
+    
+    res.json({
+      success: true,
+      patient: { nom, prenom, email }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la récupération',
+      error: error.message
+    });
+  }
+};

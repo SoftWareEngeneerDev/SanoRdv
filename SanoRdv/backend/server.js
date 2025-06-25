@@ -8,6 +8,10 @@ import patientRoutes from './routes/patient.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import specialiteRoutes from './routes/specialite.routes.js';
 import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
+import rendezvousRoutes from './routes/rendezvous.routes.js';
+import creneauRouter from './routes/creneau.routes.js';
+import agendaRouter from './routes/agenda.routes.js';
+
 
 dotenv.config();
 
@@ -37,6 +41,9 @@ const port = process.env.PORT || 3000;
   app.use('/api/auth', adminRoutes);      // gestion admins
   app.use('/api/specialites', specialiteRoutes);
   app.use('/api/recherche', systemeDeRechercheRoutes);
+  app.use('/api/rendezvous', rendezvousRoutes);
+  app.use('/api/creneau', creneauRouter);
+  app.use('/api/agenda', agendaRouter);
 
   // Gestion 404
   app.use((req, res) => {

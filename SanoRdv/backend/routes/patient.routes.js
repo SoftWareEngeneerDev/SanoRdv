@@ -1,11 +1,10 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-import {
-  register
-} from '../controllers/patient.controller.js';
+import { register, getPatientBasicInfo, getPatientInfo } from '../controllers/patient.controller.js';
+
+
 
 import Patient from '../models/patient.model.js'; // ✅ à ajouter tout en haut
-
 
 
 const router = express.Router();
@@ -56,5 +55,17 @@ router.get('/patients', async (req, res) => {
     res.status(500).json({ message: 'Erreur lors de la récupération des patients' });
   }
 });
+
+
+
+
+// Route pour récupérer les informations de base du patient (nom, prénom, email)
+router.get('/patient/:patientId/info', getPatientBasicInfo);
+
+// Route alternative
+router.get('/patient/:patientId/basic', getPatientInfo);
+
+// Route avec l'ID spécifique de votre patient
+router.get('/patient/685942963ab92ec0447dfc2a/info', getPatientBasicInfo);
 
 export default router;
