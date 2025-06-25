@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>VÉRIFICATION DU CODE</h1>
+  <p>Veuillez entrer le code reçu par email</p>
+  <form [formGroup]="codeForm" (ngSubmit)="onSubmit()">
+    <div class="input-group">
+      <input type="text" formControlName="code" placeholder="Entrez le code">
+      <i class="fas fa-key icon-right"></i>
+    </div>
+    <button type="submit" [disabled]="codeForm.invalid || isSubmitting">
+      Vérifier le code
+    </button>
+
+    <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+  </form>
+</div>

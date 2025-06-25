@@ -1,0 +1,29 @@
+<header class="header">
+  <div class="container">
+    <a routerLink="/" class="logo">SANORDV</a>
+
+    <!-- Icône hamburger visible sur petit écran -->
+    <div class="hamburger" (click)="toggleMenu()">
+      <img src="assets/menu.png" alt="Menu" />
+    </div>
+
+    <!-- Menu normal (grand écran) -->
+    <nav class="nav desktop-nav">
+      <a routerLink="/" routerLinkActive="active-link" class="nav-link">ACCUEIL</a>
+      <a routerLink="/a-propos" routerLinkActive="active-link" class="nav-link">A-PROPOS</a>
+      <a routerLink="/auth/register" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">INSCRIPTION</a>
+      <a routerLink="/auth/login" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">CONNEXION</a>
+      <a (click)="logout()" class="nav-link" *ngIf="isLogged"><button>DÉCONNEXION</button></a>
+    </nav>
+
+    <!-- Menu latéral pour petit écran -->
+    <div class="side-menu" [class.show]="isMenuOpen">
+      <a (click)="toggleMenu()" class="close-btn">×</a>
+      <a routerLink="/" routerLinkActive="active-link" class="nav-link">ACCUEIL</a>
+      <a routerLink="/a-propos" routerLinkActive="active-link" class="nav-link">A-PROPOS</a>
+      <a routerLink="/auth/register" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">INSCRIPTION</a>
+      <a routerLink="/auth/login" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">CONNEXION</a>
+      <a (click)="logout()" class="nav-link" *ngIf="isLogged"><button>DÉCONNEXION</button></a>
+    </div>
+  </div>
+</header>

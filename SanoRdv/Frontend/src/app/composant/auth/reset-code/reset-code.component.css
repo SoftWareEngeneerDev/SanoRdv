@@ -1,0 +1,160 @@
+/* ================= RESET & GLOBAL ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+  background-color: #ddd;
+  padding: 40px;
+  border-radius: 12px;
+  width: 600px;
+  max-width: 100%;
+  margin: auto;
+  margin-top: 50px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ================= TITRES ================= */
+h1 {
+  color: #1c2361;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* ================= CHAMPS ================= */
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  background-color: #f9fbfc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* Icône */
+.icon-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 15px;
+  font-size: 18px;
+  color: #999;
+}
+
+/* ================= BOUTON ================= */
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #1c2361;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #2a347f;
+}
+
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ================= MESSAGES ================= */
+.success-message {
+  color: green;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* Tablettes */
+@media (max-width: 1023px) {
+  .container {
+    width: 90%;
+    padding: 30px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  input[type="text"] {
+    font-size: 15px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 10px;
+  }
+}
+
+/* Mobiles */
+@media (max-width: 767px) {
+  .container {
+    width: 95%;
+    padding: 20px;
+    margin-top: 30px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 13px;
+  }
+
+  input[type="text"] {
+    font-size: 13px;
+    padding: 10px 36px 10px 10px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .success-message,
+  .error-message {
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,54 @@
+<div class="container">
+  <h1>BIENVENUE À SANORDV</h1>
+  <div class="login-form">
+    <h2>SE CONNECTER</h2>
+    <p>Besoin d’un compte ? <a routerLink="/auth/register">S’inscrire</a></p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Champ Email -->
+      <div class="input-group">
+        <label for="UserID">Email ou ID <span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input
+            id="UserID"
+            type="text"
+            formControlName="UserID"
+            placeholder="Email ou ID"
+          />
+          <i
+            class="fas fa-envelope"
+            style="
+              position: absolute;
+              right: 10px;
+              top: 50%;
+              transform: translateY(-50%);
+              color: #9e9e9e;
+            "
+          ></i>
+        </div>
+      </div>
+
+      <!-- Champ Mot de passe -->
+      <div class="input-group">
+        <label for="motDePasse">Mot de passe <span class="required">*</span></label>
+        <div class="password-wrapper">
+          <input
+            id="motDePasse"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="motDePasse"
+            placeholder="Mot de passe"
+            class="password-input"
+          />
+          <i
+            class="eye-icon"
+            [ngClass]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+            (click)="togglePasswordVisibility()"
+          ></i>
+        </div>
+      </div>
+
+      <a routerLink="/auth/forgot-password">Mot de passe oublié ?</a>
+      <button type="submit" [disabled]="loginForm.invalid">Connexion</button>
+    </form>
+  </div>
+</div>
