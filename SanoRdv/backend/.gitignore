@@ -1,14 +1,44 @@
-# Ignorer node_modules
+# === Node.js ===
 node_modules/
-
-# Ignorer dossiers ou fichiers liés aux dépendances
-dependencies/
-
-# Autres dossiers ou fichiers courants à ignorer
-.DS_Store
 .env
+.env.local
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Angular ===
 dist/
+out-tsc/
+.angular/
+coverage/
+
+# === Build ===
 build/
-# Ignorer package.json et package-lock.json
-package.json
-package-lock.json
+tmp/
+temp/
+*.tmp
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+
+# === IDEs & Editors ===
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# === Git ===
+.git/
+.gitignore
+
+# === Misc ===
+*.bak
+*.old
+*.swp
+*.lock
+
+# === Optional: ignore test output ===
+test-output/
