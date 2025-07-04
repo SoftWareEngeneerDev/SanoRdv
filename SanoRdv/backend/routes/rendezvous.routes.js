@@ -1,9 +1,17 @@
+// routes/rendezvous.routes.js
 import express from 'express';
-import { prendreRendezVous, annulerRendezVous } from '../controllers/rendezvous.controller.js';
-// import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { prendreRendezVous } from '../controllers/rendezvous.controller.js';
+import { annulerRendezVous } from '../controllers/rendezvous.controller.js';
+import { getRendezVousParMedecin } from '../controllers/rendezvous.controller.js';
+
 const router = express.Router();
-// :coche_blanche: Créer un rendez-vous (authentification requise)
-router.post('/rendezvous', prendreRendezVous);
-// :coche_blanche: Annuler un rendez-vous (authentification requise)
-router.put('/rendezvous/:id/annuler', annulerRendezVous);
+
+router.post('/prendre', prendreRendezVous);
+router.post('/annuler', annulerRendezVous);
+router.get('/medecin/:medecinId', getRendezVousParMedecin);
+
 export default router;
+
+
+
+

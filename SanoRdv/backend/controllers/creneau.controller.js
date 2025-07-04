@@ -1,175 +1,118 @@
 import Creneau from '../models/creneau.model.js';
-import Agenda from '../models/agenda.model.js';
 
-// ------------Fonction pour ajouter un créneau---------------------------
-export const AjouterCreneau = async (req, res) => {
-  try {
-    const { agenda, debut, fin, statut, rendezVous } = req.body;
+// -----------Fonction pour valider la date------------------------
+function validerDate(date) {
+    const isValidDate = !isNaN(new Date(date).getTime());
+    return isValidDate;
+}
 
-    // Vérifier que l'agenda existe
-    const agendaExist = await Agenda.findById(agenda);
-    if (!agendaExist) {
-      return res.status(404).json({ message: 'Agenda non trouvé' });
+
+
+// -------Fonction pour générer les créneaux horaires sans les enregistrer immédiatement--
+function genererCreneauxParDate(dateChoisie) {
+    if (!validerDate(dateChoisie)) {
+        throw new Error('La date fournie n\'est pas valide.');
     }
 
-    // Validation de la durée (30 minutes exactement)
-    const dureeMs = new Date(fin) - new Date(debut);
-    if (dureeMs !== 30 * 60 * 1000) {
-      return res.status(400).json({ 
-        message: 'La durée du créneau doit être exactement de 30 minutes' 
-      });
-    }
+    const startTime = 8;  // 8h00
+    const endTime = 17.5; // 17h30
+    const interval = 0.5; // Intervalle de 30 minutes
 
-    const nouveauCreneau = new Creneau({
-      agenda,
-      debut: new Date(debut),
-      fin: new Date(fin),
-      statut: statut || 'libre',
-      rendezVous: rendezVous || null
-    });
+    const timeSlots = [];
 
-    await nouveauCreneau.save();
+    // Générer les créneaux horaires pour la date choisie
+    for (let time = startTime; time <= endTime; time += interval) {
+        let hours = Math.floor(time);
+        let minutes = (time % 1 === 0.5) ? '30' : '00';
+        let formattedTime = `${hours}:${minutes}`;
 
-    // Lier le créneau à l'agenda : ajouter l'ID dans le tableau creneaux de l'agenda
-    await Agenda.findByIdAndUpdate(agenda, {
-      $push: { creneaux: nouveauCreneau._id }
-    });
-
-    res.status(201).json(nouveauCreneau);
-  } catch (error) {
-    if (error.message.includes('chevauche')) {
-      res.status(409).json({ message: error.message });
-    } else {
-      res.status(400).json({ 
-        message: error.message || 'Erreur lors de la création du créneau' 
-      });
-    }
-  }
-};
-
-//---------------------Fonction pour modifier un créneau--------------------
-export const ModifierCreneau = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-
-    // Bloque la modification si le créneau est réservé
-    const creneauExist = await Creneau.findById(id);
-    if (!creneauExist) {
-      return res.status(404).json({ message: 'Créneau non trouvé' });
-    }
-
-    if (creneauExist.statut === 'réservé') {
-      return res.status(403).json({ 
-        message: 'Impossible de modifier un créneau réservé' 
-      });
-    }
-
-    // Validation durée 30min si fin/debut modifiés
-    if (updates.debut || updates.fin) {
-      const fin = updates.fin ? new Date(updates.fin) : creneauExist.fin;
-      const debut = updates.debut ? new Date(updates.debut) : creneauExist.debut;
-      if ((fin - debut) !== 30 * 60 * 1000) {
-        return res.status(400).json({ 
-          message: 'La durée doit rester de 30 minutes' 
+        timeSlots.push({
+            time: formattedTime,
+            status: 'disponible', // Par défaut, tous les créneaux sont disponibles
         });
-      }
     }
 
-    const creneau = await Creneau.findByIdAndUpdate(
-      id, 
-      updates, 
-      { new: true, runValidators: true }
-    );
-    
-    res.status(200).json(creneau);
-  } catch (error) {
-    res.status(400).json({ 
-      message: error.message || 'Erreur lors de la modification du créneau' 
-    });
-  }
-};
+    return timeSlots;
+}
 
-//-------------------------Fonction pour supprimer un créneau-------------------
-export const SupprimerCreneau = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const creneau = await Creneau.findById(id);
 
-    if (!creneau) {
-      return res.status(404).json({ message: 'Créneau non trouvé' });
+
+// ----------Fonction pour modifier le statut d'un créneau spécifique-----------------
+function mettreAJourStatutCreneau(timeSlots, time, newStatus) {
+    const timeSlot = timeSlots.find(slot => slot.time === time);
+
+    if (timeSlot) {
+        if (!['disponible', 'indisponible', 'réservé'].includes(newStatus)) {
+            throw new Error('Statut invalide.');
+        }
+        timeSlot.status = newStatus;
+    } else {
+        throw new Error('Créneau horaire non trouvé');
     }
 
-    if (creneau.statut === 'réservé') {
-      return res.status(403).json({ 
-        message: 'Impossible de supprimer un créneau réservé' 
-      });
+    return timeSlots;
+}
+
+// --------------Fonction pour vérifier et supprimer les créneaux existants pour une date donnée
+async function verifierEtSupprimerCreneauxExistants(dateChoisie, agendaId) {
+    const existingCreneaux = await Creneau.findOne({ date: dateChoisie, agenda: agendaId });
+
+    if (existingCreneaux) {
+        await Creneau.deleteOne({ date: dateChoisie, agenda: agendaId });
     }
+}
 
-    // Retirer le créneau de l'agenda
-    await Agenda.findByIdAndUpdate(creneau.agenda, {
-      $pull: { creneaux: creneau._id }
-    });
 
-    await Creneau.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Créneau supprimé avec succès' });
-  } catch (error) {
-    res.status(400).json({ 
-      message: error.message || 'Erreur lors de la suppression du créneau' 
-    });
-  }
-};
 
-//---------------- Fonction pour afficher un créneau -----------
-export const AfficherCreneau = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const creneau = await Creneau.findById(id)
-      .populate('agenda', 'jour')
-      .populate('rendezVous', 'patient motif');
+// -------------Fonction pour enregistrer les créneaux dans la base de données
+async function saveCreneaux(dateChoisie, agendaId, timeSlots) {
+    try {
+        // Vérifier si des créneaux existent déjà pour cette date et cet agenda
+        await verifierEtSupprimerCreneauxExistants(dateChoisie, agendaId);
 
-    if (!creneau) {
-      return res.status(404).json({ message: 'Créneau non trouvé' });
+        const newCreneau = new Creneau({
+            agenda: agendaId,
+            date: dateChoisie,
+            timeSlots: timeSlots,
+        });
+
+        // Sauvegarder les créneaux dans la base de données
+        const savedCreneau = await newCreneau.save();
+        return savedCreneau;
+    } catch (error) {
+        console.error('Erreur lors de l\'enregistrement des créneaux:', error);
+        throw new Error('Échec de l\'enregistrement des créneaux.');
     }
+}
 
-    // Formatage pour la réponse
-    const response = {
-      ...creneau.toObject(),
-      debut: creneau.debut.toISOString(),
-      fin: creneau.fin.toISOString(),
-      duree: creneau.dureeMinutes(),
-      estDisponible: creneau.estDisponible()
-    };
 
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ 
-      message: error.message || 'Erreur lors de la récupération du créneau' 
-    });
-  }
-};
 
-//---------------- Fonction pour obtenir un agenda avec ses créneaux --------
-export const obtenirAgenda = async (req, res) => {
-  try {
-    const { agendaId } = req.params;
-    // Popule le tableau creneaux de l'agenda
-    const agenda = await Agenda.findById(agendaId).populate('creneaux');
+// -------------Fonction pour insérer les créneaux par lots (Bulk insert) pour optimiser les performances
+async function saveCreneauxBulk(dateChoisie, agendaId, timeSlots) {
+    try {
+        // Vérifier si des créneaux existent déjà pour cette date et cet agenda
+        await verifierEtSupprimerCreneauxExistants(dateChoisie, agendaId);
 
-    if (!agenda) {
-      return res.status(404).json({ success: false, message: 'Agenda introuvable' });
+        const operations = timeSlots.map(slot => ({
+            updateOne: {
+                filter: { agenda: agendaId, date: dateChoisie, time: slot.time },
+                update: { $set: slot },
+                upsert: true, // Crée un créneau si inexistant
+            },
+        }));
+
+        // Enregistrer les créneaux par lots
+        const result = await Creneau.bulkWrite(operations);
+        return result;
+    } catch (error) {
+        console.error('Erreur lors de l\'enregistrement des créneaux par lots:', error);
+        throw new Error('Échec de l\'enregistrement des créneaux par lots.');
     }
-
-    res.status(200).json({ success: true, data: agenda });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-};
+}
 
 export default {
-  AjouterCreneau,
-  ModifierCreneau,
-  SupprimerCreneau,
-  AfficherCreneau,
-  obtenirAgenda
+    genererCreneauxParDate,
+    mettreAJourStatutCreneau,
+    saveCreneaux,
+    saveCreneauxBulk,  // Ajouter la méthode d'insertion par lots
 };
