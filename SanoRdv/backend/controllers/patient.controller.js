@@ -41,8 +41,18 @@ export const register = async (req, res) => {
     if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
 
     const {
-      nom, prenom, email, telephone, motDePasse, confirmationMotDePasse,
-      sex, localite = '', dateNaissance = '', adresse = '', role = 'patient'
+      nom,
+      prenom,
+      email,
+      telephone,
+      motDePasse,
+      confirmationMotDePasse,
+      sex,
+      localite = '',
+      dateNaissance = '',
+      adresse = '',
+      role = 'patient',
+      photo = '',   // Ajout photo optionnelle
     } = req.body;
 
     const sanitizedEmail = sanitizeInput(email);
@@ -103,6 +113,7 @@ export const register = async (req, res) => {
       localite,
       dateNaissance,
       adresse,
+      photo,            // Sauvegarde la photo si fournie
       loginAttempts: 0,
       lockUntil: undefined,
       role,
@@ -128,6 +139,106 @@ export const register = async (req, res) => {
     return handleError(error, res, "Erreur lors de l'inscription");
   }
 };
+
+// ===========================
+// CONTROLEUR : Modifier profil
+// ===========================
+export const updateProfile = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
+
+    const patientId = req.params.id; // ou depuis token selon ta gestion auth
+
+    const {
+      nom,
+      prenom,
+      email,
+      telephone,
+      motDePasse,
+      confirmationMotDePasse,
+      sex,
+      localite,
+      dateNaissance,
+      adresse,
+      photo,
+    } = req.body;
+
+    // Trouver le patient
+    const patient = await Patient.findById(patientId);
+    if (!patient) return res.status(404).json({ message: "Patient non trouvé" });
+
+    // Validation email si modifié
+    if (email) {
+      const sanitizedEmail = sanitizeInput(email);
+      if (!isValidEmail(sanitizedEmail)) {
+        return res.status(400).json({ message: 'Format email invalide' });
+      }
+      const domain = sanitizedEmail.split('@')[1];
+      if (!CONFIG.ALLOWED_DOMAINS.includes(domain)) {
+        return res.status(400).json({
+          message: 'Domaine email non autorisé',
+          allowedDomains: CONFIG.ALLOWED_DOMAINS,
+        });
+      }
+      // Vérifier unicité email (exclure patient actuel)
+      const emailUsed = await Patient.findOne({ email: sanitizedEmail, _id: { $ne: patientId } });
+      if (emailUsed) {
+        return res.status(400).json({ message: 'Email déjà utilisé' });
+      }
+      patient.email = sanitizedEmail;
+    }
+
+    // Vérifier unicité téléphone si modifié
+    if (telephone) {
+      const phoneUsed = await Patient.findOne({ telephone, _id: { $ne: patientId } });
+      if (phoneUsed) {
+        return res.status(400).json({ message: 'Numéro de téléphone déjà utilisé' });
+      }
+      patient.telephone = telephone;
+    }
+
+    // Hasher mot de passe si modifié
+    if (motDePasse) {
+      if (!isValidPassword(motDePasse)) {
+        return res.status(400).json({
+          message:
+            'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial',
+        });
+      }
+      if (motDePasse !== confirmationMotDePasse) {
+        return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
+      }
+      patient.motDePasse = await bcrypt.hash(motDePasse, CONFIG.BCRYPT_ROUNDS);
+    }
+
+    // Mise à jour des autres champs si fournis
+    if (nom) patient.nom = nom.trim();
+    if (prenom) patient.prenom = prenom.trim();
+    if (sex) patient.sex = sex;
+    if (localite !== undefined) patient.localite = localite;
+    if (dateNaissance !== undefined) patient.dateNaissance = dateNaissance;
+    if (adresse !== undefined) patient.adresse = adresse;
+    if (photo !== undefined) patient.photo = photo;
+
+    await patient.save();
+
+    // Retourner sans mot de passe
+    const { motDePasse: _, ...patientData } = patient.toObject();
+    res.status(200).json({
+      message: "Profil mis à jour avec succès",
+      patient: patientData,
+    });
+
+  } catch (error) {
+    return handleError(error, res, "Erreur lors de la mise à jour du profil");
+  }
+};
+
+
+// ===========================
+// Contrôleurs existants...
+// ===========================
 
 // Contrôleur pour récupérer les informations de base du patient
 export const getPatientBasicInfo = async (req, res) => {
