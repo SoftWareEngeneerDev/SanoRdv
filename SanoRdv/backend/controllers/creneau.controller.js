@@ -1,5 +1,5 @@
-import Creneau from '../models/creneau.model.js';
-import Agenda from '../models/agenda.model.js';
+// import Creneau from './models/creneau.model.js';
+import Creneau from '../models/creneau.model.js';  // Import du modèle Creneau
 
 // ------------Fonction pour ajouter un créneau---------------------------
 export const AjouterCreneau = async (req, res) => {
@@ -47,7 +47,12 @@ export const AjouterCreneau = async (req, res) => {
   }
 };
 
+
+
+
 //---------------------Fonction pour modifier un créneau--------------------
+
+// 
 export const ModifierCreneau = async (req, res) => {
   try {
     const { id } = req.params;
@@ -90,7 +95,11 @@ export const ModifierCreneau = async (req, res) => {
   }
 };
 
+
+
+
 //-------------------------Fonction pour supprimer un créneau-------------------
+
 export const SupprimerCreneau = async (req, res) => {
   try {
     const { id } = req.params;
@@ -106,11 +115,6 @@ export const SupprimerCreneau = async (req, res) => {
       });
     }
 
-    // Retirer le créneau de l'agenda
-    await Agenda.findByIdAndUpdate(creneau.agenda, {
-      $pull: { creneaux: creneau._id }
-    });
-
     await Creneau.findByIdAndDelete(id);
     res.status(200).json({ message: 'Créneau supprimé avec succès' });
   } catch (error) {
@@ -120,7 +124,10 @@ export const SupprimerCreneau = async (req, res) => {
   }
 };
 
-//---------------- Fonction pour afficher un créneau -----------
+
+
+//---------------- Fonction pour afficher tous les créneaux -----------
+
 export const AfficherCreneau = async (req, res) => {
   try {
     const { id } = req.params;
