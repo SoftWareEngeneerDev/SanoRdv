@@ -8,8 +8,9 @@ import userRoutes from './routes/user.routes.js';
 import patientRoutes from './routes/patient.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import specialiteRoutes from './routes/specialite.routes.js';
-import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
 import creneauRouter from './routes/creneau.routes.js';
+import notificationRouter from './routes/notification.routes.js';
+import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
 
 // Configuration des variables d'environnement
 dotenv.config();
@@ -27,7 +28,7 @@ const port = process.env.PORT || 3000;
     process.exit(1); // Arrêt de l'application en cas d'erreur
   }
 
-  // Configuration CORS
+  // Middleware CORS
   app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:4200',
     credentials: true,
@@ -44,6 +45,7 @@ const port = process.env.PORT || 3000;
   app.use('/api/specialites', specialiteRoutes); // Routes pour les spécialités
   app.use('/api/recherche', systemeDeRechercheRoutes); // Système de recherche
   app.use('/api/creneaux', creneauRouter); // Routes pour les créneaux horaires
+  app.use('/api/notifications', notificationRouter); // Routes pour les notifications
 
   // Gestion des erreurs 404 (Route non trouvée)
   app.use((req, res) => {
