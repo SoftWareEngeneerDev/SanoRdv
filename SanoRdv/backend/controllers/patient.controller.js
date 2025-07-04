@@ -7,6 +7,7 @@ import Patient from '../models/patient.model.js';
 import { generateIna } from '../utils/generateIna.js';
 import { sendINEEmail, sendResetPasswordEmail } from '../utils/mail.util.js';
 
+
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -129,3 +130,4 @@ export const register = async (req, res) => {
   }
 };
 
+// Fonction de rechercherMedecins

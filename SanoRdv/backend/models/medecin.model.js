@@ -17,6 +17,7 @@ const medecinSchema = new mongoose.Schema({
   dateCreation: { type: Date, default: Date.now },
   dateNaissance: { type: Date, required: false },
   lockUntil: { type: Date },
+  isActive: { type: Boolean, default: true },
   role: { type: String, default: 'medecin' },
 }, { timestamps: true });
 

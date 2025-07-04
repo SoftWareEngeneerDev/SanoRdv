@@ -4,6 +4,9 @@ import {
   register
 } from '../controllers/patient.controller.js';
 
+import Patient from '../models/patient.model.js'; // ✅ à ajouter tout en haut
+
+
 
 const router = express.Router();
 
@@ -43,5 +46,15 @@ router.post(
   },
   register
 );
+
+router.get('/patients', async (req, res) => {
+  try {
+    const patients = await Patient.find().select('-motDePasse -__v');
+    res.json({ patients });
+  } catch (error) {
+    console.error('❌ Erreur récupération patients:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des patients' });
+  }
+});
 
 export default router;
