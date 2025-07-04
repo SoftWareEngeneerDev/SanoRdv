@@ -11,18 +11,20 @@ const RendezVousSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String,
+    type: Date,
     required: true,
-  },
+  },  
   time: {
     type: String,
     required: true,
   },
   status: {
     type: String,
-    enum: ['confirmed', 'cancelled'],
-    default: 'confirmed',
-  },
+    enum: ['confirmé', 'annulé'],
+    default: 'confirmé',
+  }
+}, {
+  timestamps: true
 });
 RendezVousSchema.index({ medecin: 1, date: 1, time: 1 }, { unique: true });
 const Rendezvous = mongoose.model('RendezVous', RendezVousSchema);

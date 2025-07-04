@@ -232,7 +232,7 @@ const updateUser = async (userId, role, updateData) => {
 export const login = async (req, res) => {
   try {
     const { UserID, motDePasse } = req.body;
-    
+
     console.log('🔐 Tentative de connexion:', { 
       UserID: UserID ? 'fourni' : 'manquant', 
       motDePasse: motDePasse ? 'fourni' : 'manquant' 
@@ -255,12 +255,11 @@ export const login = async (req, res) => {
       });
     }
 
-    // Vérification des variables d'environnement
     if (!JWT_SECRET || JWT_SECRET === 'your_jwt_secret_here_change_in_production') {
       console.error('⚠️ JWT_SECRET non configuré en production');
     }
 
-    // Recherche de l'utilisateur
+    // Recherche de l'utilisateur dans la base
     const { user, role } = await findUser(UserID);
 
     if (!user) {
@@ -273,15 +272,16 @@ export const login = async (req, res) => {
 
     console.log(`✅ Utilisateur trouvé: ${role} - ${user.nom} ${user.prenom}`);
 
-    // Vérifier si le compte est actif
-    if (user.isActive=== false || user.isActives === 'disabled') {
+    // Vérification compte actif
+    if (user.isActive === false || user.isActives === 'disabled') {
       console.log('❌ Compte désactivé');
       return res.status(403).json({ 
         message: "Ce compte est désactivé. Contactez l'administrateur.",
         error: "ACCOUNT_DISABLED"
       });
     }
-    // Vérifier si le compte est verrouillé
+
+    // Vérification compte verrouillé
     if (user.lockUntil && user.lockUntil > Date.now()) {
       const remainingTime = Math.ceil((user.lockUntil - Date.now()) / 60000);
       console.log(`🔒 Compte verrouillé pour ${remainingTime} minutes`);
@@ -292,7 +292,7 @@ export const login = async (req, res) => {
       });
     }
 
-    // Vérifier le mot de passe - gestion des deux champs possibles
+    // Vérification mot de passe
     const userPassword = user.motDePasse || user.password;
     if (!userPassword) {
       console.log('❌ Aucun mot de passe configuré');
@@ -303,20 +303,19 @@ export const login = async (req, res) => {
     }
 
     const isPasswordValid = await bcrypt.compare(motDePasse, userPassword);
-    
+
     if (!isPasswordValid) {
       console.log('❌ Mot de passe incorrect');
-      // Incrémenter les tentatives échouées
       const loginAttempts = (user.loginAttempts || 0) + 1;
       const updateData = { loginAttempts };
-      
+
       if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
         updateData.lockUntil = Date.now() + LOCKOUT_TIME;
         console.log(`🔒 Compte verrouillé après ${loginAttempts} tentatives`);
       }
-      
+
       await updateUser(user._id, role, updateData);
-      
+
       return res.status(401).json({ 
         message: "Identifiant ou mot de passe incorrect.",
         error: "INVALID_CREDENTIALS",
@@ -326,17 +325,17 @@ export const login = async (req, res) => {
 
     console.log('✅ Mot de passe valide');
 
-    // Réinitialiser les tentatives en cas de succès
+    // Réinitialiser les tentatives après succès
     if (user.loginAttempts > 0) {
       await updateUser(user._id, role, {
         $unset: { loginAttempts: 1, lockUntil: 1 }
       });
     }
 
-    // Générer le token JWT
+    // Générer token JWT
     const token = jwt.sign(
       { 
-        userId: user._id, 
+        userId: user._id,
         role,
         email: user.email
       },
@@ -344,41 +343,31 @@ export const login = async (req, res) => {
       { expiresIn: TOKEN_EXPIRY }
     );
 
-    console.log(`✅ Connexion réussie pour ${role}: ${user.nom} ${user.prenom}`);
+    // Convertir en objet JS pour supprimer mot de passe
+    let userObj = user.toObject ? user.toObject() : { ...user };
 
-    // Construire la réponse utilisateur selon le rôle
-    const userResponse = {
-      id: user._id,
-      role,
-      nom: user.nom,
-      prenom: user.prenom,
-      email: user.email
-    };
+    // Supprimer champs sensibles
+    delete userObj.motDePasse;
+    delete userObj.password;
 
-    // Ajouter les champs spécifiques selon le rôle
-    if (role === 'admin' && user.IDadmin) {
-      userResponse.IDadmin = user.IDadmin;
-    }
-    if (role === 'medecin' && user.IDmedecin) {
-      userResponse.IDmedecin = user.IDmedecin;
-    }
-    if (role === 'patient' && user.IDpatient) {
-      userResponse.IDpatient = user.IDpatient;
-    }
+    // Ajouter rôle explicitement
+    userObj.role = role;
 
-    // Réponse de succès
+    // Envoyer réponse avec token et profil complet
     res.status(200).json({
       message: "Connexion réussie",
       token,
-      user: userResponse
+      user: userObj
     });
 
   } catch (error) {
     console.error('❌ Erreur lors de la connexion:', error);
-    return handleError(error, res, "Erreur lors de la connexion");
+    return res.status(500).json({ 
+      message: "Erreur serveur lors de la connexion.",
+      error: "SERVER_ERROR"
+    });
   }
 };
-
 /**
  * DÉCONNEXION
  */

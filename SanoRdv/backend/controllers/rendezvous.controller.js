@@ -36,14 +36,29 @@ export const annulerRendezVous = async (req, res) => {
     const { id } = req.params;
     const rdv = await RendezVous.findById(id);
     if (!rdv) {
-      return res.status(404).json({ message: 'RDV non trouvé' });
+      return res.status(404).json({ message: 'Rendez-vous non trouvé' });
     }
-    rdv.status = 'cancelled';
+    rdv.status = 'annulé';
     await rdv.save();
-    await sendINEEmail('patient@example.com', rdv._id.toString(), 'Patient', 'Rendez-vous annulé'); // Adapter si possible
-    res.status(200).json({ message: 'Rendez-vous annulé' });
+    const creneau = await Creneau.findOne({ rendezVousId: rdv._id });
+    if (creneau) {
+      creneau.statut = 'libre';
+      creneau.rendezVousId = null;
+      await creneau.save();
+    }
+    // await notifierRendezVous('annulation', {
+    //   email: 'patient@example.com',
+    //   ine: rdv._id.toString(),
+    //   prenom: 'Patient',
+    //   nom: ''
+    // });
+    res.status(200).json({
+      message: 'Rendez-vous annulé et créneau libéré',
+      rendezVous: rdv,
+      creneauLibere: creneau || null
+    });
   } catch (err) {
-    console.error(err);
+    console.error('[Annuler RDV]', err);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
