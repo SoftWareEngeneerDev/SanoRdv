@@ -12,7 +12,8 @@ import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
 import rendezvousRoutes from './routes/rendezvous.routes.js';
 import creneauRouter from './routes/creneau.routes.js';
 import agendaRouter from './routes/agenda.routes.js';
-import medecinRouter from './routes/medecin.routes.js';  // corrigé : medecinRouter au lieu de medecinRoutes
+import medecinRouter from './routes/medecin.routes.js'; // corrigé : medecinRouter au lieu de medecinRoutes
+import notificationRouter from './routes/notification.routes.js';
 
 // Configuration des variables d'environnement
 dotenv.config();
@@ -30,7 +31,7 @@ const port = process.env.PORT || 3000;
     process.exit(1); // Arrêt de l'application en cas d'erreur
   }
 
-  // Configuration CORS
+  // Middleware CORS
   app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:4200',
     credentials: true,
@@ -40,16 +41,17 @@ const port = process.env.PORT || 3000;
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // IMPORTANT : Utiliser des préfixes de routes distincts pour éviter les conflits
-  app.use('/api/auth', userRoutes);         // gestion des utilisateurs (authentification)
-  app.use('/api/patients', patientRoutes);  // gestion des patients
-  app.use('/api/medecins', medecinRouter);  // gestion des médecins
-  app.use('/api/admins', adminRoutes);       // gestion des admins
-  app.use('/api/specialites', specialiteRoutes);
-  app.use('/api/recherche', systemeDeRechercheRoutes);
-  app.use('/api/rendezvous', rendezvousRoutes);
-  app.use('/api/creneaux', creneauRouter);
-  app.use('/api/agenda', agendaRouter);
+  // Définition des routes
+  app.use('/api/auth', userRoutes);        // Routes pour les utilisateurs
+  app.use('/api/patients', patientRoutes); // Routes pour les patients
+  app.use('/api/medecins', medecinRouter); // Routes pour les médecins
+  app.use('/api/admins', adminRoutes);     // Routes pour les administrateurs
+  app.use('/api/specialites', specialiteRoutes); // Routes pour les spécialités
+  app.use('/api/recherche', systemeDeRechercheRoutes); // Système de recherche
+  app.use('/api/rendezvous', rendezvousRoutes);  // Routes pour les rendez-vous
+  app.use('/api/creneaux', creneauRouter); // Routes pour les créneaux horaires
+  app.use('/api/agenda', agendaRouter);   // Routes pour l'agenda
+  app.use('/api/notifications', notificationRouter); // Routes pour les notifications
 
   // Gestion des erreurs 404 (Route non trouvée)
   app.use((req, res) => {
