@@ -8,7 +8,8 @@ import userRoutes from './routes/user.routes.js';
 import patientRoutes from './routes/patient.routes.js';
 import medecinRoutes from './routes/medecin.routes.js';
 import specialiteRoutes from './routes/specialite.routes.js';
-import creneauRouter from './routes/creneau.routes.js';  // Importation de creneauRouter
+import creneauRouter from './routes/creneau.routes.js';
+import notificationRouter from './routes/notification.routes.js';
 
 dotenv.config();
 
@@ -25,24 +26,25 @@ const port = process.env.PORT || 3000;
     process.exit(1);
   }
 
-  // Middleware CORS - config pour autoriser ton frontend
+  // Middleware CORS
   app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3001',
     credentials: true,
   }));
 
-  // Middlewares pour parser le corps des requêtes JSON et URL-encodé
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Middlewares pour parser le corps des requêtes
+  app.use(express.json()); // Remplace bodyParser.json()
+  app.use(express.urlencoded({ extended: true })); // Remplace bodyParser.urlencoded()
 
   // Montage des routes
   app.use('/api/auth', userRoutes);
   app.use('/api/auth', patientRoutes);
   app.use('/api/auth', medecinRoutes);
   app.use('/api/specialites', specialiteRoutes);
-  app.use('/api/creneaux', creneauRouter);  // Assurez-vous que cette route est incluse
+  app.use('/api/creneaux', creneauRouter);
+  app.use('/api/notifications', notificationRouter);
 
-  // Route "health check" pour tester si serveur tourne
+  // Route "health check"
   app.get('/api/health', (req, res) => {
     res.status(200).json({
       status: 'healthy',
@@ -50,7 +52,7 @@ const port = process.env.PORT || 3000;
     });
   });
 
-  // Middleware gestion des erreurs 404 (endpoint non trouvé)
+  // Middleware gestion des erreurs 404
   app.use((req, res) => {
     res.status(404).json({
       success: false,
@@ -63,7 +65,7 @@ const port = process.env.PORT || 3000;
     console.log(`🚀 Serveur démarré sur http://localhost:${port}`);
   });
 
-  // Gestion propre des arrêts du serveur (SIGTERM)
+  // Gestion propre des arrêts
   process.on('SIGTERM', () => {
     server.close(() => {
       console.log('Process terminated');
