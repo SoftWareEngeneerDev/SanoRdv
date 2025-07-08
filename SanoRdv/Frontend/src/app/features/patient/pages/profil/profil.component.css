@@ -1,0 +1,347 @@
+/* POUR LES 4 COLONNES === */
+.form-row.four-cols {
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+  margin-bottom: 1.5rem;
+}
+
+.form-group.quarter-width {
+  flex: 1;
+  min-width: 0;
+}
+
+/* === LAYOUT PRINCIPAL === */
+.page-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: 250px;
+  padding-top: 95px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* === CONTAINER ET FORMULAIRE === */
+.container {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.form-container {
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  position: relative;
+  top: -50px;
+  left: -120px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 1.5rem;
+}
+
+/* Décalage du champ email vers le haut */
+.email-offset {
+  margin-top: -40px;
+}
+
+
+.form-group.half-width {
+  flex: 1;
+}
+
+/*----------------------------TITRE (optionnel) --------------------------- */
+h3 {
+  font-size: 20px;
+  color: rgb(105, 105, 245);
+  font-weight: 500;
+  position: relative;
+  top: 17px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #000000;
+  margin: 1rem 0;
+}
+
+
+/* ---------------- PHOTO DE PROFIL ---------------------- */
+.photo-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 2rem;
+}
+
+.photo-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #888;
+}
+.photo-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #3498db;
+  color: white;
+  width: 30px;
+  height: 30px;
+  font-size: 0.8rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+.btn-change-photo {
+  background-color: white;
+  border: 1px solid rgb(115, 115, 239);
+
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3498db;
+}
+
+.btn-change-photo:hover {
+  background-color: #f5f5f5;
+}
+
+
+
+/* ----------------- FORM LAYOUT -------------------- */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-group.inline {
+  display: flex;
+  gap: 20px;
+}
+.input-group {
+  flex: 1;
+  position: relative;
+}
+
+/* ---------------- LABEL ----------------------- */
+label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #0b0f13;
+}
+.required-star {
+  color: #e74c3c;
+  margin-left: 3px;
+}
+
+/* ----------------INPUT ET SELECT------------------------------- */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 10px 36px 10px 12px;
+  border: 1.8px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-top: 6px;
+  background-color: #fff;
+}
+
+input:focus,
+select:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* ----------------------------ICONES DANS LES CHAMPS------------------------------------- */
+.input-group .icon,
+.input-wrapper .input-icon,
+.select-wrapper .select-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+/* ---------------------------- ERREURS ----------------------------------= */
+input.error,
+select.error {
+  border-color: #e74c3c ;
+}
+.field-error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* -------------------- BOUTONS -------------------------- */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  height: 30px;
+  align-items: center;
+}
+
+.form-buttons button {
+  min-width: 120px;
+  height: 40px;
+}
+
+
+.btn-cancel {
+  background-color: transparent;
+  border: 2px solid #bbb;
+  color: #555;
+}
+.btn-cancel:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+.btn-submit {
+  background-color: #3498db;
+  color: white;
+  border: none;
+}
+.btn-submit:hover:not(:disabled) {
+  background-color: #217dbb;
+}
+.btn-submit:disabled {
+  background-color: #8ec6f9;
+  cursor: not-allowed;
+}
+
+
+/*--------------------------------- Les messages -------------------------------------------------------- */
+.success-message {
+  color: #28a745;
+  font-weight: 600;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.error-message {
+  color: #dc3545;
+  font-weight: 600;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* Responsive pour tablettes (≤ 1024px)*/
+@media (max-width: 1024px) {
+  .form-row.four-cols {
+    flex-wrap: wrap;
+  }
+  .form-group.quarter-width {
+    flex: 1 1 calc(50% - 10px);
+  }
+  .form-container {
+    left: 0;
+    top: 0;
+    margin: 0 auto;
+  }
+}
+
+/*  Responsive pour petits ecrans (≤ 768px) */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding-top: 70px;
+  }
+
+  .sidebar {
+    display: none; /* cache la sidebar */
+  }
+
+  app-header-secondaire {
+    height: 70px;
+  }
+
+  .form-container {
+    padding: 1rem;
+    max-width: 100%;
+    top: 0;
+    left: 0;
+    margin: 0 auto;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .form-row,
+  .form-row.four-cols {
+    flex-direction: column;
+  }
+
+  .form-group.quarter-width,
+  .form-group.half-width {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .form-group.inline {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .photo-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .photo-wrapper {
+    width: 90px;
+    height: 90px;
+  }
+
+  .photo-placeholder {
+    font-size: 2rem;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .form-buttons button {
+    width: 100%;
+  }
+}

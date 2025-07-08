@@ -4,10 +4,10 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { RendezvousComponent } from './pages/appointment/appointment.component';
-// import { NotificationsComponent } from './pages/notifications/notifications.component';
-// import { RegisterComponent } from './pages/modifier/modifier.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { RegisterComponent } from './pages/modifier/modifier.component';
 // import { DossierMedicalComponent } from './pages/dossiers-medicaux/dossiers-medicaux.component';
-// import { ProfileComponent } from './pages/profil/profil.component';
+import { ProfilComponent } from './pages/profil/profil.component';
 import { PatientLayoutComponent } from './patient-layout/patient-layout.component';
 // import { MotifComponent} from './pages/motif/motif.component';
 // import { CreneauComponent } from './pages/creneau/creneau.component';
@@ -26,9 +26,9 @@ const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'appointment', component: RendezvousComponent },
-  // { path: 'notifications', component: NotificationsComponent },
-  // { path: 'modifier', component: RegisterComponent },
-  // { path: 'profil', component: ProfileComponent },
+  { path: 'notifications', component: NotificationsComponent },
+  { path: 'modifier', component: RegisterComponent },
+  { path: 'profil', component: ProfilComponent },
   // { path: 'dossiers-medicaux', component: DossierMedicalComponent },
   { path: '**', redirectTo: 'dashboard' },
 ]
