@@ -21,6 +21,9 @@ import { RdvStatsComponent } from './components/rdv-stats/rdv-stats.component';
 import { RechercheMedecinComponent } from './components/search-medecin/search-medecin.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {RendezvousComponent } from './pages/appointment/appointment.component';
+import { RegisterComponent } from './pages/modifier/modifier.component';
+import { ProfilComponent } from './pages/profil/profil.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
 
 
 @NgModule({
@@ -33,7 +36,10 @@ import {RendezvousComponent } from './pages/appointment/appointment.component';
       DashboardComponent,
       RdvStatsComponent,
       DossierComponent,
-      RendezvousComponent
+      RendezvousComponent,
+      RegisterComponent,
+      ProfilComponent,
+      NotificationsComponent
   ],
   imports: [
     CommonModule,
