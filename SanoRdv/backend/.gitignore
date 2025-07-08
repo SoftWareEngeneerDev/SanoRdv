@@ -33,6 +33,7 @@ Thumbs.db
 # === Git ===
 .git/
 .gitignore
+node_modules/
 
 # === Misc ===
 *.bak
