@@ -1,0 +1,29 @@
+<div class="form-container">
+  <div class="form-group">
+    <label for="motif">Motif du rendez-vous</label>
+    <select
+      id="motif"
+      class="form-control"
+      [(ngModel)]="motifConsultation"
+       (ngModelChange)="onMotifChange()"
+      name="motifConsultation"
+      required>
+      <option value="" disabled selected hidden>-- Choisir un motif --</option>
+      <option value="Consultation générale">Consultation générale</option>
+      <option value="Contrôle médical">Contrôle médical</option>
+      <option value="Douleurs persistantes">Douleurs persistantes</option>
+      <option value="Examens">Examens</option>
+      <option value="Suivi de traitement">Suivi de traitement</option>
+      <option value="Urgence">Urgence</option>
+      <option value="Vaccination">Vaccination</option>
+      <option value="Autres">Autres</option>
+    </select>
+  </div>
+
+ <div class="button-wrapper">
+<button class="btn btn-primary white-bg" (click)="precedent()">Précédent</button>
+  <button class="btn-right" [disabled]="!motifConsultation" (click)="suivant()">Suivant</button>
+</div>
+</div>
+
+

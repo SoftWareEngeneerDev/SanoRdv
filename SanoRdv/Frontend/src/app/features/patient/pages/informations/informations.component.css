@@ -1,0 +1,145 @@
+.profil-global-container {
+  max-width: 900px;
+  height: auto;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* === En-tête : Photo + Nom/Specialité === */
+.profil-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.photo-wrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.infos-principales {
+  flex-grow: 1;
+}
+
+.infos-principales h2 {
+  margin: 0;
+  color: #007bff;
+  font-size: 1.8rem;
+}
+
+.specialite {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+.infos-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+   margin-left: 150px;
+}
+
+/* Style général des cartes */
+.card {
+  flex: 1 1 260px;
+  background: #f5f2f2;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  min-height: 140px;
+}
+
+
+/* Titres */
+.card h4 {
+  color: #007bff;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+/* Contenu */
+.card p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+hr{
+  position: relative;
+  top: 50px;
+   color: #0c0303;
+}
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0c0303;
+}
+
+.footer-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.footer-buttons button:first-child {
+  margin-right: 30px;
+}
+
+/* Styles des boutons  */
+.btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+ margin-right: 200px;
+ gap: 30px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  width: 150px;
+  height: 45px;
+  font-size: 12px;
+}
+
+.btn-secondary {
+  border: 1px solid #0c0303;
+  background-color: white;
+  color: black;
+   width: 150px;
+  height: 45px;
+  font-size: 12px;
+}
+
+/* Effet hover simple */
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
