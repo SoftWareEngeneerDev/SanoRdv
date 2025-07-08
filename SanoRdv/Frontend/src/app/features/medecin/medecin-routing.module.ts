@@ -9,8 +9,7 @@ import { PatientComponent } from './patient/patient.component';
 const routes: Routes = [
 
   {
-    path: '',
-    component: LayoutComponent, // Le wrapper contenant navbar + sidebar
+    path: '',component: LayoutComponent, // Le wrapper contenant navbar + sidebar
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'rendez-vous', component: MyAppointmentComponent },

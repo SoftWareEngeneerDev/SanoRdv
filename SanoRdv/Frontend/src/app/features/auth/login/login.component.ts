@@ -37,9 +37,7 @@ export class LoginComponent {
           } else if (role === 'medecin') {
             this.router.navigate(['/medecin']);
           } else if (role === 'patient') {
-            this.router.navigate(['/patient']).then(success => {
-              console.log('Navigation vers /patient réussie ? ', success);
-            });
+            this.router.navigate(['/patient']);
           } else {
             this.router.navigate(['/Accueil']);
           }
