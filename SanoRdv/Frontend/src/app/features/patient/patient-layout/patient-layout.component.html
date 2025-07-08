@@ -1,0 +1,19 @@
+<!-- Header -->
+<app-header-patient [isCollapsed]="isCollapsed"></app-header-patient>
+
+<!-- Conteneur principal : sidebar + contenu -->
+<div class="d-flex">
+  <!-- Sidebar (émet l’état) -->
+  <app-sidebar-patient (collapseChange)="onSidebarCollapse($event)"></app-sidebar-patient>
+
+  <!-- Contenu principal -->
+  <main
+    [class.margin-collapsed]="isCollapsed"
+    [class.margin-expanded]="!isCollapsed"
+    class="patient-main-content flex-grow-1"
+  >
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+

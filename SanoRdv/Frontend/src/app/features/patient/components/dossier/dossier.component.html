@@ -1,0 +1,12 @@
+<a class="stats-card blue" routerLink="/patient/dossiers-medicaux">
+  <i class="bi bi-file-earmark-medical-fill fs-2"></i>
+  <div class="stats-content">
+    <div class="stats-title">DOSSIER MEDICAL</div>
+    <div class="stats-value">
+      {{ totalAjouts }}
+      <sup *ngIf="value >= 4">+</sup>
+    </div>
+  </div>
+</a>
+
+

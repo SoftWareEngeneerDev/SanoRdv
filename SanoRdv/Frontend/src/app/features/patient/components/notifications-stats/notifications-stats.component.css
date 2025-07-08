@@ -1,0 +1,122 @@
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+.stats-card {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(to right, #7cff7a, #2d7e3f);
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid #f1ecec;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+  flex: 1 1 300px;
+  min-width: 250px;
+  max-width: 350px;
+  height: 120px;
+  margin: 10px 0;  /* marge verticale seulement, gap gère horizontal */
+
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.stats-card.white {
+  background-color: #ffffff;
+  color: #333;
+}
+
+.stats-card:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+i {
+  font-size: 30px !important;
+  margin-right: 16px;
+  color: white;
+  position: relative;
+  top: -10px;
+}
+
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Suppression des left/top relatifs et remplacement par marges */
+.stats-title {
+  font-size: 25px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: white;
+  margin-left: 30px;
+}
+
+.stats-value {
+  font-size: 35px;
+  font-weight: bold;
+  color: white;
+  margin-left: 30px;
+  margin-top: 10px;
+}
+
+/* Responsivité */
+
+@media (max-width: 768px) {
+  .stats-card {
+    height: 90px;
+    padding: 14px;
+  }
+
+  i {
+    font-size: 18px !important;
+    top: -6px;
+    left: 8px;
+  }
+
+  .stats-title {
+    font-size: 14px;
+    margin-left: 15px;
+  }
+
+  .stats-value {
+    font-size: 18px;
+    margin-left: 15px;
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-card {
+    height: 80px;
+    padding: 10px;
+  }
+
+  i {
+    font-size: 16px !important;
+    top: -4px;
+    left: 5px;
+  }
+
+  .stats-title {
+    font-size: 12px;
+    margin-left: 10px;
+  }
+
+  .stats-value {
+    font-size: 16px;
+    margin-left: 10px;
+    margin-top: 3px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .stats-card {
+    height: 120px;
+    padding: 20px;
+  }
+}
