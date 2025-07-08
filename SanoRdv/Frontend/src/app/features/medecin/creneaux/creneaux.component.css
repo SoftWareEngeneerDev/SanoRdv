@@ -1,0 +1,63 @@
+.creneaux-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 800px;           /* agrandit */
+  margin: 80px auto 20px;     /*descend avec margin-top: 80px */
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.form-creneau {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.form-creneau label {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+button {
+  background-color: #00a3e0;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.section-title {
+  color: #007bff;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.table-creneaux {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-creneaux td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.supprimer {
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.vide {
+  color: #888;
+  font-style: italic;
+}
