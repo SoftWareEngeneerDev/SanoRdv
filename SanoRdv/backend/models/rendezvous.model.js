@@ -1,31 +1,33 @@
+// models/rendezvous.model.js
 import mongoose from 'mongoose';
-const RendezVousSchema = new mongoose.Schema({
+const rendezVousSchema = new mongoose.Schema({
   patient: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'User', // ou 'Patient'
     required: true,
   },
   medecin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Medecin',
+    ref: 'User', // ou 'Medecin'
     required: true,
   },
-  date: {
-    type: Date,
+  creneau: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Creneau',
     required: true,
-  },  
+  },
   time: {
     type: String,
-    required: true,
+    required: true, // '08:30'
   },
-  status: {
+  motif: {
+    type: String,
+  },
+  statut: {
     type: String,
     enum: ['confirmé', 'annulé'],
     default: 'confirmé',
-  }
-}, {
-  timestamps: true
-});
-RendezVousSchema.index({ medecin: 1, date: 1, time: 1 }, { unique: true });
-const Rendezvous = mongoose.model('RendezVous', RendezVousSchema);
-export default Rendezvous;
+  },
+}, { timestamps: true });
+const RendezVous = mongoose.model('RendezVous', rendezVousSchema);
+export default RendezVous;
