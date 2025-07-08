@@ -129,8 +129,6 @@ export const obtenirAgenda = async (req, res) => {
 };
 
 export default {
-
-=======
     genererCreneauxParDate,
     mettreAJourStatutCreneau,
     saveCreneaux,

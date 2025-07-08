@@ -394,7 +394,6 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Validation de l'email
     if (!email || typeof email !== 'string' || !PATTERNS.email.test(email.trim())) {
       return res.status(400).json({ 
         message: 'Email invalide.',
@@ -403,11 +402,8 @@ export const forgotPassword = async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-
-    // Recherche de l'utilisateur
     const { user, role } = await findUserByEmail(normalizedEmail);
-    
-    // Réponse générique pour éviter l'énumération d'emails
+
     const genericResponse = {
       message: "Si cet email existe, un code de réinitialisation a été envoyé.",
       success: true
@@ -417,10 +413,9 @@ export const forgotPassword = async (req, res) => {
       return res.status(200).json(genericResponse);
     }
 
-    // Protection contre le spam (rate limiting)
     const lastRequestTime = user.lastResetRequest || 0;
     const timeSinceLastRequest = Date.now() - lastRequestTime;
-    
+
     if (timeSinceLastRequest < RATE_LIMIT_WINDOW) {
       const remainingTime = Math.ceil((RATE_LIMIT_WINDOW - timeSinceLastRequest) / 1000);
       return res.status(429).json({
@@ -430,14 +425,10 @@ export const forgotPassword = async (req, res) => {
       });
     }
 
-    // Génération d'un code sécurisé à 6 chiffres
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedResetCode = await bcrypt.hash(resetCode, BCRYPT_ROUNDS);
-
-    // Configuration de l'expiration
     const expirationTime = Date.now() + RESET_CODE_EXPIRY;
 
-    // Mise à jour en base de données avec gestion d'erreur
     try {
       await updateUser(user._id, role, {
         resetCode: hashedResetCode,
@@ -446,14 +437,13 @@ export const forgotPassword = async (req, res) => {
         lastResetRequest: Date.now()
       });
     } catch (dbError) {
-      console.error('Erreur lors de la mise à jour en base:', dbError);
+      console.error('Erreur BDD:', dbError);
       return res.status(500).json({
         message: 'Erreur interne du serveur.',
         error: 'DATABASE_ERROR'
       });
     }
 
-    // Stockage en cache avec clé composite pour éviter les collisions
     const cacheKey = `${resetCode}_${normalizedEmail}`;
     codeCache.set(cacheKey, {
       email: normalizedEmail,
@@ -462,21 +452,11 @@ export const forgotPassword = async (req, res) => {
       timestamp: Date.now()
     });
 
-    // Envoi de l'email avec gestion d'erreur robuste
     try {
-      await sendResetPasswordEmail(
-        user.email, 
-        resetCode, 
-        role, 
-        user.nom, 
-        user.prenom
-      );
-      
-      console.log(`✅ Code de réinitialisation envoyé à ${normalizedEmail} (Expire: ${new Date(expirationTime).toISOString()})`);
+      await sendResetPasswordEmail(user.email, resetCode, role, user.nom, user.prenom);
+      console.log(`✅ Code envoyé à ${normalizedEmail} (Expire à ${new Date(expirationTime).toISOString()})`);
     } catch (emailError) {
-      console.error('❌ Erreur lors de l\'envoi de l\'email:', emailError);
-      
-      // En cas d'échec d'envoi, on nettoie et on retourne une erreur
+      console.error('❌ Erreur email:', emailError);
       codeCache.del(cacheKey);
       await updateUser(user._id, role, {
         $unset: {
@@ -485,9 +465,9 @@ export const forgotPassword = async (req, res) => {
           resetAttempts: 1
         }
       });
-      
+
       return res.status(500).json({
-        message: 'Erreur lors de l\'envoi de l\'email. Veuillez réessayer.',
+        message: 'Erreur lors de l\'envoi de l\'email.',
         error: 'EMAIL_SEND_ERROR'
       });
     }
@@ -495,9 +475,9 @@ export const forgotPassword = async (req, res) => {
     return res.status(200).json(genericResponse);
 
   } catch (error) {
-    console.error('❌ Erreur dans forgotPassword:', error);
+    console.error('❌ Erreur forgotPassword:', error);
     return res.status(500).json({
-      message: 'Erreur lors de la demande de réinitialisation.',
+      message: 'Erreur lors de la demande.',
       error: 'SERVER_ERROR'
     });
   }
@@ -510,7 +490,6 @@ export const verifyResetCode = async (req, res) => {
   try {
     const { resetCode } = req.body;
 
-    // 1. Validation basique
     if (!resetCode || typeof resetCode !== 'string') {
       return res.status(400).json({ 
         message: 'Le code est requis.',
@@ -520,24 +499,60 @@ export const verifyResetCode = async (req, res) => {
 
     const normalizedCode = resetCode.trim();
 
-    // 2. Recherche dans TOUS les modèles (Admin, Medecin, Patient)
-    const [admin, medecin, patient] = await Promise.all([
-      Admin.findOne({ resetCode: { $exists: true } }),
-      Medecin.findOne({ resetCode: { $exists: true } }),
-      Patient.findOne({ resetCode: { $exists: true } })
-    ]);
+    // 🔍 Recherche de la clé dans le cache
+    let cacheKey = null;
+    for (const key of codeCache.keys()) {
+      if (key.startsWith(`${normalizedCode}_`)) {
+        cacheKey = key;
+        break;
+      }
+    }
 
-    const user = admin || medecin || patient;
-    const role = admin ? 'admin' : medecin ? 'medecin' : patient ? 'patient' : null;
-
-    if (!user) {
-      return res.status(400).json({ 
-        message: 'Code invalide.',
-        error: 'INVALID_CODE' 
+    if (!cacheKey) {
+      return res.status(400).json({
+        message: 'Code invalide ou expiré.',
+        error: 'INVALID_OR_EXPIRED'
       });
     }
 
-    // 3. Validation avec bcrypt
+    const cacheData = codeCache.get(cacheKey);
+    if (!cacheData) {
+      return res.status(400).json({
+        message: 'Données de réinitialisation introuvables.',
+        error: 'CACHE_MISSING'
+      });
+    }
+
+    const { userId, role } = cacheData;
+
+    if (!userId || !role) {
+      return res.status(400).json({
+        message: 'Utilisateur ou rôle manquant.',
+        error: 'INVALID_CACHE_DATA'
+      });
+    }
+
+    // 🔍 Charger le modèle selon le rôle
+    const Model = { admin: Admin, medecin: Medecin, patient: Patient }[role];
+    if (!Model) {
+      return res.status(400).json({ message: 'Rôle invalide.', error: 'INVALID_ROLE' });
+    }
+
+    const user = await Model.findById(userId);
+    if (!user || !user.resetCode || !user.resetCodeExpire) {
+      return res.status(400).json({ 
+        message: 'Code invalide ou expiré.',
+        error: 'INVALID_USER_STATE'
+      });
+    }
+
+    if (Date.now() > user.resetCodeExpire) {
+      return res.status(400).json({ 
+        message: 'Code expiré.',
+        error: 'EXPIRED_CODE' 
+      });
+    }
+
     const isMatch = await bcrypt.compare(normalizedCode, user.resetCode);
     if (!isMatch) {
       return res.status(400).json({ 
@@ -546,28 +561,25 @@ export const verifyResetCode = async (req, res) => {
       });
     }
 
-    // 4. Génération du token
-    const token = jwt.sign(
-      { userId: user._id, role }, 
-      JWT_RESET_SECRET, 
-      { expiresIn: '15m' }
-    );
+    // ✅ Générer le token temporaire
+    const token = jwt.sign({ userId, role }, JWT_RESET_SECRET, { expiresIn: '15m' });
 
-    // 5. Réponse succès
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       token,
-      message: 'Code validé.'
+      message: 'Code validé. Vous pouvez maintenant réinitialiser votre mot de passe.'
     });
 
   } catch (error) {
-    console.error('Erreur:', error);
-    res.status(500).json({ 
-      message: 'Erreur serveur.', 
+    console.error('❌ Erreur verifyResetCode:', error);
+    return res.status(500).json({ 
+      message: 'Erreur serveur.',
       error: 'SERVER_ERROR' 
     });
   }
 };
+
+
 /**
  * RÉINITIALISATION DU MOT DE PASSE
  */
@@ -576,57 +588,65 @@ export const resetPassword = async (req, res) => {
     const { motDePasse, confirmationMotDePasse } = req.body;
     const token = req.headers.authorization?.split(' ')[1];
 
-    // 1. Validation basique
     if (!motDePasse || !confirmationMotDePasse) {
       return res.status(400).json({
-        message: 'Mot de passe et confirmation requis',
+        message: 'Mot de passe et confirmation requis.',
         error: 'MISSING_PASSWORD'
       });
     }
 
     if (motDePasse !== confirmationMotDePasse) {
       return res.status(400).json({
-        message: 'Les mots de passe ne correspondent pas',
+        message: 'Les mots de passe ne correspondent pas.',
         error: 'PASSWORD_MISMATCH'
       });
     }
 
-    // 2. Vérification du token
-    const decoded = jwt.verify(token, JWT_RESET_SECRET);
-    
-    // 3. Trouver le bon modèle selon le rôle
-    const Model = {
-      admin: Admin,
-      medecin: Medecin,
-      patient: Patient
-    }[decoded.role];
+    if (!token) {
+      return res.status(401).json({
+        message: 'Token manquant.',
+        error: 'MISSING_TOKEN'
+      });
+    }
 
-    // 4. Mise à jour du mot de passe
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_RESET_SECRET);
+    } catch (err) {
+      return res.status(401).json({
+        message: 'Token invalide ou expiré.',
+        error: 'INVALID_TOKEN'
+      });
+    }
+
+    const { userId, role } = decoded;
+    const Model = { admin: Admin, medecin: Medecin, patient: Patient }[role];
+
+    if (!Model) {
+      return res.status(400).json({ message: 'Rôle invalide.', error: 'INVALID_ROLE' });
+    }
+
     const hashedPassword = await bcrypt.hash(motDePasse, 10);
-    await Model.findByIdAndUpdate(decoded.userId, {
+
+    await Model.findByIdAndUpdate(userId, {
       motDePasse: hashedPassword,
-      $unset: { resetCode: 1 } // Nettoyage
+      $unset: { resetCode: 1, resetCodeExpire: 1, resetAttempts: 1 }
     });
 
-    res.json({ 
+    return res.status(200).json({
       success: true,
-      message: "Mot de passe réinitialisé avec succès" 
+      message: 'Mot de passe réinitialisé avec succès.'
     });
 
   } catch (error) {
-    console.error('Erreur:', error);
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ 
-        message: 'Token invalide ou expiré',
-        error: 'INVALID_TOKEN' 
-      });
-    }
-    res.status(500).json({ 
-      message: 'Erreur serveur',
-      error: 'SERVER_ERROR' 
+    console.error('❌ Erreur resetPassword:', error);
+    return res.status(500).json({
+      message: 'Erreur serveur.',
+      error: 'SERVER_ERROR'
     });
   }
 };
+
 /*
  * VÉRIFICATION DU TOKEN DE RÉINITIALISATION
  */
