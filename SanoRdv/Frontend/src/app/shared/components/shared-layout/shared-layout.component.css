@@ -1,0 +1,5 @@
+.content {
+  padding: 20px;
+  min-height: calc(100vh - 120px); /* ajuste selon la hauteur de ton header/footer */
+  background-color: #f9f9f9;
+}

@@ -1,5 +1,6 @@
 // models/Agenda.js
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
 const { Schema } = mongoose;
 
 const agendaSchema = new Schema({

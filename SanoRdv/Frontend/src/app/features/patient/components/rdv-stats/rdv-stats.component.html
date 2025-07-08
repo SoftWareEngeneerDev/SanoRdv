@@ -1,0 +1,11 @@
+<a class="stats-card" routerLink="/patient/appointment">
+  <i class="bi bi-calendar-week-fill fs-3"></i>
+  <div class="stats-content">
+    <div class="stats-title">RENDEZ-VOUS</div>
+    <div class="stats-value">
+      {{ value }}
+      <sup *ngIf="value >= 10">+</sup>
+    </div>
+  </div>
+</a>
+

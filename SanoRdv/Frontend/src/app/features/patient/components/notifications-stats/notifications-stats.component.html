@@ -1,0 +1,10 @@
+<a class="stats-card white" routerLink="/patient/notifications">
+  <i class="bi bi-bell-fill fs-1"></i>
+  <div class="stats-content">
+    <div class="stats-title">NOTIFICATIONS</div>
+    <div class="stats-value">
+      {{ unreadCount }}
+      <sup *ngIf="unreadCount >= 7">+</sup>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,114 @@
+/* Désactivation de l'ancien .nav-tabs */
+.nav-tabs {
+  display: none;
+}
+
+/* Conteneur principal avec bordure + fond bleu clair */
+.onglets-container {
+  border: 1px solid #80b5ef;
+  border-radius: 10px;
+  background-color: #80b5ef;
+  padding: 0;
+  max-width: 1200px;
+  margin: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+  top: 80px;
+}
+
+/* Ligne des onglets */
+.custom-tab {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+/* Boutons des onglets */
+.custom-tab .nav-link {
+  width: 200px;
+  padding: 10px 0;
+  font-size: 16px;
+  background-color: #80b5ef;
+  color: black;
+  font-weight: bold;
+  border: none;
+  text-align: center;
+  user-select: none;
+  position: relative;
+  left: 8px;
+  transition: 0.2s ease-in-out;
+  border-right: 1px solid #ffffff55;
+}
+
+/* Dernier onglet sans bordure droite */
+.custom-tab .nav-link:last-child {
+  border-right: none;
+}
+
+/* Onglet actif */
+.custom-tab .nav-link.active {
+  background-color: white;
+  color: black;
+  transform: translateY(1px);
+  font-weight: bold;
+  border-bottom: none;
+}
+
+/* Hover onglets inactifs */
+.custom-tab .nav-link:hover:not(.active) {
+  background-color: #80b5ef;
+}
+
+/* Contenu des onglets */
+.tab-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Table RDV */
+.table th,
+.table td {
+  background-color: white;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  font-size: 20px;
+}
+
+.table td {
+  font-size: 18px;
+}
+
+/* Boutons d’action */
+.btn-edit,
+.btn-cancel {
+  padding: 4px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: #000;
+  margin-right: 5px;
+}
+
+.btn-cancel {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+.btn-cancel:hover {
+  background-color: #c82333;
+}

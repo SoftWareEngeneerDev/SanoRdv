@@ -1,0 +1,162 @@
+/* ======= Global ======= */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* ======= HEADER ======= */
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 95px;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* ======= SIDEBAR ======= */
+aside.col-auto {
+  position: fixed;
+  top: 95px;
+  left: 0;
+  width: 300px;
+  height: calc(100vh - 95px);
+  background-color: #489ef4;
+  z-index: 999;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  overflow-y: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* ======= CONTENU PRINCIPAL ======= */
+main.col {
+  margin-left: 30px;
+  margin-top: -50px;
+  padding-left: 120px;
+  padding-top: 100px;
+  padding-right: 40px;
+  background-color: #fff;
+  min-height: calc(100vh - 95px);
+}
+
+/* ======= TITRE ======= */
+.tableau {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-top: 60px;
+  margin-bottom: 40px;
+  padding-left: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-left: 10px;
+  position: relative;
+  left: 400px;
+}
+
+/* ======= WIDGETS GRID ======= */
+.widgets-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  justify-content: flex-start;
+  margin-bottom: 60px;
+  padding-right: 0;
+  margin-left: -15px;
+}
+
+.widgets-grid app-rdv-stats,
+.widgets-grid app-dossier-medical-stats,
+.widgets-grid app-notification-stats {
+  flex: 0 0 300px;
+  max-width: 300px;
+}
+
+.shadowed-box {
+  position: relative;
+  margin-left: 20px;
+  top: 10px;
+}
+
+/* ===== RESPONSIVITÉ ===== */
+
+/* === 0 à 480px === */
+@media (max-width: 480px) {
+  main.col {
+    padding: 10px !important;
+  }
+
+  .tableau {
+    font-size: 1.3rem;
+    text-align: center;
+    margin-left: 0;
+  }
+
+  .shadowed-box {
+    padding: 10px;
+  }
+
+  .widgets-grid .col-md-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .font-responsive {
+    font-size: 12px;
+  }
+
+  app-recherche-medecin {
+    display: block;
+    margin-top: 20px;
+  }
+}
+
+
+/* === 481px à 768px === */
+@media (min-width: 481px) and (max-width: 768px) {
+  main.col {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .tableau {
+    font-size: 1.8rem;
+    margin-left: 10px;
+  }
+
+  .shadowed-box {
+    padding: 14px;
+  }
+
+  .widgets-grid .col-md-4 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .font-responsive {
+    font-size: 14px;
+  }
+}
+
+
+/* === 769px à 1024px === */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tableau {
+    font-size: 2rem;
+  }
+
+  .font-responsive {
+    font-size: 15px;
+  }
+
+  .widgets-grid .col-md-4 {
+    flex: 0 0 32%;
+    max-width: 32%;
+    margin: 0 auto;
+  }
+
+
+}

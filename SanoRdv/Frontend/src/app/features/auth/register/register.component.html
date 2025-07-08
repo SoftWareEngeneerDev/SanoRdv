@@ -1,0 +1,128 @@
+<div class="container">
+  <div class="form-container">
+    <h1>CRÉER UN COMPTE</h1>
+    <p><a routerLink="/auth/login">Déjà inscrit ? Se Connecter</a></p>
+
+    <!-- Message d'erreur général -->
+    <div class="error-message" *ngIf="errorMessage">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Nom et Prénom -->
+      <div class="form-group inline">
+        <div class="input-group">
+          <label for="nom">Nom <span class="required-star">*</span></label>
+          <input formControlName="nom" type="text" placeholder="Votre nom"
+            [class.error]="registerForm.get('nom')?.invalid && registerForm.get('nom')?.touched" />
+          <i class="bi bi-person icon"></i>
+          <div class="field-error" *ngIf="getFieldError('nom')">{{ getFieldError("nom") }}</div>
+        </div>
+        <div class="input-group">
+          <label for="prenom">Prénom <span class="required-star">*</span></label>
+          <input formControlName="prenom" type="text" placeholder="Votre prénom"
+            [class.error]="registerForm.get('prenom')?.invalid && registerForm.get('prenom')?.touched" />
+          <i class="bi bi-person icon"></i>
+          <div class="field-error" *ngIf="getFieldError('prenom')">{{ getFieldError("prenom") }}</div>
+        </div>
+      </div>
+
+      <!-- Téléphone et Sexe -->
+      <div class="form-group inline">
+        <div class="input-group">
+          <label for="telephone">Téléphone <span class="required-star">*</span></label>
+          <input formControlName="telephone" type="tel" placeholder="Numéro de téléphone"
+            [class.error]="registerForm.get('telephone')?.invalid && registerForm.get('telephone')?.touched" />
+          <i class="bi bi-telephone icon"></i>
+          <div class="field-error" *ngIf="getFieldError('telephone')">{{ getFieldError("telephone") }}</div>
+        </div>
+        <div class="input-group">
+          <label for="sex">Sexe <span class="required-star">*</span></label>
+          <select formControlName="sex"
+            [class.error]="registerForm.get('sex')?.invalid && registerForm.get('sex')?.touched">
+            <option value="">Sélectionner le sexe...</option>
+            <option value="masculin">Masculin</option>
+            <option value="féminin">Féminin</option>
+            <option value="other">Autre</option>
+          </select>
+          <div class="field-error" *ngIf="getFieldError('sex')">{{ getFieldError("sex") }}</div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <div class="latif">
+          <label for="email">Email <span class="required-star">*</span></label>
+          <input formControlName="email" type="email" placeholder="example@mail.com"
+            [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" />
+          <i class="bi bi-envelope icon"></i>
+          <div class="field-error" *ngIf="getFieldError('email')">{{ getFieldError("email") }}</div>
+        </div>
+      </div>
+
+      <!-- Mot de passe -->
+      <div class="form-group">
+        <div class="latif">
+          <label for="motDePasse">Mot de passe <span class="required-star">*</span></label>
+          <div class="password-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="motDePasse"
+              placeholder="Mot de passe sécurisé"
+              [class.error]="registerForm.get('motDePasse')?.invalid && registerForm.get('motDePasse')?.touched"
+            />
+            <i
+              class="eye-icon"
+              [ngClass]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+              (click)="togglePasswordVisibility()"
+            ></i>
+          </div>
+          <div class="field-error" *ngIf="getFieldError('motDePasse')">{{ getFieldError("motDePasse") }}</div>
+        </div>
+      </div>
+
+      <!-- Confirmation mot de passe -->
+      <div class="form-group">
+        <div class="latif">
+          <label for="confirmationMotDePasse">Confirmation du mot de passe <span class="required-star">*</span></label>
+          <div class="password-wrapper">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="confirmationMotDePasse"
+              placeholder="Confirmer le mot de passe"
+              [class.error]="
+                (registerForm.get('confirmationMotDePasse')?.invalid &&
+                registerForm.get('confirmationMotDePasse')?.touched) || passwordMismatchError"
+            />
+            <i
+              class="eye-icon"
+              [ngClass]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+              (click)="toggleConfirmPasswordVisibility()"
+            ></i>
+          </div>
+          <div class="field-error" *ngIf="getFieldError('confirmationMotDePasse')">
+            {{ getFieldError("confirmationMotDePasse") }}
+          </div>
+          <div class="field-error" *ngIf="passwordMismatchError">
+            Les mots de passe ne correspondent pas
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons S'inscrire et Annuler -->
+      <div class="form-group inline">
+        <div class="input-groupe">
+          <button type="button" class="cancel-button" (click)="onCancel()">Annuler</button>
+        </div>
+        <div class="input-groupe">
+          <button class="inscrire" type="submit" [disabled]="registerForm.invalid || isSubmitting"
+            [class.loading]="isSubmitting">
+            <span *ngIf="!isSubmitting">S'inscrire</span>
+            <span *ngIf="isSubmitting"><i class="bi bi-arrow-repeat spin"></i> Inscription en cours...</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

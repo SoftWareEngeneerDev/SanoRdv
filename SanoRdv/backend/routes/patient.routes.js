@@ -1,18 +1,38 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
+
+import Patient from '../models/patient.model.js'; // Modèle Patient
 import {
-  register
+  register,
+  getPatientBasicInfo,
+  getPatientInfo,
+  updateProfile, // <-- À importer depuis ton contrôleur
 } from '../controllers/patient.controller.js';
-
-import Patient from '../models/patient.model.js'; // ✅ à ajouter tout en haut
-
-
 
 const router = express.Router();
 
-/* ==========================================================================
-   📌 INSCRIPTION
-   ========================================================================== */
+// Middleware validation pour updateProfile (exemple)
+const profileUpdateValidation = [
+  body('email').optional().isEmail().withMessage('Email invalide'),
+  body('motDePasse').optional().isLength({ min: 8 }).withMessage('Mot de passe trop court'),
+  body('confirmationMotDePasse').optional().custom((value, { req }) => {
+    if (value !== req.body.motDePasse) {
+      throw new Error('Les mots de passe ne correspondent pas');
+    }
+    return true;
+  }),
+  body('sex')
+    .optional()
+    .isIn(['masculin', 'féminin', 'autre'])
+    .withMessage('Sexe invalide'),
+  body('dateNaissance')
+    .optional()
+    .isISO8601()
+    .toDate()
+    .withMessage('Date de naissance invalide'),
+];
+
+// Route d'inscription
 router.post(
   '/register',
   [
@@ -47,6 +67,7 @@ router.post(
   register
 );
 
+// Route récupération liste patients (sans mot de passe)
 router.get('/patients', async (req, res) => {
   try {
     const patients = await Patient.find().select('-motDePasse -__v');
@@ -56,5 +77,21 @@ router.get('/patients', async (req, res) => {
     res.status(500).json({ message: 'Erreur lors de la récupération des patients' });
   }
 });
+
+// Routes récupération infos patient
+router.get('/patient/:patientId/info', getPatientBasicInfo);
+router.get('/patient/:patientId/basic', getPatientInfo);
+
+// Route modification profil patient
+router.put(
+  '/patients/:id',
+  profileUpdateValidation,
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
+    next();
+  },
+  updateProfile
+);
 
 export default router;

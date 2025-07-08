@@ -1,0 +1,97 @@
+<div class="container rendezvous-container mt-4">
+
+  <!-- CONTENEUR AVEC BORDURE BLEUE -->
+  <div class="onglets-container">
+
+    <!-- ENCADRÉ BLEU POUR ONGLET COLLÉS -->
+    <div class="tabs-wrapper">
+      <div class="nav custom-tab d-flex" role="tablist">
+        <a
+          class="nav-item nav-link"
+          href="#"
+          [class.active]="ongletActif === 'avenir'"
+          (click)="selectOnglet($event, 'avenir')"
+        >
+          Rendez-vous à venir
+        </a>
+        <a
+          class="nav-item nav-link" id="pass"
+          href="#"
+          [class.active]="ongletActif === 'passes'"
+          (click)="selectOnglet($event, 'passes')"
+        >
+          Rendez-vous passés
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENU DES ONGLETS -->
+    <div class="tab-content p-3">
+
+      <!-- RDV à venir -->
+      <div *ngIf="ongletActif === 'avenir'">
+        <div *ngIf="loading" class="text-center">Chargement des rendez-vous...</div>
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+        <table *ngIf="!loading && rendezvousAVenir.length > 0" class="table table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>Date & Heure</th>
+              <th>Médecin</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rdv of rendezvousAVenir">
+              <td>{{ formatDate(rdv.date) }}</td>
+              <td>
+                {{ rdv.medecin.nom }}<br>
+                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
+              </td>
+              <td>
+                <button class="btn btn-warning btn-sm me-2" (click)="modifierRdv(rdv.id)">Modifier</button>
+                <button class="btn btn-danger btn-sm" (click)="annulerRdv(rdv.id)">Annuler</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!loading && rendezvousAVenir.length === 0" class="text-muted">
+          Aucun rendez-vous à venir.
+        </div>
+      </div>
+
+      <!-- RDV passés -->
+      <div *ngIf="ongletActif === 'passes'">
+        <div *ngIf="loading" class="text-center">Chargement des rendez-vous...</div>
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+        <table *ngIf="!loading && rendezvousPasses.length > 0" class="table table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>Date & Heure</th>
+              <th>Médecin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rdv of rendezvousPasses">
+              <td>{{ formatDate(rdv.date) }}</td>
+              <td>
+                {{ rdv.medecin.nom }}<br>
+                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!loading && rendezvousPasses.length === 0" class="text-muted">
+          Aucun rendez-vous passé.
+        </div>
+      </div>
+
+    </div>
+
+  </div> <!-- fin onglets-container -->
+
+</div> <!-- fin rendezvous-container -->
+

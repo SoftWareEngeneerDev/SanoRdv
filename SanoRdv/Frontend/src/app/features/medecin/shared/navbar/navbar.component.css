@@ -1,0 +1,45 @@
+.medecin-header {
+  background-color: #00a3e0;
+  color: white;
+  height: 60px;
+  width: 212%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+
+}
+
+.header-collapsed {
+   /* Sidebar réduit */
+  width: 285%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 0 9.3rem;
+}
+
+.header-expanded {
+  margin-left: 250px;
+}
+
+.medecin-icons i {
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.medecin-icons i:hover {
+  color: #d4f0ff;
+}
+
+/* Responsive: petit écran */
+@media (max-width: 768px) {
+  .header-expanded,
+  .header-collapsed {
+    margin-left: 0;
+  }
+
+  .medecin-header h1 {
+    font-size: 1rem;
+  }
+}
