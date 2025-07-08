@@ -43,7 +43,7 @@ export class ResetCodeComponent implements OnInit {
           this.successMessage = res.message || 'Code vérifié avec succès !';
           this.isSubmitting = false;
 
-          const resetToken = (res as any).resetToken || '';
+          const resetToken = (res as any).token || '';
 
           // Stocker le token dans le localStorage
           localStorage.setItem('resetToken', resetToken);
