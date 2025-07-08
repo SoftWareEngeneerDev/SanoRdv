@@ -74,17 +74,23 @@ const adminSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
   },
+
+  // Photo / avatar (ajouté ici)
+  photo: {
+    type: String,
+    default: '', // ou null si tu préfères
+  },
+
 }, {
   timestamps: true,
 });
 
-
 // Middleware : hash du mot de passe avant sauvegarde (prioritaire pour la sécurité)
 adminSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('motDePasse')) return next();
 
   try {
-    this.password = await bcrypt.hash(this.password, 12);
+    this.motDePasse = await bcrypt.hash(this.motDePasse, 12);
     next();
   } catch (error) {
     next(error);
@@ -93,7 +99,7 @@ adminSchema.pre('save', async function(next) {
 
 // Méthode : comparaison du mot de passe (authentification)
 adminSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(candidatePassword, this.motDePasse);
 };
 
 // Méthode : vérification si le compte est verrouillé (sécurité)
