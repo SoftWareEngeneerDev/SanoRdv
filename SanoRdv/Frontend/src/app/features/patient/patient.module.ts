@@ -22,8 +22,11 @@ import { RechercheMedecinComponent } from './components/search-medecin/search-me
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {RendezvousComponent } from './pages/appointment/appointment.component';
 import { RegisterComponent } from './pages/modifier/modifier.component';
+import { MotifComponent } from './pages/motif/motif.component';
 import { ProfilComponent } from './pages/profil/profil.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { RecapitulatifComponent } from './pages/recapitulatif/recapitulatif.component';
+import { ConfirmationComponent } from './pages/confirmation/confirmation.component';
 
 
 @NgModule({
@@ -31,6 +34,7 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
     SidebarPatientComponent,
     HeaderPatientComponent,
     NotificationStatsComponent,
+    MotifComponent,
      PatientLayoutComponent,
       RechercheMedecinComponent,
       DashboardComponent,
@@ -39,7 +43,9 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
       RendezvousComponent,
       RegisterComponent,
       ProfilComponent,
-      NotificationsComponent
+      NotificationsComponent,
+      RecapitulatifComponent,
+      ConfirmationComponent
   ],
   imports: [
     CommonModule,
@@ -49,7 +55,7 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
     MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
-     FormsModule,
+    FormsModule,
     ReactiveFormsModule,
     SharedModule
 

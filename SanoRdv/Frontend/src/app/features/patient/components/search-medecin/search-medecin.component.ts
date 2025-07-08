@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { RechercheMedecinService } from '../../services/recherche-medecin.service';
-import { FormsModule } from '@angular/forms';  
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-recherche-medecin',
@@ -34,10 +34,12 @@ export class RechercheMedecinComponent {
 
   // Voir profil du médecin sélectionné
   voirProfil(medecin: any) {
+    console.log('👉 CLIC détecté - Médecin :', medecin);  // ← Cela DOIT apparaître en console
     this.router.navigate(['/patient/informations'], {
       state: { medecin }
     });
   }
+
 
   // Sélection de suggestion
   selectSuggestion(suggestion: any) {

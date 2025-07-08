@@ -27,7 +27,7 @@ export class ProfilMedecinComponent implements OnInit {
     if (!this.medecin) {
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
-        this.medecinService.getMedecinById(id).subscribe(data => {
+        this.medecinService.getMedecinById(id).subscribe((data: { dateNaissance: string; }) => {
           this.medecin = {
             ...data,
             age: this.calculerAge(data.dateNaissance)
