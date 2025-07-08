@@ -1,0 +1,116 @@
+<div class="medecin-search-container">
+  <!-- Boîte de recherche -->
+  <div class="search-box">
+    <input
+      type="text"
+      [(ngModel)]="query"
+      (input)="onInputChange($event)"
+      placeholder="Rechercher par spécialté ou par nom de médécin"
+      class="search-input"
+    />
+    <button (click)="onSearch()" title="Rechercher" class="search-button">
+      <i class="bi bi-search"></i>
+    </button>
+  </div>
+
+  <!-- Suggestions d'autocomplétion -->
+  <div class="suggestions-container" *ngIf="suggestions.length > 0">
+    <div class="suggestions-scroll"></div>
+  </div>
+
+  <!-- Résultats dans une boîte scrollable -->
+  <div
+    class="resultats-container"
+    *ngIf="results.length > 0 && !suggestions.length"
+  >
+    <div class="resultats-scroll-box">
+      <div *ngFor="let result of results" class="result-item">
+        <h4>{{ result.text }}</h4>
+        <p class="result-type">{{ result.type }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lettres suggérées -->
+  <div class="next-letters-container" *ngIf="nextLetters.length > 0">
+    <div class="letters-scroll">
+      <span *ngFor="let letter of nextLetters" class="letter-item">{{
+        letter
+      }}</span>
+    </div>
+  </div>
+
+  <!-- Détails des médecins -->
+  <div class="medecin-details-container" *ngIf="medecinDetails.length > 0">
+    <div class="medecins-scroll-box">
+      <div *ngFor="let medecin of medecinDetails" class="medecin-item">
+        <div class="medecin-card">
+          <div class="medecin-info">
+            <div class="photo-section">
+              <h4 class="text-center mb-3"></h4>
+
+              <!-- Container centré -->
+              <div class="photo-container">
+                <div class="photo-wrapper">
+                  <!-- Photo du médecin -->
+                  <img
+                    [src]="
+                      photoPreview ||
+                      medecin.photo ||
+                      'assets/images/default-avatar.png'
+                    "
+                    alt=""
+                    class="profile-photo"
+                  />
+
+                  <!--Petit bouton en bas à droite -->
+                  <label class="photo-overlay" for="photoInput">
+                    <!-- <i class="bi bi-camera-fill"></i> -->
+                  </label>
+                </div>
+              </div>
+            </div>
+            <p class="nom">
+              <span class="champ-valeur"
+                >Dr.{{ medecin.nom }} {{ medecin.prenom }}</span
+              >
+            </p>
+
+            <p class="specialite">
+              <span class="champ-valeur">{{ medecin.specialite }}</span>
+            </p>
+
+            <p class="clinique">
+              <span class="emoji">📍</span>
+               <span class="champ-valeur">{{ medecin.clinique }}</span>
+            </p>
+          </div>
+
+       <div class="btn-container">
+  <button class="btn-voir-plus" (click)="voirProfil(medecin)">Voir plus</button>
+</div>
+
+
+
+          <p *ngIf="!medecin.id" class="no-id-message">
+            <i class="bi bi-exclamation-circle"></i>
+            Rendez-vous non disponible
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message si aucun résultat -->
+  <div
+    *ngIf="query.length > 0 && results.length === 0 && suggestions.length === 0"
+    class="no-results"
+  >
+    <div class="no-results-content">
+      <i class="bi bi-search"></i>
+      <p>Aucun médecin trouvé pour "{{ query }}"</p>
+      <small>Essayez avec d'autres mots-clés</small>
+    </div>
+  </div>
+</div>
+

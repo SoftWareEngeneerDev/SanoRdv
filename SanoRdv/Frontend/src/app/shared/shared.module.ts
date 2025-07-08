@@ -1,24 +1,25 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { SharedLayoutComponent } from './components/shared-layout/shared-layout.component';
-import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
     HeaderComponent,
     FooterComponent,
-    SharedLayoutComponent  // ✅ obligatoire si utilisé
+    SharedLayoutComponent  // obligatoire si utilisé dans le projet
   ],
   imports: [
     CommonModule,
-    RouterModule           // ✅ nécessaire pour <router-outlet>
+    RouterModule           // nécessaire pour utiliser <router-outlet> dans SharedLayoutComponent
   ],
   exports: [
     HeaderComponent,
     FooterComponent,
-    SharedLayoutComponent  // ✅ pour l’utiliser ailleurs
+    SharedLayoutComponent  // pour pouvoir les utiliser dans d'autres modules
   ]
 })
 export class SharedModule { }

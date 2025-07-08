@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HomeComponent } from './features/home/home.component';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PatientModule } from './features/patient/patient.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HttpClientModule,        // Nécessaire pour HttpClient
     FormsModule,
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
-    SharedModule, BrowserAnimationsModule
+    SharedModule,
+    BrowserAnimationsModule,
+    PatientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
