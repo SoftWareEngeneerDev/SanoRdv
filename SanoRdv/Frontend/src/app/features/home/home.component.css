@@ -1,0 +1,236 @@
+.container{
+  max-width: 100%;
+  max-height: 100%;
+  padding: 0px;
+  all: unset;
+
+}
+
+.content {
+  padding: 0px;
+}
+
+
+.marquee-text {
+  font-weight: bold;
+  color: black;
+  font-size: 1.2rem;
+
+}
+@keyframes scrollText {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+.hero {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background:  #00a3e0;
+  color: white;
+  margin-top: 1.9rem;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 1rem;
+
+}
+.hero-left{
+   margin-left: 6rem;
+}
+.hero-left h1 {
+  font-size: 1.4rem;
+  color: black;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  max-width: 700px;
+}
+.search-container {
+    position: relative;
+    max-width: 500px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    outline: none;
+    padding-right: 60px;
+}
+
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #0077b6;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.search-btn:hover {
+    background: #005577;
+}
+
+.hero-right img {
+  max-width: 280px;
+  height: auto;
+}
+
+.section-pourquoi {
+  background: url('/assets/fond-hopital.jpg') no-repeat center center;
+  background-size: cover;
+  backdrop-filter: brightness(0.9);
+  margin-top: 2rem; /* espace depuis le haut */
+  padding: 3rem 1.5rem;
+}
+.card {
+  border-radius: 1rem; /* arrondi visible */
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.section-medecins{
+  background-color: #E6E9ED; /* couleur de fond claire */
+  padding: 2rem 1.5rem; /* espace intérieur */
+  margin-top: 2rem; /* espace depuis le haut */
+  min-width: 100%;
+}
+.carousel-cards {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.carousel-cards::-webkit-scrollbar {
+  display: none;
+}
+.card-medecin {
+  min-width: 300px;
+  max-width: 400px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+.card-medecin:hover {
+  transform: translateY(-6px);
+}
+.medecin-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 3px solid #00a3e0;
+  padding: 2px;
+}
+
+
+
+
+
+
+/* ========== MEDIA QUERIES RESPONSIVE ========== */
+
+/* TABLETTES (max-width: 1023px) */
+@media (max-width: 1023px) {
+  .hero {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+
+  .hero-left {
+    margin: 1rem 0 0 0;
+    text-align: center;
+  }
+
+  .hero-left h1 {
+    font-size: 1.2rem;
+    max-width: 90%;
+    margin: 0 auto 1rem auto;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    width: 100%;
+    max-width: 90%;
+    gap: 1rem;
+  }
+
+  .search-bar input,
+  .search-bar button {
+    width: 100%;
+    border-radius: 30px;
+    padding: 0.8rem;
+  }
+
+  .hero-right img {
+    max-width: 200px;
+  }
+
+  .card-medecin {
+    min-width: 260px;
+  }
+
+  .section-medecins h2,
+  .section-pourquoi h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* SMARTPHONES (max-width: 767px) */
+@media (max-width: 767px) {
+  .marquee-container {
+    width: 100%;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  .marquee-text {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .hero-right img {
+    max-width: 160px;
+  }
+
+  .section-pourquoi .card h5 {
+    font-size: 1rem;
+  }
+
+  .section-pourquoi .card p {
+    font-size: 0.85rem;
+  }
+
+  .carousel-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .carousel-cards-wrapper {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  .card-medecin {
+    min-width: 240px;
+  }
+
+  .medecin-img {
+    width: 80px;
+    height: 80px;
+  }
+}

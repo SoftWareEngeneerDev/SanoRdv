@@ -1,0 +1,36 @@
+<div class="container-fluid">
+  <div class="row min-vh-100">
+    <!-- Sidebar -->
+    <aside  >
+      <!-- Ton contenu sidebar ici -->
+    </aside>
+
+    <!-- Contenu principal -->
+    <main class="col px-4 py-3">
+      <h2 class="tableau fw-bold mb-4">TABLEAU DE BORD</h2>
+
+      <!-- Barre de recherche médecin -->
+
+      <!-- Widgets statistiques -->
+      <div class="shadowed-box font-responsive p-4 rounded mt-4">
+        <div class="row g-3 widgets-grid">
+          <div class="col-md-4">
+            <app-rdv-stats></app-rdv-stats>
+          </div>
+          <div class="col-md-4">
+            <app-dossier></app-dossier>
+          </div>
+          <div class="col-md-4">
+            <app-notification-stats></app-notification-stats>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résultats de recherche en bas -->
+      <div class="mt-4">
+        <app-recherche-medecin></app-recherche-medecin>
+      </div>
+    </main>
+  </div>
+</div>
+

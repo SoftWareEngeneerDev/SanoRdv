@@ -1,0 +1,35 @@
+<div class="my-appointments-container">
+  <h2>Mes rendez-vous</h2>
+
+  <table class="appointments-table">
+    <thead>
+      <tr>
+        <th>Patient</th>
+        <th>Genre</th>
+        <th>Date & Heure</th>
+        <th>Maladie</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="rendezVous.length === 0">
+        <td colspan="5" class="no-data-row">Aucun rendez-vous disponible</td>
+      </tr>
+      <tr *ngFor="let rdv of rendezVous">
+        <td>{{ rdv.nomPatient }}</td>
+        <td>{{ rdv.genre }}</td>
+        <td>{{ rdv.date | date: 'medium' }}</td>
+        <td>{{ rdv.maladie }}</td>
+        <td>
+          <span class="badge" [ngClass]="{
+            'confirmed': rdv.statut === 'confirmé',
+            'pending': rdv.statut === 'en attente',
+            'cancelled': rdv.statut === 'annulé'
+          }">
+            {{ rdv.statut }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
