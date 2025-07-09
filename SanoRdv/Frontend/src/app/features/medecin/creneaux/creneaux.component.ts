@@ -40,12 +40,12 @@ export class CreneauxComponent implements OnInit {
     });
   }
 
-  supprimerCreneau(id: string): void {
-    this.medecinService.supprimerCreneau(id).subscribe({
-      next: () => this.chargerCreneaux(),
-      error: (err) => console.error('Erreur suppression', err)
-    });
-  }
+  // supprimerCreneau(id: string): void {
+  //   this.medecinService.supprimerCreneau(id).subscribe({
+  //     next: () => this.chargerCreneaux(),
+  //     error: (err) => console.error('Erreur suppression', err)
+  //   });
+  // }
 
   chargerCreneaux(): void {
     // Simulation temporaire en attendant GET /creneaux/medecin/:id

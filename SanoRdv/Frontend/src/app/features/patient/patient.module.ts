@@ -4,6 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {SharedModule } from '../../shared/shared.module';
 import { RouterModule } from '@angular/router';
 
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,8 +25,12 @@ import { RechercheMedecinComponent } from './components/search-medecin/search-me
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {RendezvousComponent } from './pages/appointment/appointment.component';
 import { RegisterComponent } from './pages/modifier/modifier.component';
+import { MotifComponent } from './pages/motif/motif.component';
 import { ProfilComponent } from './pages/profil/profil.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { RecapitulatifComponent } from './pages/recapitulatif/recapitulatif.component';
+import { ConfirmationComponent } from './pages/confirmation/confirmation.component';
+import { CreneauComponent } from './pages/creneau/creneau.component';
 
 
 @NgModule({
@@ -31,6 +38,7 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
     SidebarPatientComponent,
     HeaderPatientComponent,
     NotificationStatsComponent,
+    MotifComponent,
      PatientLayoutComponent,
       RechercheMedecinComponent,
       DashboardComponent,
@@ -39,17 +47,21 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
       RendezvousComponent,
       RegisterComponent,
       ProfilComponent,
-      NotificationsComponent
+      NotificationsComponent,
+      RecapitulatifComponent,
+      ConfirmationComponent,
+      CreneauComponent
   ],
   imports: [
-    CommonModule,
+      CommonModule,
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
     RouterModule,
     PatientRoutingModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
-     FormsModule,
+    FormsModule,
     ReactiveFormsModule,
     SharedModule
 

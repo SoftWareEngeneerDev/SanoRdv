@@ -26,13 +26,13 @@ export class MotifComponent {
       this.motifConsultation = '';
       this.precedentClickedOnce = true;
     } else {
-      this.router.navigate(['/informations']);
+      this.router.navigate(['/patient/informations']);
     }
   }
 
   suivant() {
     this.recapService.setMotif(this.motifConsultation);
-    this.router.navigate(['/creneau']);
+    this.router.navigate(['/patient/creneau']);
   }
 
   // Optionnel : fonction pour naviguer avec un médecin

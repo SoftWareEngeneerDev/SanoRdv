@@ -1,0 +1,96 @@
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+h2{
+  text-align: center;
+  position: relative;
+  top: 20px;
+  color: blue;
+  font-size: 26px;
+}
+
+.header h3 {
+  text-align: center;
+  background: #468cf5;
+  width: 77.5%;
+   padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  line-height: 1.2;
+  vertical-align: top;    
+  position: relative;
+  left: 125px;
+  top: 70px;
+  font-size: 22px;
+}
+
+h3{
+position: relative;
+top: -50px;
+}
+
+.body {
+  display: flex;
+  flex-direction: row;
+  margin-top: 2rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+  width: 45%;
+  height: 300px;
+  position: relative;
+  left: 460px;
+}
+
+.calendar-container {
+  flex: 1;
+  min-width: 300px;
+}
+
+.slots-container {
+  flex: 1;
+  min-width: 300px;
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.slot-btn {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.slot-btn:hover {
+  background-color: #009e7f;
+  color: white;
+}
+
+/* Réduire la taille de chaque case jour */
+.cal-month-view .cal-cell {
+  height: 20px !important;
+  width: 20px !important;
+  padding: 4px !important;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+/* Réduire la hauteur des en-têtes (Lun, Mar, ...) */
+.cal-month-view .cal-day-headers .cal-cell {
+  height: 30px !important;
+  font-size: 0.8rem;
+}
+
+/* Réduire les numéros de jour */
+.cal-day-number {
+  font-size: 0.75rem;
+}
