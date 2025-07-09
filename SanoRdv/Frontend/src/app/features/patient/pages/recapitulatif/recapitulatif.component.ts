@@ -12,23 +12,32 @@ export class RecapitulatifComponent implements OnInit {
   medecin: any;
   creneau: any;
 
-  constructor(private recapService: RecapService,
+  constructor(
+    private recapService: RecapService,
     private router: Router
   ) {}
 
   retour() {
-  this.router.navigate(['/creneau']);
-}
+    this.router.navigate(['/patient/creneau']);
+  }
 
-confirmer() {
-  this.recapService.setRdv(this.medecin, this.creneau.date, this.creneau.heure);
-  this.router.navigate(['/confirmation']);
-}
-
+  confirmer() {
+    if (!this.creneau) {
+      alert('Veuillez sélectionner un créneau avant de confirmer.');
+      return;
+    }
+    this.recapService.setRdv(this.medecin, this.creneau.date, this.creneau.heure);
+    this.router.navigate(['/patient/confirmation']);
+  }
 
   ngOnInit(): void {
-    this.motif = this.recapService.motif;
-    this.medecin = this.recapService.medecin;
-    this.creneau = this.recapService.creneau;
+    this.motif = this.recapService.getMotif();
+    this.medecin = this.recapService.getMedecin();
+    this.creneau = this.recapService.getCreneau();
+
+    // if (!this.medecin || !this.creneau) {
+    //   // Redirection si données manquantes
+    //   this.router.navigate(['/patient/motif']);
+    // }
   }
 }

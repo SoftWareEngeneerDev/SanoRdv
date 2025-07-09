@@ -50,7 +50,7 @@ import { CreneauComponent } from './pages/creneau/creneau.component';
       NotificationsComponent,
       RecapitulatifComponent,
       ConfirmationComponent,
-      CreneauComponent
+      CreneauComponent,
   ],
   imports: [
       CommonModule,
