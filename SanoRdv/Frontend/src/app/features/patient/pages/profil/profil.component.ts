@@ -68,7 +68,7 @@ export class ProfilComponent implements OnInit {
         this.patchFormWithPatient(patient);
         return;
       } catch (err) {
-        console.error("Erreur parsing localStorage:", err);
+        console.error('Erreur parsing localStorage:', err);
       }
     }
 
@@ -78,14 +78,18 @@ export class ProfilComponent implements OnInit {
       },
       error: () => {
         this.errorMessages = 'Erreur lors du chargement du profil.';
-      }
+      },
     });
   }
 
   private patchFormWithPatient(patient: Patient): void {
-    const rawDate = patient.dateNaissance ? new Date(patient.dateNaissance) : null;
+    const rawDate = patient.dateNaissance
+      ? new Date(patient.dateNaissance)
+      : null;
     const formattedDate = rawDate
-      ? `${String(rawDate.getDate()).padStart(2, '0')}-${String(rawDate.getMonth() + 1).padStart(2, '0')}-${rawDate.getFullYear()}`
+      ? `${String(rawDate.getDate()).padStart(2, '0')}-${String(
+          rawDate.getMonth() + 1
+        ).padStart(2, '0')}-${rawDate.getFullYear()}`
       : '';
 
     this.registerForm.patchValue({
@@ -93,13 +97,13 @@ export class ProfilComponent implements OnInit {
       prenom: patient.prenom || '',
       email: patient.email || '',
       telephone: patient.telephone || '',
-      sexe:  patient.sex || '', // selon la version du champ
+      sexe: patient.sex || '',
       localite: patient.localite || '',
       adresse: patient.adresse || '',
       motDePasse: '',
       dateNaissance: formattedDate,
       groupeSanguin: patient.groupeSanguin || '',
-      allergies: patient.allergies || ''
+      allergies: patient.allergies || '',
     });
 
     this.previewUrl = patient.photo || 'assets/images/default-avatar.png';
@@ -119,7 +123,9 @@ export class ProfilComponent implements OnInit {
       if (field.errors['minlength'])
         return `Le champ ${this.getFieldDisplayName(
           fieldName
-        )} doit contenir au moins ${field.errors['minlength'].requiredLength} caractères`;
+        )} doit contenir au moins ${
+          field.errors['minlength'].requiredLength
+        } caractères`;
       if (field.errors['email']) return "Format d'email invalide";
       if (field.errors['pattern'] && fieldName === 'telephone')
         return 'Numéro invalide (8 chiffres requis)';

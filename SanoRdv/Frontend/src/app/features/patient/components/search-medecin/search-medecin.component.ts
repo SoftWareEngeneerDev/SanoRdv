@@ -34,7 +34,7 @@ export class RechercheMedecinComponent {
 
   // Voir profil du médecin sélectionné
   voirProfil(medecin: any) {
-    console.log('👉 CLIC détecté - Médecin :', medecin);  // ← Cela DOIT apparaître en console
+    console.log('👉 CLIC détecté - Médecin :', medecin);  
     this.router.navigate(['/patient/informations'], {
       state: { medecin }
     });

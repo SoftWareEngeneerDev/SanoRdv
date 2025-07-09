@@ -10,7 +10,7 @@ import { RegisterComponent } from './pages/modifier/modifier.component';
 import { ProfilComponent } from './pages/profil/profil.component';
 import { PatientLayoutComponent } from './patient-layout/patient-layout.component';
 import { MotifComponent} from './pages/motif/motif.component';
-// import { CreneauComponent } from './pages/creneau/creneau.component';
+import { CreneauComponent } from './pages/creneau/creneau.component';
 import { ProfilMedecinComponent} from './pages/informations/informations.component';
 import {RecapitulatifComponent} from './pages/recapitulatif/recapitulatif.component';
 import {ConfirmationComponent} from './pages/confirmation/confirmation.component';
@@ -18,7 +18,7 @@ import {ConfirmationComponent} from './pages/confirmation/confirmation.component
 const routes: Routes = [
    { path: 'informations', component: ProfilMedecinComponent },
    { path: 'motif', component: MotifComponent },
-  //  { path: 'creneau', component: CreneauComponent },
+   { path: 'creneau', component: CreneauComponent },
    { path: 'recapitulatif', component: RecapitulatifComponent },
    { path: 'confirmation', component: ConfirmationComponent },
  { path: '', component: PatientLayoutComponent,

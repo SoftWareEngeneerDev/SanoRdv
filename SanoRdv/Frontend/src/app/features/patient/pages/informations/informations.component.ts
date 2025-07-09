@@ -39,11 +39,11 @@ export class ProfilMedecinComponent implements OnInit {
 
   prendreRDV() {
     this.recapService.setMedecin(this.medecin);
-    this.router.navigate(['/motif']);
+    this.router.navigate(['/patient/motif']);
   }
 
   retour() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/patient/dashboard']);
   }
 
   calculerAge(dateNaissance: string): number {
