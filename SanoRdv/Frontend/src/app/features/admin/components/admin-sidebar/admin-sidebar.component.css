@@ -1,0 +1,96 @@
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: #00a3e0;
+  color: white;
+  padding: 0.5rem 1rem 1rem 1rem;
+  z-index: 1000;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* Sidebar réduit */
+.admin-sidebar.collapsed {
+  width: 150px;
+}
+
+/* Titre SANORDV */
+.sidebar-title {
+  font-size: 1.4rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Avatar rectangle */
+.admin-avatar {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 3px solid white;
+}
+
+/* Icône crayon */
+.edit-icon {
+  position: absolute;
+  bottom: 5px;
+  right: -10px;
+  background-color: white;
+  color: #00aee0;
+  padding: 4px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Flèche toggle */
+.collapse-btn {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.collapse-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Liens */
+.nav-link {
+  padding: 0.5rem 0.75rem;
+  transition: background 0.3s ease;
+}
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Actif */
+.active-link {
+  background-color: white;
+  color: #00aee0 !important;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 150px;
+  }
+
+  .admin-sidebar.collapsed {
+    width: 100px;
+  }
+
+  .admin-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .edit-icon {
+    right: -5px;
+  }
+}
