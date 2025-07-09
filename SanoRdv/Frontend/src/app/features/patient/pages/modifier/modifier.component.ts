@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';  // ajouter ActivatedRoute
 import { PatientService } from '../../../../shared/services/patient.service';
 
 @Component({
@@ -12,29 +12,32 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute  // injecter ici
   ) {}
 
   ngOnInit(): void {
-    //  Données fictives pour test CSS
-    this.patient = {
-      nom: 'TRAORE',
-      prenom: 'Sharifa',
-      email: 'sharifa@example.com',
-      telephone: '+226 70 00 00 00',
-      sexe: 'Féminin',
-      dateNaissance: '1995-04-12',
-      photo: ''
-    };
-
-    // Décommente ceci quand le backend est prêt
-    this.patientService.getProfilPatient().subscribe((data: any) => {
-      this.patient = data;
-    });
-
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        this.patient = JSON.parse(storedUser);
+      } catch (error) {
+        console.error('Erreur lors du parsing du user dans localStorage:', error);
+      }
+    } else {
+      this.patient = {
+        nom: 'TRAORE',
+        prenom: 'Sharifa',
+        email: 'sharifa@example.com',
+        telephone: '+226 70 00 00 00',
+        sexe: 'Féminin',  // correction aussi ici : 'sexe' au lieu de 'sex'
+        dateNaissance: '1995-04-12',
+        photo: ''
+      };
+    }
   }
 
   modifierProfil(): void {
-    this.router.navigate(['/profil']);
+    this.router.navigate(['/patient/profil'], { relativeTo: this.route });
   }
 }

@@ -8,6 +8,11 @@ import { HomeComponent } from './features/home/home.component';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PatientModule } from './features/patient/patient.module';
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+import { LOCALE_ID } from '@angular/core';
+
+registerLocaleData(localeFr);
 
 @NgModule({
   declarations: [
@@ -24,7 +29,9 @@ import { PatientModule } from './features/patient/patient.module';
     BrowserAnimationsModule,
     PatientModule
   ],
-  providers: [],
+  providers: [
+     { provide: LOCALE_ID, useValue: 'fr' }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

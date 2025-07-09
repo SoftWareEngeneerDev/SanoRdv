@@ -9,7 +9,7 @@
   <hr>
   <div class="info-row">
     <div data-label="Date de naissance">{{ patient?.dateNaissance | date: 'dd/MM/yyyy' }}</div>
-    <div data-label="Sexe">{{ patient?.sexe }}</div>
+    <div data-label="Sexe">{{ patient?.sex }}</div> <!-- correction : sex au lieu de sexe -->
   </div>
 
   <h3 class="section-title">Coordonnées</h3>
@@ -19,6 +19,4 @@
     <div data-label="Téléphone">{{ patient?.telephone }}</div>
     <div data-label="Localité">{{ patient?.localite }}</div>
   </div>
-
-
 </div>
