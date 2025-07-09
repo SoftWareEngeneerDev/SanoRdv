@@ -51,7 +51,7 @@ p {
 }
 
 a {
-  color: #007bff;
+  color: #00a3e0;
   text-decoration: none;
 }
 
@@ -78,12 +78,12 @@ label {
 }
 
 /* --------------------- CHAMP INPUT AVEC ICÔNE --------------------- */
-.input-with-icon {
+.input-with-icon, .password-wrapper {
   position: relative;
   width: 100%;
 }
-
-.input-with-icon input {
+/* Style des champs de texte */
+.input-with-icon input, .password-wrapper input{
   width: 100%;
   padding: 12px 40px 12px 12px;
   font-size: 16px;
@@ -92,8 +92,8 @@ label {
   background-color: #f9fbfc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.09);
 }
-
-.input-with-icon .fas {
+/* Icône positionnée à droite */
+.input-with-icon i,.bi {
   position: absolute;
   top: 50%;
   right: 10px;
@@ -103,7 +103,7 @@ label {
   cursor: pointer;
 }
 
-.input-with-icon .fas:hover {
+.input-with-icon .bi:hover {
   color: #666;
 }
 
@@ -142,7 +142,7 @@ label {
 button {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: #00a3e0;
   color: black;
   border: none;
   border-radius: 8px;
@@ -153,7 +153,7 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #00a3e0;
   color: white;
 }
 

@@ -1,0 +1,16 @@
+.card {
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.table thead th {
+  font-weight: bold;
+}
+
+.text-danger {
+  font-weight: bold;
+}
+
+.text-primary {
+  font-weight: bold;
+}
