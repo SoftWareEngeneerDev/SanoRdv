@@ -6,6 +6,17 @@ import Medecin from '../models/medecin.model.js';
 import dotenv from 'dotenv';
 import Patient from '../models/patient.model.js';
 import mongoose from 'mongoose';
+import * as jdenticon from 'jdenticon';
+import { Buffer } from 'buffer';
+
+const generateAvatarBase64 = (nom, prenom) => {
+  const initials = `${prenom?.[0] ?? ''}${nom?.[0] ?? ''}`.toUpperCase();
+  const size = 256;
+  const svg = jdenticon.toSvg(initials, size);
+  const base64 = Buffer.from(svg).toString('base64');
+  return `data:image/svg+xml;base64,${base64}`;
+};
+
 
 dotenv.config();
 
@@ -111,7 +122,12 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
     // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(motDePasse, 10);
 
-    // Création admin avec valeurs par défaut
+    // Générer l'avatar par défaut si aucune photo fournie
+    const avatar = additionalInfo.photo
+      ? additionalInfo.photo
+      : generateAvatarBase64(additionalInfo.nom, additionalInfo.prenom);
+
+    // Création admin avec valeurs par défaut et avatar
     const admin = new Admin({
       email,
       motDePasse: hashedPassword,
@@ -120,7 +136,8 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
       isActive: true,
       ...additionalInfo,
       nom: additionalInfo.nom || 'Administrateur',
-      prenom: additionalInfo.prenom || 'Système'
+      prenom: additionalInfo.prenom || 'Système',
+      photo: avatar
     });
 
     const savedAdmin = await admin.save();
@@ -153,7 +170,6 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
     };
   }
 };
-
 export const listAdmins = async () => {
   try {
     const admins = await Admin.find({ role: 'admin' })
@@ -176,6 +192,7 @@ export const listAdmins = async () => {
 // =============================================================================
 // CONTRÔLEURS MÉDECIN
 // =============================================================================
+
 export const ajouterMedecin = async (req, res) => {
   try {
     let {
@@ -193,7 +210,7 @@ export const ajouterMedecin = async (req, res) => {
       nationalite
     } = req.body;
 
-    // Nettoyage des données
+    // Nettoyage
     nom = sanitizeInput(nom);
     prenom = sanitizeInput(prenom);
     email = sanitizeInput(email)?.toLowerCase();
@@ -207,22 +224,12 @@ export const ajouterMedecin = async (req, res) => {
     adresse = sanitizeInput(adresse);
     nationalite = sanitizeInput(nationalite);
 
-    // Validation des champs obligatoires
-    const champsObligatoires = {
-      nom,
-      prenom,
-      email,
-      telephone,
-      specialite,
-      anneeExperience,
-      motDePasse
-    };
-
+    // Validation champs obligatoires
+    const champsObligatoires = { nom, prenom, email, telephone, specialite, anneeExperience, motDePasse };
     const champManquant = Object.entries(champsObligatoires).find(([key, value]) => {
       if (key === 'anneeExperience') return isNaN(value) || value === null;
       return !value || value === '';
     });
-
     if (champManquant) {
       return res.status(400).json({
         message: `Le champ "${champManquant[0]}" est obligatoire.`,
@@ -234,7 +241,6 @@ export const ajouterMedecin = async (req, res) => {
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: 'Format email invalide.' });
     }
-
     const domain = email.split('@')[1];
     if (!CONFIG.ALLOWED_DOMAINS.includes(domain)) {
       return res.status(400).json({
@@ -266,10 +272,15 @@ export const ajouterMedecin = async (req, res) => {
       });
     }
 
-    // Hashage du mot de passe
+    // Hashage mot de passe
     const hash = await bcrypt.hash(motDePasse, CONFIG.BCRYPT_ROUNDS);
 
-    // Préparation des données
+    // Génération avatar si photo absente ou vide
+    if (!photo || photo.trim() === '') {
+      photo = generateAvatarBase64(nom, prenom);
+    }
+
+    // Préparation données médecin
     const donneesBase = {
       nom,
       prenom,
@@ -280,19 +291,19 @@ export const ajouterMedecin = async (req, res) => {
       motDePasse: hash,
       IDmedecin,
       role: 'medecin',
-      dateCreation: new Date()
+      dateCreation: new Date(),
+      photo,
     };
 
     const donneesCompletes = {
       ...donneesBase,
       ...(localite && { localite }),
       ...(dateNaissance && { dateNaissance: new Date(dateNaissance) }),
-      ...(photo && { photo }),
       ...(adresse && { adresse }),
       ...(nationalite && { nationalite })
     };
 
-    // Création du médecin
+    // Création médecin
     const nouveauMedecin = new Medecin(donneesCompletes);
     await nouveauMedecin.save();
 
@@ -303,24 +314,16 @@ export const ajouterMedecin = async (req, res) => {
       console.error('Erreur envoi email:', emailError);
       return res.status(201).json({
         message: '⚠️ Médecin ajouté, mais erreur lors de l\'envoi de l\'email.',
-        medecin: formatMedecinResponse(nouveauMedecin),
-        identifiants: {
-          email,
-          IDmedecin,
-          motDePasse
-        },
+        medecin: nouveauMedecin,
+        identifiants: { email, IDmedecin, motDePasse },
         erreurEmail: emailError.message
       });
     }
 
-
     return res.status(201).json({
       message: '✅ Médecin ajouté avec succès et email envoyé',
-      medecin: formatMedecinResponse(nouveauMedecin),
-      identifiants: {
-        email,
-        IDmedecin
-      }
+      medecin: nouveauMedecin,
+      identifiants: { email, IDmedecin }
     });
 
   } catch (error) {
@@ -331,7 +334,6 @@ export const ajouterMedecin = async (req, res) => {
     });
   }
 };
-
 
 
 export const modifierMedecin = async (req, res) => {

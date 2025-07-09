@@ -1,7 +1,12 @@
-
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import { PatientService, Patient } from '../../../../shared/services/patient.service';
 import { Router } from '@angular/router';
+
+interface PatientLocal {
+  nom: string;
+  prenom: string;
+  photo?: string;
+  // ajoute d'autres champs si besoin
+}
 
 @Component({
   selector: 'app-sidebar-patient',
@@ -9,35 +14,32 @@ import { Router } from '@angular/router';
   styleUrls: ['./sidebar-patient.component.css']
 })
 export class SidebarPatientComponent implements OnInit {
-  patient: Patient = {
+  patient: PatientLocal = {
     nom: '',
     prenom: '',
-    email: '',
-    telephone: '',
-    sexe: '',
-    motDePasse: '',
+    photo: ''
   };
 
-
-   isCollapsed: boolean = false;
+  isCollapsed: boolean = false;
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
   @Output() collapseChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-
-  constructor(private patientService: PatientService, private router: Router) {}
-
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.patientService.getMonProfil().subscribe((data: Patient) => {
-      this.patient = data;
-    });
-  }
-
-  patients={
-    nom:'TRAORE',
-    prenom:'Sharifa',
-    avatar:'assets/sharifa.jpg'
+    // Récupérer les données patient stockées en JSON dans localStorage sous la clé 'user'
+    const userDataString = localStorage.getItem('user');
+    if (userDataString) {
+      try {
+        const userData = JSON.parse(userDataString);
+        this.patient.nom = userData.nom || '';
+        this.patient.prenom = userData.prenom || '';
+        this.patient.photo = userData.photo || '';  // peut être vide
+      } catch (e) {
+        console.error('Erreur lecture patient localStorage', e);
+      }
+    }
   }
 
   toggleSidebar() {
@@ -45,16 +47,15 @@ export class SidebarPatientComponent implements OnInit {
     this.collapseChange.emit(this.isCollapsed);
   }
 
-goToProfileEdit(): void {
-  this.router.navigate(['/modifier']);
-}
+  goToProfileEdit(): void {
+    this.router.navigate(['/patient/modifier']);
+  }
 
   menuItems = [
     { title: 'Tableau de bord', link: '/patient/dashboard', icon: 'bi-grid-fill' },
-    { title: 'Mes rendez-vous',link: '/patient/appointment',icon: 'bi-calendar-event',},
+    { title: 'Mes rendez-vous', link: '/patient/appointment', icon: 'bi-calendar-event' },
     { title: 'Notifications', link: '/patient/notifications', icon: 'bi-bell' },
-    { title: 'Dossiers medicaux',link: '/patient/dossiers-medicaux', icon: ' bi-file-earmark-medical',},
+    { title: 'Dossiers medicaux', link: '/patient/dossiers-medicaux', icon: 'bi-file-earmark-medical' },
     { title: 'Profil', link: '/patient/modifier', icon: 'bi-gear' },
   ];
 }
-

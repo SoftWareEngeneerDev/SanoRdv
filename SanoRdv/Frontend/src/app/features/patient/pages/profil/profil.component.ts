@@ -52,7 +52,7 @@ export class ProfilComponent implements OnInit {
         confirmationMotDePasse: [''],
         localite: ['', Validators.required],
         adresse: ['', Validators.required],
-        dateDeNaissance: ['', Validators.required],
+        dateNaissance: ['', Validators.required],
         groupeSanguin: [''],
         allergies: [''],
       },
@@ -61,45 +61,52 @@ export class ProfilComponent implements OnInit {
   }
 
   private loadUserData(): void {
+    const localUser = localStorage.getItem('user');
+    if (localUser) {
+      try {
+        const patient: Patient = JSON.parse(localUser);
+        this.patchFormWithPatient(patient);
+        return;
+      } catch (err) {
+        console.error('Erreur parsing localStorage:', err);
+      }
+    }
+
     this.patientService.getMonProfil().subscribe({
       next: (patient: Patient) => {
-        const rawDate = patient.dateNaissance
-          ? new Date(patient.dateNaissance)
-          : null;
-        const formattedDate = rawDate
-          ? `${String(rawDate.getDate()).padStart(2, '0')}-${String(
-              rawDate.getMonth() + 1
-            ).padStart(2, '0')}-${rawDate.getFullYear()}`
-          : '';
-
-        this.registerForm.patchValue({
-          nom: patient.nom || '',
-          prenom: patient.prenom || '',
-          email: patient.email || '',
-          telephone: patient.telephone || '',
-          sex: patient.sex || '',
-          localite: patient.localite || '',
-          adresse: patient.adresse || '',
-          motDePasse: '', // jamais prérempli
-          dateNaissance: formattedDate,
-          groupeSanguin: patient.groupeSanguin || '',
-          allergies: patient.allergies || '',
-        });
-
-        // Photo de profil
-        if (patient.photo && typeof patient.photo === 'string') {
-          this.previewUrl = patient.photo.startsWith('http')
-            ? patient.photo
-            : `http://localhost:3000/uploads/${patient.photo}`;
-        } else {
-          this.errorMessages = 'Photo de profil introuvable ou invalide.';
-          this.previewUrl = null;
-        }
+        this.patchFormWithPatient(patient);
       },
       error: () => {
-        this.errorMessages = '';
+        this.errorMessages = 'Erreur lors du chargement du profil.';
       },
     });
+  }
+
+  private patchFormWithPatient(patient: Patient): void {
+    const rawDate = patient.dateNaissance
+      ? new Date(patient.dateNaissance)
+      : null;
+    const formattedDate = rawDate
+      ? `${String(rawDate.getDate()).padStart(2, '0')}-${String(
+          rawDate.getMonth() + 1
+        ).padStart(2, '0')}-${rawDate.getFullYear()}`
+      : '';
+
+    this.registerForm.patchValue({
+      nom: patient.nom || '',
+      prenom: patient.prenom || '',
+      email: patient.email || '',
+      telephone: patient.telephone || '',
+      sexe: patient.sex || '',
+      localite: patient.localite || '',
+      adresse: patient.adresse || '',
+      motDePasse: '',
+      dateNaissance: formattedDate,
+      groupeSanguin: patient.groupeSanguin || '',
+      allergies: patient.allergies || '',
+    });
+
+    this.previewUrl = patient.photo || 'assets/images/default-avatar.png';
   }
 
   passwordsMatch(form: AbstractControl) {
@@ -138,7 +145,7 @@ export class ProfilComponent implements OnInit {
       confirmationMotDePasse: 'Confirmation du mot de passe',
       localite: 'Localité',
       adresse: 'Adresse',
-      dateDeNaissance: 'Date de naissance',
+      dateNaissance: 'Date de naissance',
       groupeSanguin: 'Groupe sanguin',
       allergies: 'Allergies',
     };
@@ -192,10 +199,6 @@ export class ProfilComponent implements OnInit {
     }
   }
 
-  enregistre() {
-    this.router.navigate(['/modifier']);
-  }
-
   onSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
@@ -234,6 +237,16 @@ export class ProfilComponent implements OnInit {
       next: () => {
         this.successMessage = 'Profil mis à jour avec succès !';
 
+        // ✅ Mise à jour du localStorage
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = {
+          ...currentUser,
+          ...value,
+          photo: this.previewUrl,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        // ✅ Notification
         this.notificationsService
           .creerNotification({
             message:

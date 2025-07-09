@@ -1,0 +1,101 @@
+.container {
+  max-width: 700px;
+  margin: 60px auto;
+  position: relative;
+  top: 100px;
+}
+
+h2.text-center {
+  color: #007bff;
+  font-weight: 600;
+  font-size: 26px;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card h5 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+}
+
+.card hr {
+  border: none;
+  border-top: 1.5px solid #000;
+  margin: 12px 0;
+}
+
+
+ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 20px;
+  position: relative;
+  text-align: end;
+}
+
+
+ul li:last-child {
+  border-bottom: none;
+}
+
+strong {
+  color: #000;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+ span{
+  position: relative;
+  text-align: end;
+  top: -10px;
+  font-size: 17px;
+  font-weight: 500;
+ }
+
+ h5{
+  position: relative;
+  top: 30px;
+ }
+
+ .btn-primary.white-bg {
+  background-color: white;
+  color: black;
+  border-color: #000000;
+}
+
+.btn-primary.white-bg:hover {
+  background-color: #e6f0ff ;
+  color: #0a58ca ;
+}
+
+.bottom-buttons {
+  margin-top: 100px;
+}
+
+.black-check {
+  color: white;
+  font-size: 1.2em;
+  position: relative;
+  top: 2px;
+}
+
+.lieu{
+  position: relative;
+  top: 14px;
+}
