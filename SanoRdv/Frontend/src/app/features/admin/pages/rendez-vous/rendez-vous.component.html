@@ -1,0 +1,30 @@
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4">GESTIONS DES RENDEZ-VOUS</h2>
+
+  <div class="card shadow-sm p-3">
+    <table class="table table-hover align-middle text-center">
+      <thead>
+        <tr>
+          <th>Date et Heure</th>
+          <th>Patients</th>
+          <th>Médecin</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rdv of rendezVousList">
+          <td>{{ rdv.dateHeure | date:'dd/MM/yyyy - HH:mm' }}</td>
+          <td class="fw-bold text-uppercase">{{ rdv.patientNom }}</td>
+          <td class="fw-bold">Dr {{ rdv.medecinNom }}</td>
+          <td>{{ rdv.statut }}</td>
+          <td>
+            <span *ngIf="rdv.statut === 'En_attente'" class="text-danger me-2" style="cursor:pointer;" (click)="annuler(rdv.id)">Annuler</span>
+            <span *ngIf="rdv.statut === 'En_attente'" class="text-primary" style="cursor:pointer;" (click)="modifier(rdv.id)">Modifier</span>
+            <span *ngIf="rdv.statut !== 'En_attente'">-</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

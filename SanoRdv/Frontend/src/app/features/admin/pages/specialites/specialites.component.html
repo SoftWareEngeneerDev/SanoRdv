@@ -1,0 +1,18 @@
+<div class="container-specialite p-4 shadow rounded bg-white">
+  <h2 class="fw-bold">SPECIALITES</h2>
+
+  <!-- Formulaire d’ajout -->
+  <div class="d-flex flex-column flex-md-row align-items-stretch gap-2 mt-3 mb-4">
+    <input [(ngModel)]="nouvelleSpecialite" type="text" class="form-control"
+           placeholder="Nouvelle spécialité.....">
+    <button class="btn btn-primary fw-bold" (click)="ajouterSpecialite()">Ajouter</button>
+  </div>
+
+  <!-- Liste des spécialités -->
+  <h5 class="fw-bold">LISTE DES SPECIALITES</h5>
+  <div *ngFor="let specialite of specialites" class="d-flex justify-content-between align-items-center border p-2 rounded mb-2">
+    <span>{{ specialite.nom }}</span>
+    <button class="btn btn-link text-danger fw-bold" (click)="supprimerSpecialite(specialite.id)">Supprimer</button>
+  </div>
+</div>
+

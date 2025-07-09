@@ -1,0 +1,53 @@
+h2 {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.btn-ajout {
+  background-color: #00aee0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin-bottom: 15px;
+}
+
+.btn-ajout:hover {
+  background-color: #0096c7;
+}
+
+.table-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.text-success {
+  color: green;
+  font-weight: bold;
+}
+
+.text-danger {
+  color: red;
+  font-weight: bold;
+}
+
+.text-primary {
+  color: #007bff;
+}
+
+.text-action {
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.text-action:hover {
+  text-decoration: underline;
+}

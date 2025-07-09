@@ -12,7 +12,9 @@ import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID } from '@angular/core';
 
+// Enregistrement de la locale française
 registerLocaleData(localeFr);
+
 
 @NgModule({
   declarations: [
@@ -27,7 +29,7 @@ registerLocaleData(localeFr);
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
     SharedModule,
     BrowserAnimationsModule,
-    PatientModule
+    
   ],
   providers: [
      { provide: LOCALE_ID, useValue: 'fr' }
