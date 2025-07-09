@@ -14,6 +14,7 @@ import { CreneauComponent } from './pages/creneau/creneau.component';
 import { ProfilMedecinComponent} from './pages/informations/informations.component';
 import {RecapitulatifComponent} from './pages/recapitulatif/recapitulatif.component';
 import {ConfirmationComponent} from './pages/confirmation/confirmation.component';
+import { DeconnexionComponent } from './pages/deconnexion/deconnexion.component';
 
 const routes: Routes = [
    { path: 'informations', component: ProfilMedecinComponent },
@@ -21,6 +22,7 @@ const routes: Routes = [
    { path: 'creneau', component: CreneauComponent },
    { path: 'recapitulatif', component: RecapitulatifComponent },
    { path: 'confirmation', component: ConfirmationComponent },
+   { path: 'deconnexion', component: DeconnexionComponent },
  { path: '', component: PatientLayoutComponent,
    children: [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
