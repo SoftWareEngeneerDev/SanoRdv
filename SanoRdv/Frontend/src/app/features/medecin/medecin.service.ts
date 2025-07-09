@@ -8,29 +8,18 @@ import { Observable } from 'rxjs';
 export class MedecinService {
 
   private apiUrl = 'http://localhost:3000/api'; // Adapte à ton URL backend si besoin
+  baseUrl: any;
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Récupérer les rendez-vous d'un médecin
-   */
-  getRendezVousPourMedecin(medecinId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/rendezvous/medecin/${medecinId}`);
-  }
 
-  /**
-   * Ajouter un créneau
-   */
-  ajouterCreneau(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/creneau`, data);
-  }
+  getRendezVousDuJour() {
+  return this.http.get<any[]>('/api/medecin/rendez-vous'); // adapte l’URL selon ton backend
+}
 
-  /**
-   * Supprimer un créneau par ID
-   */
-  supprimerCreneau(idCreneau: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/creneau/${idCreneau}`);
-  }
+  ajouterCreneau(payload: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/creneaux`, payload);
+}
 
-  // Tu peux ajouter d'autres méthodes ici (modifier creneau, charger patient, etc.)
+
 }
