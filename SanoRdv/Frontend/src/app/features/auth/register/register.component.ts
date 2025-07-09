@@ -24,6 +24,7 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Création du formulaire avec les validations
     this.registerForm = this.fb.group(
       {
         nom: ['', [Validators.required, Validators.minLength(2)]],
@@ -47,7 +48,7 @@ export class RegisterComponent implements OnInit {
       }
     );
   }
-
+// Validation si les mots de passe correspondent
   passwordsMatch(form: FormGroup) {
     const pass = form.get('motDePasse')?.value;
     const confirm = form.get('confirmationMotDePasse')?.value;
@@ -69,18 +70,18 @@ export class RegisterComponent implements OnInit {
     }
     return '';
   }
-
+// Vérification de l'erreur de non-correspondance des mots de passe
   get passwordMismatchError(): boolean {
     return (
       this.registerForm.errors?.['passwordMismatch'] &&
       this.registerForm.get('confirmationMotDePasse')?.touched
     );
   }
-
+// Fonction pour afficher/masquer le mot de passe
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-
+// Fonction pour afficher/masquer le mot de passe de confirmation
   toggleConfirmPasswordVisibility() {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
