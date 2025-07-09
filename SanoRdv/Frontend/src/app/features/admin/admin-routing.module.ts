@@ -7,6 +7,7 @@ import { MedecinsComponent } from './pages/medecins/medecins.component';
 import { PatientsComponent } from './pages/patients/patients.component';
 import { SpecialitesComponent } from './pages/specialites/specialites.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { ProfilComponent } from './pages/profil/profil.component';
 
 const routes: Routes = [
   { path: '', 
@@ -16,6 +17,7 @@ const routes: Routes = [
            { path: 'rendez-vous', component: RendezVousComponent},
            { path: 'medecins', component: MedecinsComponent},
            { path: 'patients', component: PatientsComponent},
+           { path: 'profil', component: ProfilComponent},
            { path: 'specialites', component: SpecialitesComponent},
            { path: 'notifications', component: NotificationsComponent},
        ]

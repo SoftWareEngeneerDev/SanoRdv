@@ -12,7 +12,8 @@ import { PatientsComponent } from './pages/patients/patients.component';
 import { MedecinsComponent } from './pages/medecins/medecins.component';
 import { SpecialitesComponent } from './pages/specialites/specialites.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component'; // Assurez-vous d'avoir installé ng2-charts
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ProfilComponent } from './pages/profil/profil.component';
 
 
 @NgModule({
@@ -25,13 +26,15 @@ import { FormsModule } from '@angular/forms';
     PatientsComponent,
     MedecinsComponent,
     SpecialitesComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    ProfilComponent
   ],
   imports: [
     CommonModule,
     AdminRoutingModule,
     NgChartsModule,
     FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class AdminModule { }
