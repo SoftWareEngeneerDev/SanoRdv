@@ -1,6 +1,6 @@
-.my-appointments-container {
+/* .my-appointments-container {
   max-width: 1000px;
-  margin: 50px auto; /* Centrage horizontal + espacement vertical */
+  margin: 50px auto;
   background-color: #fff;
   padding: 20px;
   border-radius: 12px;
@@ -60,4 +60,288 @@ h2 {
   font-style: italic;
   color: #888;
 }
+ */
 
+
+
+
+
+
+
+
+
+
+
+
+.container {
+    max-width: 1000px;
+    position: absolute;
+    margin: 50px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    top: 50px;
+    left: 250px;
+}
+h1 {
+    color: #3498db;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+}
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fff;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  width: 455px;
+  height: 80px;
+  position: relative;
+  top: 0px;
+  left: -15px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+.btn-danger {
+    background-color: #e74c3c;
+}
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+.btn-success {
+    background-color: #2ecc71;
+}
+.btn-success:hover {
+    background-color: #27ae60;
+}
+.btn-secondary {
+    background-color: #95a5a6;
+}
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #e0e0e0;
+    padding: 12px 15px;
+    text-align: left;
+}
+th {
+    background-color: #3498db;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+tr:hover {
+    background-color: #ebf5fb;
+}
+.status-pending {
+    color: #f39c12;
+    font-weight: 600;
+}
+.status-confirmed {
+    color: #2ecc71;
+    font-weight: 600;
+}
+.status-cancelled {
+    color: #e74c3c;
+    font-weight: 600;
+}
+/* .modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 8px;
+    width: 60%;
+    max-width: 700px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    animation: modalopen 0.3s;
+} */
+@keyframes modalopen {
+    from {opacity: 0; transform: translateY(-50px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close:hover {
+    color: #333;
+}
+.appointment-details {
+    margin-top: 20px;
+}
+.detail-row {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.detail-label {
+    font-weight: 600;
+    width: 150px;
+    color: #7f8c8d;
+}
+.detail-value {
+    flex: 1;
+}
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    justify-content: flex-end;
+}
+.icon {
+    font-size: 1.2em;
+}
+.no-appointments {
+    text-align: center;
+    padding: 40px;
+    color: #7f8c8d;
+    font-style: italic;
+}
+.filter-section {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.filter-group {
+    flex: 1;
+}
+
+
+
+.modal {
+    display: none; /* sera activé dynamiquement via TypeScript */
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 8px;
+    width: 60%;
+    max-width: 700px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    animation: modalopen 0.3s;
+}
+
+@keyframes modalopen {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.appointment-details {
+    margin-top: 20px;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+    font-weight: 600;
+    width: 150px;
+    color: #7f8c8d;
+}
+
+.detail-value {
+    flex: 1;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    justify-content: flex-end;
+}
