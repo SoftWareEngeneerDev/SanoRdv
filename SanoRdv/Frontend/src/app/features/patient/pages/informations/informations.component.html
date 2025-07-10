@@ -1,7 +1,6 @@
 <div class="profil-global-container">
 
   <div class="profil-header">
-    <!-- 📷 PHOTO -->
     <div class="photo-wrapper">
       <img
         [src]="medecin.photo || 'assets/images/default-avatar.png'"
@@ -10,49 +9,43 @@
       />
     </div>
 
-    <!--  NOM + SPÉCIALITÉ -->
     <div class="infos-principales">
       <h2>Dr. {{ medecin.nom }} {{ medecin.prenom }}</h2>
       <p class="specialite">{{ medecin.specialite }}</p>
     </div>
   </div>
 
+  <div class="infos-wrapper">
+    <div class="card info-card">
+      <h4>Informations personnelles</h4>
+      <p>Âge : {{ medecin.age }} ans</p>
+      <p>Années d'expérience : {{ medecin.anneeExperience }} ans</p>
+      <p>Nationalité : {{ medecin.nationalite }}</p>
+    </div>
 
- <div class="infos-wrapper">
-  <!-- Carte Infos -->
-  <div class="card info-card">
-    <h4>Informations personnelles</h4>
-    <p>Âge {{ medecin.age }} ans</p>
-    <p>Expérience {{ medecin.experience }} ans</p>
+    <div class="card contact-card">
+      <h4>Contact</h4>
+      <p>Téléphone : {{ medecin.telephone }}</p>
+      <p>Email : {{ medecin.email }}</p>
+    </div>
+
+    <div class="card localisation-card">
+      <h4>Localisation</h4>
+      <p>Localité : {{ medecin.localite }}</p>
+      <p>Adresse : {{ medecin.adresse }}</p>
+    </div>
   </div>
 
-  <!-- Carte Contact -->
-  <div class="card contact-card">
-    <h4>Contact</h4>
-    <p>Téléphone {{ medecin.telephone }}</p>
-    <p>Email {{ medecin.email }}</p>
+  <hr>
+
+  <div class="footer">
+    <h3>Parcours professionnel</h3>
+    <!-- Tu peux compléter ici si tu as d'autres infos sur le parcours -->
   </div>
 
-  <!-- Carte Localisation -->
-  <div class="card localisation-card">
-    <h4>Localisation</h4>
-    <p>Clinique {{ medecin.clinique }}</p>
-    <p>Adresse {{ medecin.adresse }}</p>
+  <div class="footer-buttons">
+    <button class="btn btn-secondary" (click)="retour()">Retour</button>
+    <button class="btn btn-primary" (click)="prendreRDV()">Prendre un rendez-vous</button>
   </div>
-</div>
-
-<hr>
-<div class="footer">
-<h3>Parcours professionnel</h3>
-<span></span>
-</div>
-
-<div class="footer-buttons">
-  <button class="btn btn-secondary" (click)="retour()">Retour</button>
- <button class="btn btn-primary" (click)="prendreRDV()">Prendre un rendez-vous</button>
 
 </div>
-
-</div>
-
-

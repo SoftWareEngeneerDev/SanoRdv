@@ -385,9 +385,10 @@ async function rechercherMedecins(query, type, limit) {
     };
     
     const medecins = await Medecin.find(searchQuery)
-        .select('nom prenom specialite localite')
-        .limit(limit)
-        .lean();
+    .select('nom prenom specialite localite photo anneeExperience nationalite') // ✅ champs complets
+    .limit(limit)
+    .lean();
+
     
     return medecins.map(medecin => ({
         type: 'medecin',

@@ -2,257 +2,293 @@
 <div class="container">
   <div class="hero">
     <div class="hero-left">
-      <div class="marquee-container">
-        <p class="marquee-text">
+      <div class="marquee-container" aria-label="Slogan du site">
+        <p class="marquee-text" role="heading" aria-level="1">
           PRENEZ RENDEZ-VOUS AVEC UN MÉDECIN EN QUELQUES CLICS
         </p>
       </div>
-      <div class="search-container">
-        <input 
-          type="text" 
-          class="search-input" 
-          placeholder="Nom, Spécialité..." 
-          [(ngModel)]="query" 
-          (keyup.enter)="onSearch()" 
-          aria-label="Recherche médecin"
-        />
-        <button class="search-btn" (click)="onSearch()" aria-label="Lancer la recherche">
-          <i class="fas fa-search"></i>
+      <div class="search-container" style="position: relative;">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Nom, Spécialité..."
+        [(ngModel)]="query"
+        (ngModelChange)="onAutocompleteInput($event)"
+        aria-label="Recherche médecin par nom ou spécialité"
+        autocomplete="off"
+        aria-autocomplete="list"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="medecins.length > 0"
+        aria-owns="suggestions-list"
+      />
+        <button
+          class="search-btn"
+          (click)="onSearch()"
+          aria-label="Lancer la recherche"
+          title="Lancer la recherche"
+        >
+          <i class="fas fa-search" aria-hidden="true"></i>
         </button>
+
+        <!-- Liste des suggestions d'autocomplétion -->
+        <ul
+          *ngIf="suggestions.length > 0"
+          id="suggestions-list"
+          class="autocomplete-suggestions"
+          role="listbox"
+          style="position: absolute; z-index: 1000; background: white; width: 100%; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; margin-top: 0; padding-left: 0; list-style: none;"
+        >
+          <li
+            *ngFor="let suggestion of suggestions"
+            role="option"
+            tabindex="0"
+            (click)="onSearchByLetter(suggestion)"
+            (keydown.enter)="onSearchByLetter(suggestion)"
+            style="padding: 8px; cursor: pointer;"
+            [attr.aria-selected]="false"
+          >
+            {{ suggestion }}
+          </li>
+        </ul>
       </div>
 
-      <!-- Affichage des résultats de recherche -->
-      <div *ngIf="medecins.length > 0" class="search-results mt-3">
-        <div *ngFor="let medecin of medecins" class="medecin-result-card">
-          <h5>{{ medecin.nom }}</h5>
-          <p><strong>Spécialité :</strong> {{ medecin.specialite }}</p>
-          <p><strong>Localité :</strong> {{ medecin.localite }}</p>
-        </div>
-      </div>
-      <div *ngIf="medecins.length === 0 && query.trim() !== ''" class="no-results mt-3">
+<div *ngIf="medecins.length > 0" class="search-results mt-4" role="list" aria-label="Liste des médecins trouvés">
+  <div
+    *ngFor="let medecin of medecins"
+    class="card shadow-sm mb-3 p-2 d-flex flex-row align-items-center"
+    style="max-width: 500px; margin: 0 auto;"
+    role="listitem"
+    tabindex="0"
+  >
+    <!-- Bouton "Voir plus" devant la photo -->
+    <div style="flex: 0 0 auto; padding-right: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+<button
+  (click)="redirectToAuth(medecin._id)" 
+  (mouseenter)="hover = true"
+  (mouseleave)="hover = false"
+  [style.background-color]="hover ? '#0056b3' : '#007bff'"
+  style="
+    margin-bottom: 6px;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    border: none;
+    left: 350px;
+    top: 50px;
+    position: relative;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: background-color 0.3s ease;
+  "
+  aria-label="Voir plus - se connecter"
+>
+  Voir plus
+</button>
+
+      <img
+        *ngIf="medecin.photo"
+        [src]="medecin.photo"
+        alt="Photo de {{ medecin.nom }}"
+        style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;"
+      />
+    </div>
+
+    <!-- Infos à droite -->
+    <div style="flex: 1 1 auto;">
+      <h5 class="mb-1">{{ medecin.nom }} {{ medecin.prenom }}</h5>
+      <p class="mb-1 text-primary"><strong>{{ medecin.specialite }}</strong></p>
+      <p class="mb-0 text-muted"><i class="bi bi-geo-alt"></i> {{ medecin.localite }}</p>
+    </div>
+  </div>
+</div>
+
+      <!-- Message quand aucun résultat -->
+      <div *ngIf="medecins.length === 0 && query.trim() !== ''" class="no-results mt-3" role="alert" aria-live="polite">
         Aucun médecin trouvé pour "{{ query }}"
       </div>
     </div>
+
     <div class="hero-right">
-      <img src="assets/infirmière.png" alt="Docteur" />
+      <img src="assets/infirmière.png" alt="Image docteur souriant" />
     </div>
   </div>
-  <section class="section-pourquoi text-center text-black">
-    <div class="container py-5">
-      <h2 class="mb-5 fw-bold">POURQUOI CHOISIR SANORDV ?</h2>
-      <div class="row justify-content-center g-4">
-        <!-- Card 1 -->
-        <div class="col-md-4">
-          <div class="card h-100 shadow-lg">
-            <div class="card-body text-dark">
-              <div class="mb-3">
-                <i class="fa-solid fa-stethoscope fs-1 text-primary"></i>
-              </div>
-              <h5 class="card-title fw-bold">FACILITEZ VOTRE SANTÉ</h5>
-              <p class="card-text">
-                Prenez rendez-vous rapidement avec des médecins et spécialistes
-                près de chez vous.
-              </p>
-              <p class="card-text">
-                Une plateforme simple, fiable et sécurisée pour gérer vos
-                consultations en toute sérénité.
-              </p>
-            </div>
-          </div>
-        </div>
-        <!-- Card 2 -->
-        <div class="col-md-4">
-          <div class="card h-100 shadow-lg">
-            <div class="card-body text-dark">
-              <div class="mb-3">
-                <i class="bi bi-tools fs-1 text-primary"></i>
-              </div>
-              <h5 class="card-title fw-bold">
-                PRISE DE RENDEZ-VOUS SIMPLIFIÉE
-              </h5>
-              <p class="card-text">
-                Une solution tout-en-un pour patients et professionnels :
-                trouvez un praticien, gérez vos agendas, et suivez vos
-                consultations, le tout en ligne et en toute sécurité.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="col-md-4">
-          <div class="card h-100 shadow-lg">
-            <div class="card-body text-dark">
-              <div class="mb-3">
-                <i class="bi bi-heart-pulse-fill fs-1 text-danger"></i>
-              </div>
-              <h5 class="card-title fw-bold">ON S’OCCUPE DU RESTE</h5>
-              <p class="card-text">
-                Prenez soin de vous. On gère vos rendez-vous, rappels, et accès
-                aux praticiens facilement, en ligne.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="section-medecins">
-    <div class="container py-5 text-center">
-      <h2 class="fw-bold mb-4 text-uppercase text-primary">NOS MÉDECINS</h2>
-      <!-- Flèches -->
-      <div
-        class="carousel-controls mb-3 d-flex justify-content-between align-items-center"
-      >
-        <button class="btn btn-outline-primary" id="prevBtn">
-          <i class="bi bi-chevron-left fs-4"></i>
-        </button>
-        <button class="btn btn-outline-primary" id="nextBtn">
-          <i class="bi bi-chevron-right fs-4"></i>
-        </button>
-      </div>
-      <!-- Carrousel horizontal -->
-      <div class="carousel-cards-wrapper">
-        <div class="carousel-cards d-flex flex-nowrap" #carouselContainer>
-          <!-- Carte Médecin -->
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/boukari.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr KAGAMBEGA Boukary"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr KAGAMBEGA Boukary</h5>
-              <p class="text-primary mb-1">Cardiologue</p>
-              <p class="card-text">
-                Experte en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/arnold.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Arnold Kabore"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr Arnold Kabore</h5>
-              <p class="text-primary mb-1">Cardiologue</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies
-                <br />cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/faril.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Adam Faril"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr Adam Faril</h5>
-              <p class="text-primary mb-1">Cardiologue</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/bako.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Adam Faril"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr BAKO Robert</h5>
-              <p class="text-primary mb-1">Pediatre</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/latif.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Adam Faril"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr SAWADOGO A Latif</h5>
-              <p class="text-primary mb-1">Cardiologue</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/charifa.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Adam Faril"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr TRAORE Sergine</h5>
-              <p class="text-primary mb-1">Cardiologue</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/faiçal.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Adam Faril"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr KABORE Faical</h5>
-              <p class="text-primary mb-1">Médecin généraliste</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/medecin3.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Adam Faril"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr Adam Faril</h5>
-              <p class="text-primary mb-1">Cardiologue</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <div class="card card-medecin text-center me-3">
-            <img
-              src="assets/images/medecin3.jpg"
-              class="rounded-circle mx-auto mt-3 medecin-img"
-              alt="Dr Adam Faril"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold mt-3">Dr Adam Faril</h5>
-              <p class="text-primary mb-1">Cardiologue</p>
-              <p class="card-text">
-                Expert en prévention et traitement des maladies <br />
-                cardiovasculaires. <a href="#">Plus d'info</a>
-              </p>
-            </div>
-          </div>
-          <!-- Ajoute 4 autres cartes ici si besoin -->
-        </div>
-      </div>
-    </div>
-  </section>
 </div>
+<section class="section-pourquoi text-center text-black">
+  <div class="container py-5">
+    <h2 class="mb-5 fw-bold">POURQUOI CHOISIR SANORDV ?</h2>
+    <div class="row justify-content-center g-4">
+      <!-- Card 1 -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-lg">
+          <div class="card-body text-dark">
+            <div class="mb-3">
+              <i class="fa-solid fa-stethoscope fs-1 text-primary"></i>
+            </div>
+            <h5 class="card-title fw-bold">FACILITEZ VOTRE SANTÉ</h5>
+            <p class="card-text">
+              Prenez rendez-vous rapidement avec des médecins et spécialistes
+              près de chez vous.
+            </p>
+            <p class="card-text">
+              Une plateforme simple, fiable et sécurisée pour gérer vos
+              consultations en toute sérénité.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-lg">
+          <div class="card-body text-dark">
+            <div class="mb-3">
+              <i class="bi bi-tools fs-1 text-primary"></i>
+            </div>
+            <h5 class="card-title fw-bold">
+              PRISE DE RENDEZ-VOUS SIMPLIFIÉE
+            </h5>
+            <p class="card-text">
+              Une solution tout-en-un pour patients et professionnels :
+              trouvez un praticien, gérez vos agendas, et suivez vos
+              consultations, le tout en ligne et en toute sécurité.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-lg">
+          <div class="card-body text-dark">
+            <div class="mb-3">
+              <i class="bi bi-heart-pulse-fill fs-1 text-danger"></i>
+            </div>
+            <h5 class="card-title fw-bold">ON S’OCCUPE DU RESTE</h5>
+            <p class="card-text">
+              Prenez soin de vous. On gère vos rendez-vous, rappels, et accès
+              aux praticiens facilement, en ligne.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section-medecins">
+  <div class="container py-5 text-center">
+    <h2 class="fw-bold mb-4 text-uppercase text-primary">NOS MÉDECINS</h2>
+    <!-- Flèches -->
+    <div class="carousel-controls mb-3 d-flex justify-content-between align-items-center">
+      <button class="btn btn-outline-primary" id="prevBtn">
+        <i class="bi bi-chevron-left fs-4"></i>
+      </button>
+      <button class="btn btn-outline-primary" id="nextBtn">
+        <i class="bi bi-chevron-right fs-4"></i>
+      </button>
+    </div>
+    <!-- Carrousel horizontal -->
+    <div class="carousel-cards-wrapper">
+      <div class="carousel-cards d-flex flex-nowrap" #carouselContainer>
+        <!-- Carte Médecin -->
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/boukari.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr KAGAMBEGA Boukary" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr KAGAMBEGA Boukary</h5>
+            <p class="text-primary mb-1">Cardiologue</p>
+            <p class="card-text">
+              Experte en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/arnold.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Arnold Kabore" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr Arnold Kabore</h5>
+            <p class="text-primary mb-1">Cardiologue</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/faril.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Adam Faril" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr Adam Faril</h5>
+            <p class="text-primary mb-1">Cardiologue</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/bako.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Adam Faril" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr BAKO Robert</h5>
+            <p class="text-primary mb-1">Pediatre</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/latif.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Adam Faril" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr SAWADOGO A Latif</h5>
+            <p class="text-primary mb-1">Cardiologue</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/charifa.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Adam Faril" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr TRAORE Sergine</h5>
+            <p class="text-primary mb-1">Cardiologue</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/faiçal.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Adam Faril" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr KABORE Faical</h5>
+            <p class="text-primary mb-1">Médecin généraliste</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/medecin3.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Adam Faril" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr Adam Faril</h5>
+            <p class="text-primary mb-1">Cardiologue</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <div class="card card-medecin text-center me-3">
+          <img src="assets/images/medecin3.jpg" class="rounded-circle mx-auto mt-3 medecin-img" alt="Dr Adam Faril" />
+          <div class="card-body">
+            <h5 class="card-title fw-bold mt-3">Dr Adam Faril</h5>
+            <p class="text-primary mb-1">Cardiologue</p>
+            <p class="card-text">
+              Expert en prévention et traitement des maladies <br />
+              cardiovasculaires. <a href="#">Plus d'info</a>
+            </p>
+          </div>
+        </div>
+        <!-- Ajoute 4 autres cartes ici si besoin -->
+      </div>
+    </div>
+  </div>
+</section>
