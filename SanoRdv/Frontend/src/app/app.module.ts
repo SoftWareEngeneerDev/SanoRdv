@@ -29,7 +29,7 @@ registerLocaleData(localeFr);
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
     SharedModule,
     BrowserAnimationsModule,
-    
+
   ],
   providers: [
      { provide: LOCALE_ID, useValue: 'fr' }

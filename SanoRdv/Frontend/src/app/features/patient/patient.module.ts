@@ -34,6 +34,7 @@ import { CreneauComponent } from './pages/creneau/creneau.component';
 import { DeconnexionComponent } from './pages/deconnexion/deconnexion.component';
 
 
+
 @NgModule({
   declarations: [
     SidebarPatientComponent,

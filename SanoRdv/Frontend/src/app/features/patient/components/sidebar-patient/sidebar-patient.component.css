@@ -82,6 +82,20 @@ h5 {
   font-weight: 500;
 }
 
+.patient-sidebar nav.nav.flex-column a.nav-link:hover {
+  background-color: rgba(51, 16, 230, 0.15);
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.patient-sidebar nav.nav.flex-column a.nav-link.active-link {
+  background-color: #027bb7;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
 /* Edit icon */
 .edit-icon {
   position: absolute !important;
@@ -96,7 +110,7 @@ h5 {
 /* ==================== Responsive ==================== */
 
 /* Très petits écrans (0 à 480px) */
-@media (max-width: 480px) {
+@media (max-width: 1024px) {
   .patient-sidebar {
     width: 120px;
     padding-left: 0.3rem;
@@ -144,69 +158,6 @@ h5 {
   }
 
   .collapse-btn {
-    display: none !important;
-  }
-}
-
-/*  Tablettes (481 à 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .patient-sidebar {
-    width: 180px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-
-  .patient-avatar {
-    width: 80px;
-    height: 80px;
-  }
-
-  .sidebar-title {
-    font-size: 0.7rem;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  .nav-link {
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-    padding: 0.5rem 0.75rem;
-  }
-
-  .nav-link i {
-    font-size: 1.2rem;
-    margin-top: 0;
-    text-align: center;
-  }
-
-  .nav-link span,
-  .nav-link .link-text,
-  .nav-link > *:not(i) {
-    display: inline-block;
-    font-size: 0.9rem;
-    margin-top: 0;
-    line-height: 1.2;
-  }
-
-  /* Sidebar pliée */
-  .patient-sidebar.collapsed {
-    width: 100px;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-  }
-
-  .patient-sidebar.collapsed .nav-link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 1rem 0 !important;
-  }
-
-  .patient-sidebar.collapsed .nav-link span,
-  .patient-sidebar.collapsed .nav-link .link-text,
-  .patient-sidebar.collapsed .nav-link > *:not(i) {
     display: none !important;
   }
 }

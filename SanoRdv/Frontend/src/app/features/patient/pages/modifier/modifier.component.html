@@ -1,22 +1,25 @@
-<div class="profile-card">
-  <div class="profile-header">
-    <img [src]="patient?.photo || 'assets/images/default-avatar.png'" class="profile-photo" alt="Photo de profil" />
-    <h2>{{ patient?.prenom }} {{ patient?.nom }}</h2>
-    <button class="btn-edit" (click)="modifierProfil()">Modifier le profil</button>
-  </div>
+<!-- <div class="profile-card page-container"> -->
+  <div class="pt-5 mt-5 form-container">
 
-  <h3 class="section-title">Informations personnelles</h3>
-  <hr>
-  <div class="info-row">
-    <div data-label="Date de naissance">{{ patient?.dateNaissance | date: 'dd/MM/yyyy' }}</div>
-    <div data-label="Sexe">{{ patient?.sex }}</div> <!-- correction : sex au lieu de sexe -->
-  </div>
+    <div class="profile-header">
+      <img [src]="patient?.photo || 'assets/images/default-avatar.png'" class="profile-photo" alt="Photo de profil" />
+      <h2>{{ patient?.prenom }} {{ patient?.nom }}</h2>
+      <button class="btn-edit" (click)="modifierProfil()">Modifier le profil</button>
+    </div>
 
-  <h3 class="section-title">Coordonnées</h3>
-  <hr>
-  <div class="info-row">
-    <div data-label="Adresse email">{{ patient?.email }}</div>
-    <div data-label="Téléphone">{{ patient?.telephone }}</div>
-    <div data-label="Localité">{{ patient?.localite }}</div>
+    <h3 class="section-title">Informations personnelles</h3>
+    <hr>
+    <div class="info-row">
+      <div data-label="Date de naissance">{{ patient?.dateNaissance | date: 'dd/MM/yyyy' }}</div>
+      <div data-label="Sexe">{{ patient?.sex }}</div>
+    </div>
+
+    <h3 class="section-title">Coordonnées</h3>
+    <hr>
+    <div class="info-row">
+      <div data-label="Adresse email">{{ patient?.email }}</div>
+      <div data-label="Téléphone">{{ patient?.telephone }}</div>
+      <div data-label="Localité">{{ patient?.localite }}</div>
+    </div>
   </div>
-</div>
+<!-- </div> -->

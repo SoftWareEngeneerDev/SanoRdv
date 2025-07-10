@@ -5,7 +5,15 @@
 
   <div class="body">
     <div class="calendar-container">
-      <h3>{{ viewDate | date: 'LLLL yyyy':'':'fr' }}</h3>
+      <!-- Barre de navigation mois -->
+      <div class="calendar-header-wrapper">
+  <button (click)="moisPrecedent()" class="nav-arrow nav-left">‹</button>
+  <h3>{{ viewDate | date: 'LLLL yyyy':'':'fr' }}</h3>
+  <button (click)="moisSuivant()" class="nav-arrow nav-right">›</button>
+</div>
+
+
+      <!-- Calendrier Angular -->
       <mwl-calendar-month-view
         [viewDate]="viewDate"
         (dayClicked)="selectDate($event.day.date)"
@@ -15,6 +23,7 @@
       </mwl-calendar-month-view>
     </div>
 
+    <!-- Affichage des créneaux -->
     <div class="slots-container" *ngIf="selectedDate">
       <h4>Créneaux disponibles - {{ selectedDate | date:'fullDate':'':'fr' }}</h4>
 
@@ -33,7 +42,7 @@
       </ng-template>
     </div>
 
-    <!-- Les boutons en bas -->
+    <!-- Boutons bas -->
     <div class="bottom-buttons">
       <button class="btn btn-primary white-bg" (click)="retourMotif()">← Précédent</button>
       <button class="btn btn-primary" (click)="allerSuivant()">Suivant →</button>

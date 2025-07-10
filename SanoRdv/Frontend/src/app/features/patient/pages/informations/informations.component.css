@@ -8,7 +8,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* === En-tête : Photo + Nom/Specialité === */
+/* === En-tête === */
 .profil-header {
   display: flex;
   align-items: center;

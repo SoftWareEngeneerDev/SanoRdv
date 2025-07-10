@@ -1,20 +1,25 @@
-/* Désactivation de l'ancien .nav-tabs */
+/* Désactivation ancien .nav-tabs */
 .nav-tabs {
   display: none;
 }
 
-/* Conteneur principal avec bordure + fond bleu clair */
+.form-container {
+  margin-left: 30px;
+  margin-top: -50px;
+  padding-top: 95px;
+  min-height: 100vh;
+  width: 100%;
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+/* Conteneur principal */
 .onglets-container {
   border: 1px solid #80b5ef;
   border-radius: 10px;
   background-color: #80b5ef;
-  padding: 0;
-  max-width: 1200px;
-  margin: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  position: relative;
-  top: 80px;
+  box-sizing: border-box;
 }
 
 /* Ligne des onglets */
@@ -24,11 +29,14 @@
   margin: 0;
   padding: 0;
   gap: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Boutons des onglets */
 .custom-tab .nav-link {
-  width: 200px;
+  flex: 0 0 200px;
   padding: 10px 0;
   font-size: 16px;
   background-color: #80b5ef;
@@ -37,15 +45,11 @@
   border: none;
   text-align: center;
   user-select: none;
-  position: relative;
-  left: 8px;
   transition: 0.2s ease-in-out;
   border-right: 1px solid #ffffff55;
-}
-
-/* Dernier onglet sans bordure droite */
-.custom-tab .nav-link:last-child {
-  border-right: none;
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
 }
 
 /* Onglet actif */
@@ -62,11 +66,16 @@
   background-color: #80b5ef;
 }
 
+.custom-tab .nav-link:last-child {
+  border-right: none;
+}
+
 /* Contenu des onglets */
 .tab-content {
   background-color: white;
   padding: 20px;
   border-radius: 0 0 10px 10px;
+  box-sizing: border-box;
 }
 
 /* Table RDV */
@@ -75,6 +84,8 @@
   background-color: white;
   padding: 8px;
   text-align: left;
+  word-wrap: break-word;
+  vertical-align: middle;
 }
 
 .table th {
@@ -92,6 +103,8 @@
   font-size: 14px;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-edit {
@@ -100,15 +113,130 @@
   margin-right: 5px;
 }
 
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
 .btn-cancel {
   background-color: #dc3545;
   color: #fff;
 }
 
-.btn-edit:hover {
-  background-color: #e0a800;
-}
-
 .btn-cancel:hover {
   background-color: #c82333;
+}
+
+/* --- RESPONSIVE --- */
+
+/* Sidebar pliée entre 769px et 1180px */
+@media (min-width: 769px) and (max-width: 1180px) {
+  body.sidebar-collapsed .onglets-container {
+    margin-left: 170px;
+    margin-right: 20px;
+    width: calc(100% - 190px);
+    max-width: none;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+  }
+
+  /* Assurer que le contenu interne ne dépasse pas */
+  body.sidebar-collapsed .onglets-container * {
+    max-width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+  }
+
+  /* Suppression de tout décalage horizontal sur nav-link */
+  body.sidebar-collapsed .custom-tab .nav-link {
+    left: 0 !important;
+  }
+}
+
+/* Jusqu'à 1024px */
+@media (max-width: 1024px) {
+  .custom-tab .nav-link {
+    flex: 0 0 150px;
+    font-size: 14px;
+    padding: 8px 0;
+  }
+
+  .table th {
+    font-size: 18px;
+  }
+
+  .table td {
+    font-size: 16px;
+  }
+}
+
+/* Jusqu'à 768px */
+@media (max-width: 768px) {
+  .custom-tab {
+    gap: 4px;
+  }
+
+  .custom-tab .nav-link {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .tab-content {
+    padding: 15px 10px;
+  }
+
+  .table th {
+    font-size: 16px;
+  }
+
+  .table td {
+    font-size: 14px;
+  }
+
+  .btn-edit,
+  .btn-cancel {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+}
+
+/* Jusqu'à 480px */
+@media (max-width: 480px) {
+  .custom-tab {
+    flex-wrap: wrap;
+  }
+
+  .custom-tab .nav-link {
+    flex: 1 1 100%;
+    max-width: 100%;
+    padding: 10px 0;
+    font-size: 14px;
+    border-right: none;
+    border-bottom: 1px solid #ffffff55;
+  }
+
+  .custom-tab .nav-link:last-child {
+    border-bottom: none;
+  }
+
+  .tab-content {
+    padding: 10px 8px;
+  }
+
+  .table th,
+  .table td {
+    font-size: 14px;
+  }
+
+  .btn-edit,
+  .btn-cancel {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* Empêcher défilement horizontal sur toute la page */
+html, body {
+  overflow-x: hidden;
 }
