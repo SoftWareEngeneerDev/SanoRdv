@@ -8,10 +8,29 @@
         </p>
       </div>
       <div class="search-container">
-            <input type="text" class="search-input"placeholder="Nom, Spécialité..."/>
-            <button class="search-btn">
-              <i class="fas fa-search"></i>
-            </button>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Nom, Spécialité..." 
+          [(ngModel)]="query" 
+          (keyup.enter)="onSearch()" 
+          aria-label="Recherche médecin"
+        />
+        <button class="search-btn" (click)="onSearch()" aria-label="Lancer la recherche">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+
+      <!-- Affichage des résultats de recherche -->
+      <div *ngIf="medecins.length > 0" class="search-results mt-3">
+        <div *ngFor="let medecin of medecins" class="medecin-result-card">
+          <h5>{{ medecin.nom }}</h5>
+          <p><strong>Spécialité :</strong> {{ medecin.specialite }}</p>
+          <p><strong>Localité :</strong> {{ medecin.localite }}</p>
+        </div>
+      </div>
+      <div *ngIf="medecins.length === 0 && query.trim() !== ''" class="no-results mt-3">
+        Aucun médecin trouvé pour "{{ query }}"
       </div>
     </div>
     <div class="hero-right">
@@ -59,6 +78,7 @@
             </div>
           </div>
         </div>
+
         <!-- Card 3 -->
         <div class="col-md-4">
           <div class="card h-100 shadow-lg">

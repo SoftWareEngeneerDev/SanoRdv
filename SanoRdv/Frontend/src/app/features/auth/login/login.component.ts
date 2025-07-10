@@ -33,7 +33,7 @@ export class LoginComponent {
           const role = response?.user?.role;
           // Rediriger selon le rôle
           if (role === 'admin') {
-            this.router.navigate(['/admin-dashboard']);
+            this.router.navigate(['/admin/dashboard']);
           } else if (role === 'medecin') {
             this.router.navigate(['/medecin']);
           } else if (role === 'patient') {

@@ -30,8 +30,8 @@
 
     <!-- Infos visibles si pas réduit -->
     <div *ngIf="!isCollapsed">
-      <h5 class="mb-0 fw-bold">{{ admin.nom }}</h5>
-      <small>{{ admin.prenom }}</small>
+      <h5 class="mb-0 fw-bold">{{ admin.nom || 'Nom' }}</h5>
+      <small>{{ admin.prenom || 'Prénom' }}</small>
     </div>
   </div>
 
