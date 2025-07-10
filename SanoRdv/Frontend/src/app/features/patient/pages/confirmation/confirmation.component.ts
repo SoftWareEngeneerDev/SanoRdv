@@ -39,10 +39,10 @@ export class ConfirmationComponent implements OnInit {
 
 
   goToAccueil() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/patient/dashboard']);
   }
 
   goToListeRdv() {
-    this.router.navigate(['/appointment']);
+    this.router.navigate(['/patient/appointment']);
   }
 }

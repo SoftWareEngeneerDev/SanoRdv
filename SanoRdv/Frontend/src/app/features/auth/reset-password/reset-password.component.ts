@@ -82,4 +82,20 @@ export class ResetPasswordComponent implements OnInit {
       this.resetForm.markAllAsTouched();
     }
   }
+
+  // Fonction pour afficher/masquer le mot de passe
+  togglePasswordVisibility(field: string): void {
+    const inputField = document.getElementById(field) as HTMLInputElement;
+    const icon = document.querySelector(`#${field} + .input-with-icon i`) as HTMLElement;
+
+    if (inputField.type === 'password') {
+      inputField.type = 'text';
+      icon.classList.remove('bi-eye-slash');
+      icon.classList.add('bi-eye');
+    } else {
+      inputField.type = 'password';
+      icon.classList.remove('bi-eye');
+      icon.classList.add('bi-eye-slash');
+    }
+  }
 }

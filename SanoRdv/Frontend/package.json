@@ -24,7 +24,9 @@
     "angular-calendar": "^0.31.1",
     "bootstrap": "^5.3.7",
     "bootstrap-icons": "^1.13.1",
+    "chart.js": "^4.5.0",
     "date-fns": "^2.30.0",
+    "ng2-charts": "^4.1.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
@@ -34,6 +36,8 @@
     "@angular/cli": "~15.2.11",
     "@angular/compiler-cli": "^15.2.0",
     "@types/angular": "^1.8.9",
+    "@types/chart.js": "^2.9.41",
+    "@types/date-fns": "^2.5.3",
     "@types/jasmine": "~4.3.0",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.0",
