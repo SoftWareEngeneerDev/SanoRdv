@@ -11,8 +11,6 @@ import { PatientModule } from './features/patient/patient.module';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID } from '@angular/core';
-import { CalendarModule, DateAdapter } from 'angular-calendar';
-import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -21,7 +19,8 @@ registerLocaleData(localeFr);
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent // Composant accueil déclaré ici
+    HomeComponent,
+    AboutComponent // Composant accueil déclaré ici
   ],
   imports: [
     BrowserModule,
