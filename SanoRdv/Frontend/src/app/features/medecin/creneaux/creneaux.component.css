@@ -1,63 +1,70 @@
-.creneaux-container {
-  background: #fff;
+.calendar-container {
+  width: 800px;
+  margin: auto;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 800px;           /* agrandit */
-  margin: 80px auto 20px;     /*descend avec margin-top: 80px */
+  position: absolute;
+  top: 80px;
+  left: 250px;
 }
 
-h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
+.time-slots {
+  margin-top: 30px;
 }
 
-.form-creneau {
+.slots {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 20px;
-  align-items: center;
+  margin: 15px 0;
 }
 
-.form-creneau label {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+.slots button {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 70px;
 }
 
-button {
-  background-color: #00a3e0;
+.slots button.selected {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.save-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
   color: white;
   border: none;
-  padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
 }
-
-.section-title {
-  color: #007bff;
-  font-weight: bold;
+.month-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
   margin-bottom: 10px;
-}
-
-.table-creneaux {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table-creneaux td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.supprimer {
-  color: red;
-  cursor: pointer;
+  gap: 15px;
+  color: white;
   font-weight: bold;
+  background-color: #007bff;
+  height: 50px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
-.vide {
-  color: #888;
-  font-style: italic;
+.month-label button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: white;
+}
+::ng-deep .cal-month-view .cal-open-day-events {
+  background-color: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
 }

@@ -11,7 +11,6 @@ import { PatientModule } from './features/patient/patient.module';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID } from '@angular/core';
-import { AboutComponent } from './features/about/about.component';
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -31,7 +30,8 @@ registerLocaleData(localeFr);
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
     SharedModule,
     BrowserAnimationsModule,
-    
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+
   ],
   providers: [
      { provide: LOCALE_ID, useValue: 'fr' }
