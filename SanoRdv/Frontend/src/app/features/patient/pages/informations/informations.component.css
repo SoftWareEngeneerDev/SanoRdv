@@ -1,3 +1,14 @@
+.error-message {
+  color: red;
+  margin: 1em 0;
+}
+
+.loading-message {
+  font-style: italic;
+  margin: 1em 0;
+}
+
+
 .profil-global-container {
   max-width: 900px;
   height: auto;

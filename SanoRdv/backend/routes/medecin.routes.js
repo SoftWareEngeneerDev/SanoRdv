@@ -1,6 +1,6 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-import { modifierMedecin } from '../controllers/medecin.controller.js';
+import { modifierMedecin ,getMedecinById} from '../controllers/medecin.controller.js';
 
 const router = express.Router();
 
@@ -25,5 +25,6 @@ const profileUpdateValidation = [
 ];
 
 router.put('/:id', profileUpdateValidation, modifierMedecin);
+router.get('/:id', getMedecinById);
 
 export default router;

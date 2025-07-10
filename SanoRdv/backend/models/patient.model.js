@@ -17,6 +17,7 @@ const patientSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
+    // match: /...regex email.../  // optionnel
   },
   telephone: {
     type: String,
@@ -27,15 +28,12 @@ const patientSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  confirmationMotDePasse: {
-    type: String,
-    required: false,
-  },
   sex: {
     type: String,
     enum: ['masculin', 'féminin', 'autre'],
+    required: false,
   },
-  IDpatient: {  // renommé ici
+  IDpatient: {
     type: String,
     required: true,
     unique: true,
@@ -63,10 +61,17 @@ const patientSchema = new mongoose.Schema({
     required: false,
     trim: true,
   },
+  groupeSanguin: {
+    type: String,
+    required: false,
+  },
+  allergies: {
+    type: String, // ou [String] si plusieurs allergies à prévoir
+    required: false,
+  },
   resetCodeExpire: {
     type: Date,
   },
-  // Sécurité - verrouillage login
   loginAttempts: {
     type: Number,
     default: 0,
@@ -74,8 +79,10 @@ const patientSchema = new mongoose.Schema({
   lockUntil: {
     type: Date,
   },
-  isActive: { type: Boolean, default: true },
-  // Rôle
+  isActive: { 
+    type: Boolean, 
+    default: true 
+  },
   role: {
     type: String,
     default: 'patient',
