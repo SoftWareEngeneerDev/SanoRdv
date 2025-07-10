@@ -31,6 +31,7 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
 import { RecapitulatifComponent } from './pages/recapitulatif/recapitulatif.component';
 import { ConfirmationComponent } from './pages/confirmation/confirmation.component';
 import { CreneauComponent } from './pages/creneau/creneau.component';
+import { DeconnexionComponent } from './pages/deconnexion/deconnexion.component';
 
 
 @NgModule({
@@ -50,7 +51,8 @@ import { CreneauComponent } from './pages/creneau/creneau.component';
       NotificationsComponent,
       RecapitulatifComponent,
       ConfirmationComponent,
-      CreneauComponent
+      CreneauComponent,
+      DeconnexionComponent,
   ],
   imports: [
       CommonModule,

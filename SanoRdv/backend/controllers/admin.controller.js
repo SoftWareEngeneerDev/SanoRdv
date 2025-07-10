@@ -109,7 +109,6 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
   try {
     const IDadmin = `ADMIN_${Math.floor(10000 + Math.random() * 90000)}`;
 
-    // Vérification existence admin
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
       return {
@@ -119,18 +118,13 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
       };
     }
 
-    // Hasher le mot de passe
-    const hashedPassword = await bcrypt.hash(motDePasse, 10);
-
-    // Générer l'avatar par défaut si aucune photo fournie
     const avatar = additionalInfo.photo
       ? additionalInfo.photo
       : generateAvatarBase64(additionalInfo.nom, additionalInfo.prenom);
 
-    // Création admin avec valeurs par défaut et avatar
     const admin = new Admin({
       email,
-      motDePasse: hashedPassword,
+      motDePasse, // Ne pas hasher ici
       IDadmin,
       role: 'admin',
       isActive: true,
@@ -142,7 +136,6 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
 
     const savedAdmin = await admin.save();
 
-    // Envoi email avec paramètres corrects
     let emailSent = false;
     try {
       await sendAdminCredentials(
@@ -170,6 +163,8 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
     };
   }
 };
+
+
 export const listAdmins = async () => {
   try {
     const admins = await Admin.find({ role: 'admin' })

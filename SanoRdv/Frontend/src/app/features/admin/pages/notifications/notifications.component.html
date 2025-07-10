@@ -1,0 +1,32 @@
+<div class="container mt-4">
+  <h2 class="text-primary mb-3">Notifications envoyées</h2>
+
+  <!-- Filtres -->
+  <div class="mb-3 d-flex flex-wrap gap-3">
+    <select class="form-select w-auto" [(ngModel)]="filtreType">
+      <option value="">Tous</option>
+      <option value="patient">Patients</option>
+      <option value="medecin">Médecins</option>
+    </select>
+  </div>
+
+  <!-- Liste des notifications -->
+  <div *ngFor="let notif of notificationsFiltrees()" class="card mb-2 shadow-sm">
+    <div class="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="card-title">{{ notif.titre }}</h5>
+        <p class="mb-1">{{ notif.message }}</p>
+        <small class="text-muted">
+          Pour : {{ notif.destinataireNom }} ({{ notif.destinataireType }}) •
+          {{ notif.date | date:'short' }}
+          <span *ngIf="notif.lu" class="badge bg-success ms-2">Lue</span>
+          <span *ngIf="!notif.lu" class="badge bg-warning text-dark ms-2">Non lue</span>
+        </small>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" (click)="supprimer(notif.id)">
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+

@@ -7,6 +7,7 @@ import { ResetCodeComponent } from './reset-code/reset-code.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SharedLayoutComponent } from '../../shared/components/shared-layout/shared-layout.component';
 import { SuccessFullComponent } from './success-full/success-full.component';
+import { LoginGuard } from 'src/app/core/guards/login.guard';
 
 const routes: Routes = [
   {
@@ -14,12 +15,12 @@ const routes: Routes = [
     component: SharedLayoutComponent,
     children: [
       { path: '', redirectTo: 'login', pathMatch: 'full' },
-      { path: 'login', component: LoginComponent },
-      { path: 'register', component: RegisterComponent },
+      { path: 'login', component: LoginComponent, canActivate: [ LoginGuard ] },
+      { path: 'register', component: RegisterComponent},
       { path: 'forgot-password', component: ForgotPasswordComponent },
       { path: 'reset-code', component: ResetCodeComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
-      {path: 'successFull' , component: SuccessFullComponent}
+      { path: 'successFull', component: SuccessFullComponent}
     ]
   }
 ];
@@ -28,4 +29,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AuthRoutingModule { }
+export class AuthRoutingModule {}
