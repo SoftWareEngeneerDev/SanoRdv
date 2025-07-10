@@ -11,6 +11,7 @@ import { PatientModule } from './features/patient/patient.module';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID } from '@angular/core';
+import { AboutComponent } from './features/about/about.component';
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -19,7 +20,8 @@ registerLocaleData(localeFr);
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent // Composant accueil déclaré ici
+    HomeComponent,
+    AboutComponent // Composant accueil déclaré ici
   ],
   imports: [
     BrowserModule,
