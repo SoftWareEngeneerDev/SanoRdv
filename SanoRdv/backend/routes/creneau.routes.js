@@ -62,7 +62,7 @@ router.put('/modifierStatut', (req, res) => {
 });
 
 // Route pour enregistrer les créneaux
-router.post('/ ', async (req, res) => {
+router.post('/', async (req, res) => {
     // Validation des champs requis
     if (!req.body?.dateChoisie || !req.body?.agendaId || !req.body?.timeSlots) {
         return res.status(400).json({

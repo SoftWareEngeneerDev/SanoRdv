@@ -1,4 +1,5 @@
-.medecin-sidebar {
+/* Sidebar normale */
+.patient-sidebar {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,11 +11,29 @@
   z-index: 1000;
   transition: width 0.3s ease;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
-/* Sidebar réduit */
-.medecin-sidebar.collapsed {
-  width: 150px;
+/* Titres */
+h5 {
+  font-size: 18px;
+}
+
+/* Sidebar réduite (collapsed) */
+.patient-sidebar.collapsed {
+  width: 170px;
+}
+
+/* Avatar */
+.patient-avatar {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 3px solid white;
+  margin-top: 20px;
+  margin-bottom: 1rem;
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
 /* Titre SANORDV */
@@ -23,74 +42,197 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* Avatar rectangle */
-.medecin-avatar {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 3px solid white;
-}
-
-/* Icône crayon */
-.edit-icon {
-  position: absolute;
-  bottom: 5px;
-  right: -10px;
-  background-color: white;
-  color: #00aee0;
-  padding: 4px;
-  border-radius: 50%;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-/* Flèche toggle */
-.collapse-btn {
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-.collapse-btn:hover {
-  transform: scale(1.2);
+  margin-bottom: 1rem;
+  text-align: center;
+  padding: 0 0.5rem;
+  user-select: none;
+  width: 100%;
+  transition: opacity 0.3s ease;
 }
 
 /* Liens */
-.nav-link {
-  padding: 0.5rem 0.75rem;
-  transition: background 0.3s ease;
-}
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+.nav-link i {
+  font-size: 1.4rem;
+  text-align: center;
 }
 
-/* Actif */
-.active-link {
-  background-color: white;
-  color: #00aee0 !important;
-  font-weight: bold;
-  border-radius: 0.5rem;
+.nav-link span,
+.nav-link .link-text,
+.nav-link > *:not(i) {
+  transition: opacity 0.3s ease;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-  .admin-sidebar {
-    top: 60px;
-    height: calc(100vh - 60px);
-    width: 150px;
+/* Style général nav-link */
+.patient-sidebar nav.nav.flex-column a.nav-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.patient-sidebar nav.nav.flex-column a.nav-link i {
+  margin-top: 20px;
+  font-size: 1.5rem;
+}
+
+.patient-sidebar nav.nav.flex-column a.nav-link span {
+  margin-top: 20px;
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Edit icon */
+.edit-icon {
+  position: absolute !important;
+  bottom: 8px !important;
+  right: -6px !important;
+  font-size: 0.75rem !important;
+  padding: 1px 3px !important;
+  color: white;
+  border-radius: 50%;
+}
+
+/* ==================== Responsive ==================== */
+
+/* Très petits écrans (0 à 480px) */
+@media (max-width: 480px) {
+  .patient-sidebar {
+    width: 120px;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
   }
 
-  .medecin-sidebar.collapsed {
-    width: 100px;
+  .patient-avatar {
+    width: 60px;
+    height: 60px;
+    margin-top: 20px;
+    margin-bottom: 1rem;
   }
 
-  .medecin-avatar {
+  .sidebar-title {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    margin-left: -10px;
+  }
+
+  .nav-link {
+    justify-content: center;
+    padding: 0.8rem 0;
+  }
+
+  .nav-link i {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .nav-link span,
+  .nav-link .link-text,
+  .nav-link > *:not(i) {
+    display: none !important;
+  }
+
+  .edit-icon {
+    font-size: 1rem;
+    bottom: 1px;
+    right: -6px;
+  }
+
+  h5 {
+    display: none;
+  }
+
+  .collapse-btn {
+    display: none !important;
+  }
+}
+
+/*  Tablettes (481 à 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .patient-sidebar {
+    width: 180px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .patient-avatar {
     width: 80px;
     height: 80px;
   }
 
-  .edit-icon {
-    right: -5px;
+  .sidebar-title {
+    font-size: 0.7rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .nav-link {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .nav-link i {
+    font-size: 1.2rem;
+    margin-top: 0;
+    text-align: center;
+  }
+
+  .nav-link span,
+  .nav-link .link-text,
+  .nav-link > *:not(i) {
+    display: inline-block;
+    font-size: 0.9rem;
+    margin-top: 0;
+    line-height: 1.2;
+  }
+
+  /* Sidebar pliée */
+  .patient-sidebar.collapsed {
+    width: 100px;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .patient-sidebar.collapsed .nav-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 0 !important;
+  }
+
+  .patient-sidebar.collapsed .nav-link span,
+  .patient-sidebar.collapsed .nav-link .link-text,
+  .patient-sidebar.collapsed .nav-link > *:not(i) {
+    display: none !important;
+  }
+}
+
+
+/*  Grand écran : Sidebar réduite (collapsed) */
+@media (min-width: 769px) {
+  .patient-sidebar.collapsed {
+    width: 150px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .patient-sidebar.collapsed .text-center > div:not(.position-relative),
+  .patient-sidebar.collapsed .nav-link span,
+  .patient-sidebar.collapsed .nav-link .link-text,
+  .patient-sidebar.collapsed .nav-link > *:not(i) {
+    display: none;
+  }
+
+  .patient-sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 1rem 0;
+  }
+
+  .patient-sidebar.collapsed .sidebar-title {
+    font-size: 1rem;
   }
 }
