@@ -1,0 +1,38 @@
+
+
+<div class="calendar-container">
+  <h2>Gérer mes indisponibilités</h2>
+
+  <!-- Mois en haut -->
+  <div class="month-label">
+    <button (click)="previousMonth()">&#8592;</button>
+    <span>{{ viewDate | date: 'MMMM yyyy' : undefined : 'fr' }}</span>
+    <button (click)="nextMonth()">&#8594;</button>
+  </div>
+
+  <!-- Calendrier -->
+  <mwl-calendar-month-view
+    [viewDate]="viewDate"
+    [locale]="'fr'"
+    [weekStartsOn]="1"
+    (dayClicked)="handleDayClick($event.day.date)"
+    [activeDayIsOpen]="true">
+  </mwl-calendar-month-view>
+
+  <!-- Créneaux horaires -->
+  <div *ngIf="selectedDate" class="time-slots">
+    <h3>Créneaux pour le {{ selectedDate | date: 'fullDate' : undefined : 'fr' }}</h3>
+    <p>Définir les créneaux indisponibles</p>
+
+    <div class="slots">
+      <button
+        *ngFor="let hour of timeSlots"
+        [class.selected]="isSlotSelected(hour)"
+        (click)="toggleSlot(hour)">
+        {{ hour }}
+      </button>
+    </div>
+
+    <button class="save-btn" (click)="saveUnavailability()">Sauvegarder les indisponibilités</button>
+  </div>
+</div>

@@ -7,6 +7,8 @@ import { MyAppointmentComponent } from './my-appointment/my-appointment.componen
 import { PatientComponent } from './patient/patient.component';
 
 import { AuthGuard } from 'src/app/core/guards/auth.guard';
+import { ProfileComponent } from './profile/profile.component';
+import { ProfilViewComponent } from './profil-view/profil-view.component';
 
 const routes: Routes = [
   {
@@ -18,7 +20,9 @@ const routes: Routes = [
       { path: 'rendez-vous', component: MyAppointmentComponent },
       { path: 'creneaux', component: CreneauxComponent },
       { path: 'patients', component: PatientComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'profil-view', component: ProfilViewComponent },
+      { path: 'profile', component: ProfileComponent },
+      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   }
 ];

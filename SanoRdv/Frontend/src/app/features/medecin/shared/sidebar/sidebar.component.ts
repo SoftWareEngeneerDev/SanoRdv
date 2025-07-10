@@ -48,37 +48,11 @@ export class SidebarComponent implements OnInit {
       this.collapseChange.emit(this.isCollapsed);
     }
 
-    // goToProfileEdit(): void {
-    //   this.router.navigate(['']);
-    // }
-
     menuItems = [
-      { title: 'Tableau de bord', link: '/medecin/dashboard', icon: 'bi-grid-fill' },
-       { title: 'Mes Rendez-vous', icon: 'bi-calendar-event', link: '/medecin/rendez-vous' },
-      { title: 'Agenda', icon: 'bi-people-fill', link: '/medecin/creneaux' },
-      { title: 'Patients', icon: 'bi-person-badge', link: '/medecin/patients' },
-      // { title: 'Profil', link: '/patient/', icon: 'bi-gear' },
+      { title: 'TABLEAU DE BORD', link: '/medecin/dashboard', icon: 'bi-grid-fill' },
+      { title: 'RENDEZ-VOUS', icon: 'bi-calendar-event', link: '/medecin/rendez-vous' },
+      { title: 'AGENDA', icon: 'bi-people-fill', link: '/medecin/creneaux' },
+      { title: 'PATIENTS', icon: 'bi-person-badge', link: '/medecin/patients' },
+      { title: 'PROFIL', link: '/medecin/profil-view', icon: 'fas fa-user fa-0,5x' },
     ];
-  // isCollapsed: boolean = false;
-  // @Output() collapseChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-
-  // medecin = {
-  //   nom: 'Ouédraogo',
-  //   prenom: 'Issa',
-  //   avatar: 'assets/images/faiçal.jpg'
-  // };
-
-  // ngOnInit(): void {}
-
-  // toggleSidebar() {
-  //   this.isCollapsed = !this.isCollapsed;
-  //   this.collapseChange.emit(this.isCollapsed);
-  // }
-
-  // menuItems = [
-  //   { title: 'Tableau de bord', icon: 'bi-grid-fill', link: '/medecin/dashboard' },
-  //   { title: 'Mes Rendez-vous', icon: 'bi-calendar-event', link: '/medecin/rendez-vous' },
-  //   { title: 'Agenda', icon: 'bi-people-fill', link: '/medecin/creneaux' },
-  //   { title: 'Patients', icon: 'bi-person-badge', link: '/medecin/patients' }
-  // ];
 }
