@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
 import { SharedLayoutComponent } from './shared/components/shared-layout/shared-layout.component';
 import { LoginGuard } from './core/guards/login.guard';
+import { AboutComponent } from './features/about/about.component';
 
 const routes: Routes = [
   {
@@ -10,7 +11,8 @@ const routes: Routes = [
     component: SharedLayoutComponent,
     canActivate: [LoginGuard],
     children: [
-      { path: '', component: HomeComponent }
+      { path: '', component: HomeComponent },
+      { path: 'about', component: AboutComponent } // <-- Ajoute cette ligne ici
     ]
   },
   {
@@ -36,6 +38,9 @@ const routes: Routes = [
     data: { roles: ['patient'] }, //  Seul le patient peut accéder
     loadChildren: () => import('./features/patient/patient.module').then(m => m.PatientModule)
   },
+
+
+
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 
