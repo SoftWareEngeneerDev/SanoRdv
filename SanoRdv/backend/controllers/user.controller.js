@@ -1,15 +1,14 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Admin from '../models/admin.model.js';
-import Medecin from '../models/medecin.model.js'; 
+import Medecin from '../models/medecin.model.js';
 import Patient from '../models/patient.model.js';
 import { sanitizeInput, handleError } from '../utils/helpers.js';
 import { sendResetPasswordEmail } from '../utils/mail.util.js';
 import NodeCache from 'node-cache';
 
-
 // Cache pour les codes de réinitialisation
-const codeCache = new NodeCache({ 
+const codeCache = new NodeCache({
   stdTTL: 25 * 60, // 25 minutes de durée de vie par défaut
   checkperiod: 60 // Vérification et nettoyage toutes les 60 secondes
 });
@@ -32,11 +31,12 @@ const MAX_RESET_ATTEMPTS = 3; // Nombre maximum de tentatives de code
 // Patterns de validation
 const PATTERNS = {
   email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-  IDadmin: /^admin-\d+$/i, // Format: admin-1750251190039
-  IDmedecin: /^MED-\d+$/i, // Format: MED-001
-  IDpatient: /^INE-\d{8}-\d{6}$/i, // Format: INE-20250618-113054
+  IDadmin: /^admin[_-]\d+$/i, // Accepte admin_44810 ou admin-44810 (insensible à la casse)
+  IDmedecin: /^MED-\d+$/i,
+  IDpatient: /^INE-\d{8}-\d{6}$/i,
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 };
+
 // Mapping des modèles
 const USER_MODELS = {
   admin: Admin,
@@ -46,31 +46,24 @@ const USER_MODELS = {
 
 /**
  * Trouve un utilisateur par identifiant (email ou ID spécifique selon le rôle)
- * Version corrigée selon vos champs de base de données
  */
 const findUser = async (identifier) => {
   const cleanId = sanitizeInput(identifier);
-  
+
   try {
     console.log(`🔍 Recherche utilisateur avec identifiant: "${cleanId}"`);
-    
+
     // 1. Recherche par email (Admin, Médecin, Patient)
     if (PATTERNS.email.test(cleanId)) {
       console.log('📧 Recherche par email...');
-      
+
       const escapedEmail = cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const [admin, medecin, patient] = await Promise.all([
-        Admin.findOne({ 
-          email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } 
-        }).select('+motDePasse +password'), // Inclure les deux champs possibles
-        Medecin.findOne({ 
-          email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } 
-        }).select('+motDePasse +password'),
-        Patient.findOne({ 
-          email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } 
-        }).select('+motDePasse +password')
+        Admin.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }).select('+motDePasse +password'),
+        Medecin.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }).select('+motDePasse +password'),
+        Patient.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }).select('+motDePasse +password')
       ]);
-      
+
       if (admin) {
         console.log('✅ Admin trouvé par email');
         return { user: admin, role: 'admin' };
@@ -84,64 +77,60 @@ const findUser = async (identifier) => {
         return { user: patient, role: 'patient' };
       }
     }
-    
-    // 2. Recherche par IDadmin (Admin uniquement)
+
+    // 2. Recherche par IDadmin (Admin uniquement) — ici modif pour insensible à la casse
     if (PATTERNS.IDadmin.test(cleanId)) {
       console.log('👑 Recherche par IDadmin...');
-      const admin = await Admin.findOne({ 
-        IDadmin: cleanId 
+      const admin = await Admin.findOne({
+        IDadmin: { $regex: new RegExp(`^${cleanId}$`, 'i') }
       }).select('+motDePasse +password');
-      
+
       if (admin) {
         console.log('✅ Admin trouvé par IDadmin');
         return { user: admin, role: 'admin' };
       }
     }
-    
+
     // 3. Recherche par IDmedecin (Médecin uniquement)
     if (PATTERNS.IDmedecin.test(cleanId)) {
       console.log('🩺 Recherche par IDmedecin...');
-      const medecin = await Medecin.findOne({ 
-        IDmedecin: cleanId 
-      }).select('+motDePasse +password');
-      
+      const medecin = await Medecin.findOne({ IDmedecin: cleanId }).select('+motDePasse +password');
+
       if (medecin) {
         console.log('✅ Médecin trouvé par IDmedecin');
         return { user: medecin, role: 'medecin' };
       }
     }
-    
+
     // 4. Recherche par IDpatient (Patient uniquement)
     if (PATTERNS.IDpatient.test(cleanId)) {
       console.log('🏥 Recherche par IDpatient...');
-      const patient = await Patient.findOne({ 
-        IDpatient: cleanId 
-      }).select('+motDePasse +password');
-      
+      const patient = await Patient.findOne({ IDpatient: cleanId }).select('+motDePasse +password');
+
       if (patient) {
         console.log('✅ Patient trouvé par IDpatient');
         return { user: patient, role: 'patient' };
       }
     }
-    
-    // 5. Recherche générale (fallback pour tous les formats possibles)
+
+    // 5. Recherche générale (fallback)
     console.log('🔍 Recherche générale dans tous les modèles...');
     const [adminById, medecinById, patientById] = await Promise.all([
-      Admin.findOne({ 
+      Admin.findOne({
         $or: [
           { email: { $regex: new RegExp(`^${cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
-          { IDadmin: cleanId },
+          { IDadmin: { $regex: new RegExp(`^${cleanId}$`, 'i') } },
           { _id: cleanId.match(/^[0-9a-fA-F]{24}$/) ? cleanId : null }
         ]
       }).select('+motDePasse +password'),
-      Medecin.findOne({ 
+      Medecin.findOne({
         $or: [
           { IDmedecin: cleanId },
           { email: { $regex: new RegExp(`^${cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
           { _id: cleanId.match(/^[0-9a-fA-F]{24}$/) ? cleanId : null }
         ]
       }).select('+motDePasse +password'),
-      Patient.findOne({ 
+      Patient.findOne({
         $or: [
           { IDpatient: cleanId },
           { email: { $regex: new RegExp(`^${cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
@@ -149,7 +138,7 @@ const findUser = async (identifier) => {
         ]
       }).select('+motDePasse +password')
     ]);
-    
+
     if (adminById) {
       console.log('✅ Admin trouvé par recherche générale');
       return { user: adminById, role: 'admin' };
@@ -176,10 +165,10 @@ const findUser = async (identifier) => {
  */
 const findUserByEmail = async (email) => {
   const cleanEmail = sanitizeInput(email);
-  
+
   try {
     console.log(`🔍 Recherche par email pour reset: "${cleanEmail}"`);
-    
+
     const escapedEmail = cleanEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const [admin, medecin, patient] = await Promise.all([
       Admin.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }),
@@ -199,7 +188,7 @@ const findUserByEmail = async (email) => {
       console.log('✅ Patient trouvé pour reset');
       return { user: patient, role: 'patient' };
     }
-    
+
     console.log('❌ Aucun utilisateur trouvé pour reset');
     return { user: null, role: null };
   } catch (error) {
@@ -216,7 +205,7 @@ const updateUser = async (userId, role, updateData) => {
   if (!Model) {
     throw new Error(`Rôle invalide: ${role}`);
   }
-  
+
   try {
     return await Model.findByIdAndUpdate(userId, updateData, { new: true });
   } catch (error) {
@@ -228,20 +217,19 @@ const updateUser = async (userId, role, updateData) => {
 /**
  * CONNEXION
  */
-
 export const login = async (req, res) => {
   try {
     const { UserID, motDePasse } = req.body;
 
-    console.log('🔐 Tentative de connexion:', { 
-      UserID: UserID ? 'fourni' : 'manquant', 
-      motDePasse: motDePasse ? 'fourni' : 'manquant' 
+    console.log('🔐 Tentative de connexion:', {
+      UserID: UserID ? 'fourni' : 'manquant',
+      motDePasse: motDePasse ? 'fourni' : 'manquant'
     });
 
     // Validation des données
     if (!UserID || !motDePasse) {
       console.log('❌ Données manquantes');
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Identifiant et mot de passe requis.",
         error: "MISSING_CREDENTIALS"
       });
@@ -249,7 +237,7 @@ export const login = async (req, res) => {
 
     if (typeof motDePasse !== 'string' || motDePasse.trim() === '') {
       console.log('❌ Mot de passe invalide');
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Mot de passe invalide.",
         error: "INVALID_PASSWORD"
       });
@@ -257,14 +245,15 @@ export const login = async (req, res) => {
 
     if (!JWT_SECRET || JWT_SECRET === 'your_jwt_secret_here_change_in_production') {
       console.error('⚠️ JWT_SECRET non configuré en production');
+      throw new Error('JWT_SECRET non configuré');
     }
 
     // Recherche de l'utilisateur dans la base
-    const { user, role } = await findUser(UserID);
+    const { user, role } = await findUser(UserID.trim());
 
     if (!user) {
       console.log('❌ Utilisateur non trouvé');
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: "Identifiant ou mot de passe incorrect.",
         error: "INVALID_CREDENTIALS"
       });
@@ -275,7 +264,7 @@ export const login = async (req, res) => {
     // Vérification compte actif
     if (user.isActive === false || user.isActives === 'disabled') {
       console.log('❌ Compte désactivé');
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: "Ce compte est désactivé. Contactez l'administrateur.",
         error: "ACCOUNT_DISABLED"
       });
@@ -285,7 +274,7 @@ export const login = async (req, res) => {
     if (user.lockUntil && user.lockUntil > Date.now()) {
       const remainingTime = Math.ceil((user.lockUntil - Date.now()) / 60000);
       console.log(`🔒 Compte verrouillé pour ${remainingTime} minutes`);
-      return res.status(423).json({ 
+      return res.status(423).json({
         message: `Compte verrouillé. Réessayez dans ${remainingTime} minutes.`,
         error: "ACCOUNT_LOCKED",
         remainingTime
@@ -296,7 +285,7 @@ export const login = async (req, res) => {
     const userPassword = user.motDePasse || user.password;
     if (!userPassword) {
       console.log('❌ Aucun mot de passe configuré');
-      return res.status(500).json({ 
+      return res.status(500).json({
         message: "Erreur de configuration du compte.",
         error: "NO_PASSWORD_SET"
       });
@@ -316,7 +305,7 @@ export const login = async (req, res) => {
 
       await updateUser(user._id, role, updateData);
 
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: "Identifiant ou mot de passe incorrect.",
         error: "INVALID_CREDENTIALS",
         attemptsLeft: Math.max(0, MAX_LOGIN_ATTEMPTS - loginAttempts)
@@ -334,7 +323,7 @@ export const login = async (req, res) => {
 
     // Générer token JWT
     const token = jwt.sign(
-      { 
+      {
         userId: user._id,
         role,
         email: user.email
@@ -362,12 +351,13 @@ export const login = async (req, res) => {
 
   } catch (error) {
     console.error('❌ Erreur lors de la connexion:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: "Erreur serveur lors de la connexion.",
       error: "SERVER_ERROR"
     });
   }
 };
+
 /**
  * DÉCONNEXION
  */
