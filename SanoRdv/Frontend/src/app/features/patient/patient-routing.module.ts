@@ -12,7 +12,8 @@ import { CreneauComponent } from './pages/creneau/creneau.component';
 import { ProfilMedecinComponent } from './pages/informations/informations.component';
 import { RecapitulatifComponent } from './pages/recapitulatif/recapitulatif.component';
 import { ConfirmationComponent } from './pages/confirmation/confirmation.component';
-import { AuthGuard } from 'src/app/core/guards/auth.guard';
+import { DeconnexionComponent } from './pages/deconnexion/deconnexion.component';
+import { AuthGuard } from 'src/app/core/guards/auth.guard';  // Importation du AuthGuard
 
 const routes: Routes = [
   { path: 'informations', component: ProfilMedecinComponent, canActivate: [AuthGuard] },
@@ -20,10 +21,11 @@ const routes: Routes = [
   { path: 'creneau', component: CreneauComponent, canActivate: [AuthGuard] },
   { path: 'recapitulatif', component: RecapitulatifComponent, canActivate: [AuthGuard] },
   { path: 'confirmation', component: ConfirmationComponent, canActivate: [AuthGuard] },
+  { path: 'deconnexion', component: DeconnexionComponent, canActivate: [AuthGuard] },
   {
     path: '',
     component: PatientLayoutComponent,
-    canActivateChild: [AuthGuard], // <-- protège toutes les routes enfants automatiquement
+    canActivateChild: [AuthGuard], // Protection de toutes les routes enfants
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
