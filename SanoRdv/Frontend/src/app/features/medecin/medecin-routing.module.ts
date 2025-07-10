@@ -6,10 +6,13 @@ import { CreneauxComponent } from './creneaux/creneaux.component';
 import { MyAppointmentComponent } from './my-appointment/my-appointment.component';
 import { PatientComponent } from './patient/patient.component';
 
-const routes: Routes = [
+import { AuthGuard } from 'src/app/core/guards/auth.guard';
 
+const routes: Routes = [
   {
-    path: '',component: LayoutComponent, // Le wrapper contenant navbar + sidebar
+    path: '',
+    component: LayoutComponent,
+    canActivateChild: [AuthGuard], // <-- Protéger toutes les routes enfants
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'rendez-vous', component: MyAppointmentComponent },

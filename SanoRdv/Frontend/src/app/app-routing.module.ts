@@ -2,21 +2,20 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
 import { SharedLayoutComponent } from './shared/components/shared-layout/shared-layout.component';
-
+import { LoginGuard } from './core/guards/login.guard';
 
 const routes: Routes = [
-  // Page d'accueil avec layout commun
   {
     path: '',
     component: SharedLayoutComponent,
+    canActivate: [LoginGuard], // ✅ Bloque l'accès si connecté
     children: [
       { path: '', component: HomeComponent }
     ]
   },
-
-  // Lazy loading des modules
   {
     path: 'auth',
+    canActivate: [LoginGuard], // ✅ Bloque tout le module auth si connecté
     loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)
   },
   {
@@ -31,8 +30,6 @@ const routes: Routes = [
     path: 'patient',
     loadChildren: () => import('./features/patient/patient.module').then(m => m.PatientModule)
   },
-
-  // Toute URL inconnue redirige vers la page d'accueil
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 
