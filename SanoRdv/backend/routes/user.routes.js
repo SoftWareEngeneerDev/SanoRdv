@@ -208,6 +208,10 @@ router.post(
   resetPassword
 );
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 /* ==========================================================================
     ROUTE GET /validate-token - VALIDATION DU TOKEN (optionnelle)
    ========================================================================== */

@@ -1,0 +1,63 @@
+.my-appointments-container {
+  max-width: 1000px;
+  margin: 50px auto; /* Centrage horizontal + espacement vertical */
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #007bff;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.appointments-table th,
+.appointments-table td {
+  border: 1px solid #dee2e6;
+  padding: 12px;
+  text-align: left;
+}
+
+.appointments-table th {
+  background-color: #f1f1f1;
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.badge.confirmed {
+  background-color: #28a745;
+}
+
+.badge.pending {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.badge.cancelled {
+  background-color: #dc3545;
+}
+
+.empty {
+  color: #888;
+  font-style: italic;
+}
+.no-data-row {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+}
+

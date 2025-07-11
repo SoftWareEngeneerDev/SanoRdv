@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 import Creneau from '../models/creneau.model.js';
+=======
+
+import Creneau from '../models/creneau.model.js';
+import Agenda from '../models/agenda.model.js';
+
+>>>>>>> origin/master
 
 // -----------Fonction pour valider la date------------------------
 function validerDate(date) {
@@ -110,9 +117,34 @@ async function saveCreneauxBulk(dateChoisie, agendaId, timeSlots) {
     }
 }
 
+<<<<<<< HEAD
+=======
+//---------------- Fonction pour obtenir un agenda avec ses créneaux --------
+export const obtenirAgenda = async (req, res) => {
+  try {
+    const { agendaId } = req.params;
+    // Popule le tableau creneaux de l'agenda
+    const agenda = await Agenda.findById(agendaId).populate('creneaux');
+
+    if (!agenda) {
+      return res.status(404).json({ success: false, message: 'Agenda introuvable' });
+    }
+
+    res.status(200).json({ success: true, data: agenda });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+>>>>>>> origin/master
 export default {
     genererCreneauxParDate,
     mettreAJourStatutCreneau,
     saveCreneaux,
+<<<<<<< HEAD
     saveCreneauxBulk,  // Ajouter la méthode d'insertion par lots
 };
+=======
+    saveCreneauxBulk  // Ajouter la méthode d'insertion par lots
+};
+>>>>>>> origin/master

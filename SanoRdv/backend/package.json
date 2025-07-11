@@ -22,10 +22,14 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.6.1",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.0",
     "node-cache": "^5.1.2",
+<<<<<<< HEAD
     "node-cron": "^4.2.0",
+=======
+>>>>>>> origin/master
     "nodemailer": "^7.0.3"
   }
 }
