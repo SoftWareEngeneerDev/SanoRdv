@@ -1,0 +1,28 @@
+<div class="profile-container">
+  <h2 class="title">PROFIL</h2>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="nom">Nom <span class="required">*</span></label>
+      <div class="input-icon">
+        <input type="text" id="nom" formControlName="nom" placeholder="Votre nom" />
+        <i class="fa fa-user"></i>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="prenom">Prénom <span class="required">*</span></label>
+      <div class="input-icon">
+        <input type="text" id="prenom" formControlName="prenom" placeholder="Votre prénom" />
+        <i class="fa fa-user"></i>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="photo">Photo</label>
+      <input type="file" id="photo" (change)="onFileSelected($event)" />
+    </div>
+
+    <button type="submit" class="btn-save" [disabled]="!profileForm.valid">Enregistrer</button>
+  </form>
+</div>
