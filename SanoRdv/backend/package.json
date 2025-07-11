@@ -27,7 +27,14 @@
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.0",
     "node-cache": "^5.1.2",
+<<<<<<< HEAD
     "node-cron": "^4.2.0",
+=======
+<<<<<<< HEAD
+    "node-cron": "^4.2.0",
+=======
+>>>>>>> origin/master
+>>>>>>> origin/master
     "nodemailer": "^7.0.3"
   }
 }

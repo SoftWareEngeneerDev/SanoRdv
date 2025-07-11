@@ -1,30 +1,85 @@
 <div class="container mt-4">
-  <h2 class="fw-bold mb-4">GESTIONS DES RENDEZ-VOUS</h2>
+  <h1 class="mb-4">Gestion des Rendez-vous</h1>
 
-  <div class="card shadow-sm p-3">
-    <table class="table table-hover align-middle text-center">
-      <thead>
-        <tr>
-          <th>Date et Heure</th>
-          <th>Patients</th>
-          <th>Médecin</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let rdv of rendezVousList">
-          <td>{{ rdv.dateHeure | date:'dd/MM/yyyy - HH:mm' }}</td>
-          <td class="fw-bold text-uppercase">{{ rdv.patientNom }}</td>
-          <td class="fw-bold">Dr {{ rdv.medecinNom }}</td>
-          <td>{{ rdv.statut }}</td>
-          <td>
-            <span *ngIf="rdv.statut === 'En_attente'" class="text-danger me-2" style="cursor:pointer;" (click)="annuler(rdv.id)">Annuler</span>
-            <span *ngIf="rdv.statut === 'En_attente'" class="text-primary" style="cursor:pointer;" (click)="modifier(rdv.id)">Modifier</span>
-            <span *ngIf="rdv.statut !== 'En_attente'">-</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="input-group">
+        <input type="text" class="form-control" 
+               placeholder="Entrez le nom du médecin, ou du patient..."
+               [(ngModel)]="searchTerm" (input)="searchRendezVous()">
+        <button class="btn btn-outline-secondary" type="button" (click)="searchRendezVous()">
+          <i class="bi bi-search"></i> Rechercher
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Liste des Rendez-vous</h5>
+    </div>
+    
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Patient</th>
+              <th>Médecin</th>
+              <th>Date/Heure</th>
+              <th>Statut</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rendezVous of filteredRendezVous">
+              <td>
+                <strong>{{ rendezVous.patient.nomComplet }}</strong><br>
+                <small class="text-muted">Né le {{ rendezVous.patient.dateNaissance | date:'dd/MM/yyyy' }}</small>
+              </td>
+              <td>
+                <strong>{{ rendezVous.medecin.nom }}</strong><br>
+                <small class="text-muted">{{ rendezVous.medecin.specialite }}</small>
+              </td>
+              <td>
+                {{ formaterDateFrancais(rendezVous.dateHeure.debut) }} - 
+{{ rendezVous.dateHeure.fin | date:'HH:mm' }}
+              </td>
+              <td>
+                <span class="badge rounded-pill {{ getStatusClass(rendezVous.statut) }}">
+                  {{ rendezVous.statut }}
+                </span>
+              </td>
+              <td class="text-end">
+                <button *ngIf="rendezVous.statut !== 'Terminé'" 
+                        class="btn btn-sm btn-outline-primary me-1"
+                        [routerLink]="['/admin/rendezvous/modifier', rendezVous.id]">
+                  <i class="bi bi-pencil"></i> Modifier
+                </button>
+                <button class="btn btn-sm btn-outline-primary me-1"
+                        [routerLink]="['/admin/rendezvous', rendezVous.id]">
+                  <i class="bi bi-eye"></i> Voir
+                </button>
+                <button *ngIf="rendezVous.statut !== 'Terminé' && rendezVous.statut !== 'Annulé'" 
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="annulerRendezVous(rendezVous.id)">
+                  <i class="bi bi-x-circle"></i> Annuler
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredRendezVous.length === 0 && !chargement">
+              <td colspan="5" class="text-center py-4">Aucun rendez-vous trouvé</td>
+            </tr>
+            <tr *ngIf="chargement">
+              <td colspan="5" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Chargement...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

@@ -9,34 +9,81 @@ import { Specialite } from '../../models/specialites.model';
 })
 export class SpecialitesComponent implements OnInit {
 
-      specialites: Specialite[] = [];
-  nouvelleSpecialite: string = '';
+    specialites: Specialite[] = [];
+  rechercheSpecialite = '';
+  specialiteEnEdition: Specialite | null = null;
+  nouvelleSpecialite = {
+    nom: '',
+    description: ''
+  };
+
+  
 
   constructor(private specialiteService: SpecialiteService) {}
 
   ngOnInit(): void {
     this.chargerSpecialites();
   }
+  
 
-  chargerSpecialites() {
-    this.specialiteService.getSpecialites().subscribe(data => {
-      this.specialites = data;
+  chargerSpecialites(): void {
+    this.specialiteService.getSpecialites().subscribe(specialites => {
+      this.specialites = specialites;
     });
   }
 
-  ajouterSpecialite() {
-    if (!this.nouvelleSpecialite.trim()) return;
+  commencerEdition(specialite: Specialite): void {
+    this.specialiteEnEdition = { ...specialite };
+  }
 
-    this.specialiteService.ajouterSpecialite({ nom: this.nouvelleSpecialite }).subscribe(() => {
-      this.nouvelleSpecialite = '';
+  annulerEdition(): void {
+    this.specialiteEnEdition = null;
+  }
+
+  validerEdition(): void {
+    if (this.specialiteEnEdition) {
+      this.specialiteService.modifierSpecialite(this.specialiteEnEdition).subscribe(() => {
+        this.specialiteEnEdition = null;
+        this.chargerSpecialites();
+      });
+    }
+  }
+
+  ajouterSpecialite(): void {
+    if (!this.nouvelleSpecialite.nom.trim()) return;
+
+    this.specialiteService.ajouterSpecialite({
+      ...this.nouvelleSpecialite,
+      nombreMedecins: 0
+    }).subscribe(() => {
+      this.nouvelleSpecialite = { nom: '', description: '' };
       this.chargerSpecialites();
     });
   }
 
-  supprimerSpecialite(id: string) {
-    this.specialiteService.supprimerSpecialite(id).subscribe(() => {
-      this.chargerSpecialites();
-    });
+  supprimerSpecialite(id: string): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette spécialité ?')) {
+      this.specialiteService.supprimerSpecialite(id).subscribe(() => {
+        this.chargerSpecialites();
+      });
+    }
   }
+
+  filteredSpecialites: Specialite[] = [];
+
+
+
+searchSpecialites(): void {
+  if (!this.rechercheSpecialite.trim()) {
+    this.filteredSpecialites = [...this.specialites];
+    return;
+  }
+  
+  const term = this.rechercheSpecialite.toLowerCase();
+  this.filteredSpecialites = this.specialites.filter(s => 
+    s.nom.toLowerCase().includes(term) || 
+    s.description.toLowerCase().includes(term)
+  );
+}
 
 }

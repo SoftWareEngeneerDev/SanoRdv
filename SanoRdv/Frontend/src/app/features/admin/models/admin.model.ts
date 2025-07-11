@@ -3,5 +3,5 @@ export interface Admin {
    nom: string;
    prenom: string;
    photo?: string;
-   email: string;
+   
 }

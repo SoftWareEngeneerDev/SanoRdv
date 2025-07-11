@@ -1,16 +1,38 @@
-.card {
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+.table th {
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.table thead th {
-  font-weight: bold;
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
 }
 
-.text-danger {
-  font-weight: bold;
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
 }
 
-.text-primary {
-  font-weight: bold;
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .table-responsive {
+    border: 0;
+  }
+  
+  .table {
+    font-size: 0.875rem;
+  }
+  
+  .btn-sm {
+    margin-bottom: 0.25rem;
+    display: inline-block;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
 }
