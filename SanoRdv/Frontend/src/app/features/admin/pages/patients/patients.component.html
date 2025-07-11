@@ -1,0 +1,71 @@
+<div class="container p-3">
+  <div class="card shadow-sm rounded border-0 p-4">
+    <h2 class="fw-bold mb-4 text-uppercase">Gestions des Patients</h2>
+
+    <!-- Barre de recherche -->
+    <div class="d-flex justify-content-end mb-3">
+      <div class="input-group w-100 w-md-50">
+        <span class="input-group-text bg-white">
+          <i class="bi bi-search text-primary"></i>
+        </span>
+        <input type="text"
+               [(ngModel)]="searchTerm"
+               class="form-control"
+               placeholder="Recherche patient...">
+      </div>
+    </div>
+
+    <!-- Tableau des patients -->
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light text-center">
+          <tr>
+            <th>NOM</th>
+            <th>Email</th>
+            <th>Compte</th>
+            <th>Rendez-vous passés</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let patient of filteredPatients()" class="text-center">
+            <td class="fw-semibold">{{ patient.nom }}</td>
+            <td>{{ patient.email }}</td>
+            <td>
+              <span class="badge fw-bold"
+                    [ngClass]="{
+                      'bg-success text-white': patient.actif,
+                      'bg-danger text-white': !patient.actif
+                    }">
+                {{ patient.actif ? 'Actif' : 'Inactif' }}
+              </span>
+            </td>
+            <td>{{ patient.rendezVousPasses  }}</td>
+            <td>
+              <span class="text-danger me-2" style="cursor: pointer;" (click)="ouvrirConfirmation(patient.id)">Supprimer</span>
+              <span *ngIf="patient.actif"
+                    class="text-primary"
+                    style="cursor: pointer;"
+                    (click)="voirHistorique(patient.id)">
+                Historique
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ MODALE DE CONFIRMATION -->
+<div class="modal-backdrop-custom" *ngIf="patientASupprimer">
+  <div class="modal-confirmation card shadow p-4 text-center">
+    <h5 class="fw-bold mb-3">Confirmer la suppression</h5>
+    <p>Voulez-vous vraiment supprimer ce patient ?</p>
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <button class="btn btn-outline-secondary" (click)="annulerSuppression()">Annuler</button>
+      <button class="btn btn-danger" (click)="confirmerSuppression()">Supprimer</button>
+    </div>
+  </div>
+</div>
+

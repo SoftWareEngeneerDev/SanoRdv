@@ -15,8 +15,9 @@
             formControlName="UserID"
             placeholder="Email ou ID"
           />
+          <!-- Icône Bootstrap pour l'email, à l'intérieur et à droite -->
           <i
-            class="fas fa-envelope"
+            class="bi bi-envelope"
             style="
               position: absolute;
               right: 10px;
@@ -39,11 +40,12 @@
             placeholder="Mot de passe"
             class="password-input"
           />
+          <!-- Icône Bootstrap pour afficher/masquer le mot de passe -->
           <i
-            class="eye-icon"
-            [ngClass]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+            class="bi"
+            [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
             (click)="togglePasswordVisibility()"
-          ></i>
+          ></i><!-- Icône fermée correctement -->
         </div>
       </div>
 

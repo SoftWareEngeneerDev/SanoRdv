@@ -1,124 +1,67 @@
-<<<<<<< HEAD
-import Creneau from '../models/creneau.model.js';
-=======
 
 import Creneau from '../models/creneau.model.js';
 import Agenda from '../models/agenda.model.js';
-
->>>>>>> origin/master
-
-// -----------Fonction pour valider la date------------------------
-function validerDate(date) {
-    const isValidDate = !isNaN(new Date(date).getTime());
-    return isValidDate;
-}
+import { genererCreneauxParDate } from '../utils/genererCreneauxParDate.creneau.js';
+import { modifierStatusParHeure } from '../utils/modifierStatusParHeure.creneau.js';
 
 
 
-// -------Fonction pour générer les créneaux horaires sans les enregistrer immédiatement--
-function genererCreneauxParDate(dateChoisie) {
-    if (!validerDate(dateChoisie)) {
-        throw new Error('La date fournie n\'est pas valide.');
+//-----------Fonction qui permet de generer et enregistrer----------
+async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles = []) {
+    if (!agendaId || !date) {
+        throw new Error("Champs 'agendaId' et 'date' requis.");
     }
 
-    const startTime = 8;  // 8h00
-    const endTime = 17.5; // 17h30
-    const interval = 0.5; // Intervalle de 30 minutes
+    // 1. Générer les créneaux de la journée
+    let timeSlots = genererCreneauxParDate(date);
 
-    const timeSlots = [];
-
-    // Générer les créneaux horaires pour la date choisie
-    for (let time = startTime; time <= endTime; time += interval) {
-        let hours = Math.floor(time);
-        let minutes = (time % 1 === 0.5) ? '30' : '00';
-        let formattedTime = `${hours}:${minutes}`;
-
-        timeSlots.push({
-            time: formattedTime,
-            status: 'disponible', // Par défaut, tous les créneaux sont disponibles
-        });
+    // 2. Marquer les créneaux indisponibles selon les choix du médecin
+    if (heuresIndisponibles.length > 0) {
+        timeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles, 'indisponible');
     }
 
-    return timeSlots;
-}
+    // 3. Vérifie si un créneau existe déjà (update si oui)
+    const existing = await Creneau.findOne({ agenda: agendaId, date: new Date(date) });
 
-
-
-// ----------Fonction pour modifier le statut d'un créneau spécifique-----------------
-function mettreAJourStatutCreneau(timeSlots, time, newStatus) {
-    const timeSlot = timeSlots.find(slot => slot.time === time);
-
-    if (timeSlot) {
-        if (!['disponible', 'indisponible', 'réservé'].includes(newStatus)) {
-            throw new Error('Statut invalide.');
-        }
-        timeSlot.status = newStatus;
-    } else {
-        throw new Error('Créneau horaire non trouvé');
+    if (existing) {
+        existing.timeSlots = timeSlots;
+        const updated = await existing.save();
+        return { operation: 'update', data: updated };
     }
 
-    return timeSlots;
+    // 4. Sinon, créer un nouveau
+    const nouveau = new Creneau({
+        agenda: agendaId,
+        date: new Date(date),
+        timeSlots
+    });
+
+    const saved = await nouveau.save();
+    return { operation: 'create', data: saved };
 }
+
+//------------------------------------------------------------------
+
 
 // --------------Fonction pour vérifier et supprimer les créneaux existants pour une date donnée
-async function verifierEtSupprimerCreneauxExistants(dateChoisie, agendaId) {
-    const existingCreneaux = await Creneau.findOne({ date: dateChoisie, agenda: agendaId });
 
-    if (existingCreneaux) {
-        await Creneau.deleteOne({ date: dateChoisie, agenda: agendaId });
-    }
+export async function supprimerCreneau(agendaId, date) {
+  if (!agendaId || !date) {
+    throw new Error("Les champs 'agendaId' et 'date' sont requis");
+  }
+
+  const result = await Creneau.deleteOne({
+    agenda: agendaId,
+    date: new Date(date)
+  });
+
+  if (result.deletedCount === 0) {
+    throw new Error("Aucun créneau trouvé pour cette date et cet agenda.");
+  }
+
+  return result;
 }
 
-
-
-// -------------Fonction pour enregistrer les créneaux dans la base de données
-async function saveCreneaux(dateChoisie, agendaId, timeSlots) {
-    try {
-        // Vérifier si des créneaux existent déjà pour cette date et cet agenda
-        await verifierEtSupprimerCreneauxExistants(dateChoisie, agendaId);
-
-        const newCreneau = new Creneau({
-            agenda: agendaId,
-            date: dateChoisie,
-            timeSlots: timeSlots,
-        });
-
-        // Sauvegarder les créneaux dans la base de données
-        const savedCreneau = await newCreneau.save();
-        return savedCreneau;
-    } catch (error) {
-        console.error('Erreur lors de l\'enregistrement des créneaux:', error);
-        throw new Error('Échec de l\'enregistrement des créneaux.');
-    }
-}
-
-
-
-// -------------Fonction pour insérer les créneaux par lots (Bulk insert) pour optimiser les performances
-async function saveCreneauxBulk(dateChoisie, agendaId, timeSlots) {
-    try {
-        // Vérifier si des créneaux existent déjà pour cette date et cet agenda
-        await verifierEtSupprimerCreneauxExistants(dateChoisie, agendaId);
-
-        const operations = timeSlots.map(slot => ({
-            updateOne: {
-                filter: { agenda: agendaId, date: dateChoisie, time: slot.time },
-                update: { $set: slot },
-                upsert: true, // Crée un créneau si inexistant
-            },
-        }));
-
-        // Enregistrer les créneaux par lots
-        const result = await Creneau.bulkWrite(operations);
-        return result;
-    } catch (error) {
-        console.error('Erreur lors de l\'enregistrement des créneaux par lots:', error);
-        throw new Error('Échec de l\'enregistrement des créneaux par lots.');
-    }
-}
-
-<<<<<<< HEAD
-=======
 //---------------- Fonction pour obtenir un agenda avec ses créneaux --------
 export const obtenirAgenda = async (req, res) => {
   try {
@@ -136,15 +79,54 @@ export const obtenirAgenda = async (req, res) => {
   }
 };
 
->>>>>>> origin/master
+// --------Pour afficher les créneaux d’un agenda à une date donnée --
+export async function getCreneauxParDate(agendaId, date) {
+  if (!agendaId || !date) {
+    throw new Error("Les champs 'agendaId' et 'date' sont requis");
+  }
+
+  const creneau = await Creneau.findOne({
+    agenda: agendaId,
+    date: new Date(date),
+  });
+
+  if (!creneau) {
+    throw new Error("Aucun créneau trouvé pour cette date et cet agenda.");
+  }
+
+  return creneau;
+}
+
+//--------------Fonction contrôleur – filtrer par statut-----------------------
+// 
+export async function filtrerCreneauxParStatut(agendaId, date, statut) {
+  if (!agendaId || !date || !statut) {
+    throw new Error("Les champs 'agendaId', 'date' et 'statut' sont requis");
+  }
+
+  const creneau = await Creneau.findOne({
+    agenda: agendaId,
+    date: new Date(date),
+  });
+
+  if (!creneau) {
+    throw new Error("Aucun créneau trouvé pour cette date et cet agenda.");
+  }
+
+  // Filtrer les timeSlots selon le statut
+  const timeSlotsFiltres = creneau.timeSlots.filter(slot => slot.status === statut);
+
+  return {
+    agenda: creneau.agenda,
+    date: creneau.date,
+    timeSlots: timeSlotsFiltres
+  };
+}
+
+//---------------------------------------------------------------------------
 export default {
-    genererCreneauxParDate,
-    mettreAJourStatutCreneau,
-    saveCreneaux,
-<<<<<<< HEAD
-    saveCreneauxBulk,  // Ajouter la méthode d'insertion par lots
+    genererEtEnregistrerCreneau,
+    supprimerCreneau,
+    getCreneauxParDate,
+    filtrerCreneauxParStatut
 };
-=======
-    saveCreneauxBulk  // Ajouter la méthode d'insertion par lots
-};
->>>>>>> origin/master

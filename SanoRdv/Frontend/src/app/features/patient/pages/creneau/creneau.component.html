@@ -1,0 +1,42 @@
+<div class="container">
+  <div class="header">
+    <h2>Choisissez la date et l’horaire de votre rendez-vous médical</h2>
+  </div>
+
+  <div class="body">
+    <div class="calendar-container">
+      <h3>{{ viewDate | date: 'LLLL yyyy':'':'fr' }}</h3>
+      <mwl-calendar-month-view
+        [viewDate]="viewDate"
+        (dayClicked)="selectDate($event.day.date)"
+        [locale]="'fr'"
+        [weekStartsOn]="1"
+        [activeDayIsOpen]="false">
+      </mwl-calendar-month-view>
+    </div>
+
+    <div class="slots-container" *ngIf="selectedDate">
+      <h4>Créneaux disponibles - {{ selectedDate | date:'fullDate':'':'fr' }}</h4>
+
+      <div *ngIf="horairesDispo.length > 0; else aucunCreneau" class="slots">
+        <button
+          *ngFor="let h of horairesDispo"
+          class="slot-btn"
+          [class.selected]="h === selectedCreneau"
+          (click)="selectCreneau(h)">
+          {{ h }}
+        </button>
+      </div>
+
+      <ng-template #aucunCreneau>
+        <p>Aucun créneau disponible ce jour.</p>
+      </ng-template>
+    </div>
+
+    <!-- Les boutons en bas -->
+    <div class="bottom-buttons">
+      <button class="btn btn-primary white-bg" (click)="retourMotif()">← Précédent</button>
+      <button class="btn btn-primary" (click)="allerSuivant()">Suivant →</button>
+    </div>
+  </div>
+</div>

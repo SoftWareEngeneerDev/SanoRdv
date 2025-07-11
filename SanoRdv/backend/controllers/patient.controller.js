@@ -1,25 +1,18 @@
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
+import * as jdenticon from 'jdenticon';
+import { Buffer } from 'buffer';
 
 import Patient from '../models/patient.model.js';
 import { generateIna } from '../utils/generateIna.js';
-import { sendINEEmail, sendResetPasswordEmail } from '../utils/mail.util.js';
+import { sendINEEmail } from '../utils/mail.util.js';
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_RESET_SECRET = process.env.JWT_RESET_SECRET || JWT_SECRET;
-
 const CONFIG = {
   BCRYPT_ROUNDS: 12,
-  TOKEN_EXPIRY: '1h',
-  RESET_TOKEN_EXPIRY: '15m',
-  RESET_CODE_EXPIRY: 15 * 60 * 1000,
   ALLOWED_DOMAINS: ['gmail.com', 'icloud.com', 'yahoo.com', 'outlook.com'],
-  MAX_LOGIN_ATTEMPTS: 5,
-  LOCKOUT_TIME: 15 * 60 * 1000,
 };
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -27,24 +20,25 @@ const isValidPassword = (password) =>
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
 const sanitizeInput = (input) => (typeof input === 'string' ? input.trim().toLowerCase() : input);
 
+const generateAvatarBase64 = (nom, prenom) => {
+  const initials = `${prenom?.[0] ?? ''}${nom?.[0] ?? ''}`.toUpperCase();
+  const size = 256;
+  const svg = jdenticon.toSvg(initials, size);
+  const base64 = Buffer.from(svg).toString('base64');
+  return `data:image/svg+xml;base64,${base64}`;
+};
+
 const handleError = (error, res, message = 'Erreur serveur') => {
   console.error(error);
   return res.status(500).json({ message });
 };
 
-// ===========================
-// CONTROLEUR : Inscription
-// ===========================
 export const register = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
 
     const {
-<<<<<<< HEAD
-      nom, prenom, email, telephone, motDePasse, confirmationMotDePasse,
-      sex, localite = '', dateNaissance = '', adresse = '', role = 'patient'
-=======
       nom,
       prenom,
       email,
@@ -56,8 +50,7 @@ export const register = async (req, res) => {
       dateNaissance = '',
       adresse = '',
       role = 'patient',
-      photo = '',   // Ajout photo optionnelle
->>>>>>> origin/master
+      photo = '', // optionnel
     } = req.body;
 
     const sanitizedEmail = sanitizeInput(email);
@@ -67,6 +60,7 @@ export const register = async (req, res) => {
     if (!isValidEmail(sanitizedEmail)) {
       return res.status(400).json({ message: 'Format email invalide' });
     }
+
     const domain = sanitizedEmail.split('@')[1];
     if (!CONFIG.ALLOWED_DOMAINS.includes(domain)) {
       return res.status(400).json({
@@ -81,6 +75,7 @@ export const register = async (req, res) => {
           'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial',
       });
     }
+
     if (motDePasse !== confirmationMotDePasse) {
       return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
     }
@@ -107,6 +102,12 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(motDePasse, CONFIG.BCRYPT_ROUNDS);
 
+    // Génère avatar si pas de photo fournie
+    let avatarImage = photo;
+    if (!avatarImage || avatarImage.trim() === '') {
+      avatarImage = generateAvatarBase64(sanitizedNom, sanitizedPrenom);
+    }
+
     const newUser = new Patient({
       nom: sanitizedNom,
       prenom: sanitizedPrenom,
@@ -118,10 +119,7 @@ export const register = async (req, res) => {
       localite,
       dateNaissance,
       adresse,
-<<<<<<< HEAD
-=======
-      photo,            // Sauvegarde la photo si fournie
->>>>>>> origin/master
+      photo: avatarImage,
       loginAttempts: 0,
       lockUntil: undefined,
       role,
@@ -148,18 +146,24 @@ export const register = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-=======
 // ===========================
 // CONTROLEUR : Modifier profil
 // ===========================
 export const updateProfile = async (req, res) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ erreurs: errors.array() });
+    }
 
-    const patientId = req.params.id; // ou depuis token selon ta gestion auth
+    const patientId = req.params.id;
 
+    // Vérification de la présence de req.body
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Le corps de la requête est vide ou invalide." });
+    }
+
+    // Déstructuration après vérification
     const {
       nom,
       prenom,
@@ -172,13 +176,17 @@ export const updateProfile = async (req, res) => {
       dateNaissance,
       adresse,
       photo,
+      groupeSanguin,
+      allergies
     } = req.body;
 
     // Trouver le patient
     const patient = await Patient.findById(patientId);
-    if (!patient) return res.status(404).json({ message: "Patient non trouvé" });
+    if (!patient) {
+      return res.status(404).json({ message: "Patient non trouvé" });
+    }
 
-    // Validation email si modifié
+    // Email
     if (email) {
       const sanitizedEmail = sanitizeInput(email);
       if (!isValidEmail(sanitizedEmail)) {
@@ -191,7 +199,6 @@ export const updateProfile = async (req, res) => {
           allowedDomains: CONFIG.ALLOWED_DOMAINS,
         });
       }
-      // Vérifier unicité email (exclure patient actuel)
       const emailUsed = await Patient.findOne({ email: sanitizedEmail, _id: { $ne: patientId } });
       if (emailUsed) {
         return res.status(400).json({ message: 'Email déjà utilisé' });
@@ -199,16 +206,16 @@ export const updateProfile = async (req, res) => {
       patient.email = sanitizedEmail;
     }
 
-    // Vérifier unicité téléphone si modifié
+    // Téléphone
     if (telephone) {
       const phoneUsed = await Patient.findOne({ telephone, _id: { $ne: patientId } });
       if (phoneUsed) {
         return res.status(400).json({ message: 'Numéro de téléphone déjà utilisé' });
       }
-      patient.telephone = telephone;
+      patient.telephone = sanitizeInput(telephone);
     }
 
-    // Hasher mot de passe si modifié
+    // Mot de passe
     if (motDePasse) {
       if (!isValidPassword(motDePasse)) {
         return res.status(400).json({
@@ -222,22 +229,33 @@ export const updateProfile = async (req, res) => {
       patient.motDePasse = await bcrypt.hash(motDePasse, CONFIG.BCRYPT_ROUNDS);
     }
 
-    // Mise à jour des autres champs si fournis
-    if (nom) patient.nom = nom.trim();
-    if (prenom) patient.prenom = prenom.trim();
+    // Mise à jour des autres champs si présents
+    if (nom) patient.nom = sanitizeInput(nom);
+    if (prenom) patient.prenom = sanitizeInput(prenom);
     if (sex) patient.sex = sex;
-    if (localite !== undefined) patient.localite = localite;
-    if (dateNaissance !== undefined) patient.dateNaissance = dateNaissance;
-    if (adresse !== undefined) patient.adresse = adresse;
+    if (localite !== undefined) patient.localite = sanitizeInput(localite);
+    if (dateNaissance !== undefined) {
+      const parsedDate = new Date(dateNaissance);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ message: 'Date de naissance invalide' });
+      }
+      patient.dateNaissance = parsedDate;
+    }
+    if (adresse !== undefined) patient.adresse = sanitizeInput(adresse);
     if (photo !== undefined) patient.photo = photo;
+    if (groupeSanguin !== undefined) patient.groupeSanguin = sanitizeInput(groupeSanguin);
+    if (allergies !== undefined) patient.allergies = sanitizeInput(allergies);
 
+    // Sauvegarde
     await patient.save();
 
-    // Retourner sans mot de passe
-    const { motDePasse: _, ...patientData } = patient.toObject();
+    // Suppression du mot de passe dans la réponse
+    const patientObj = patient.toObject();
+    delete patientObj.motDePasse;
+
     res.status(200).json({
       message: "Profil mis à jour avec succès",
-      patient: patientData,
+      patient: patientObj,
     });
 
   } catch (error) {
@@ -250,7 +268,6 @@ export const updateProfile = async (req, res) => {
 // Contrôleurs existants...
 // ===========================
 
->>>>>>> origin/master
 // Contrôleur pour récupérer les informations de base du patient
 export const getPatientBasicInfo = async (req, res) => {
   try {

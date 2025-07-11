@@ -8,11 +8,19 @@ import { HomeComponent } from './features/home/home.component';
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PatientModule } from './features/patient/patient.module';
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+import { LOCALE_ID } from '@angular/core';
+
+// Enregistrement de la locale française
+registerLocaleData(localeFr);
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent // Composant accueil déclaré ici
+    HomeComponent,
+    AboutComponent // Composant accueil déclaré ici
   ],
   imports: [
     BrowserModule,
@@ -22,9 +30,12 @@ import { PatientModule } from './features/patient/patient.module';
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
     SharedModule,
     BrowserAnimationsModule,
-    PatientModule
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+
   ],
-  providers: [],
+  providers: [
+     { provide: LOCALE_ID, useValue: 'fr' }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

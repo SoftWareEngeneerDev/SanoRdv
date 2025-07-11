@@ -1,16 +1,11 @@
 import Admin from '../models/admin.model.js';
 import Patient from '../models/patient.model.js';
 import Medecin from '../models/medecin.model.js';
-<<<<<<< HEAD
-=======
 import bcrypt from 'bcryptjs';
->>>>>>> origin/master
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-<<<<<<< HEAD
-=======
 // Configuration (adaptable)
 const CONFIG = {
   ALLOWED_DOMAINS: ['gmail.com', 'icloud.com', 'yahoo.com', 'outlook.com'],
@@ -67,7 +62,6 @@ const formatMedecinResponse = (medecin) => {
 
 // ============================================
 // Changer statut Médecin
->>>>>>> origin/master
 export const changerStatutMedecin = async (req, res) => {
   try {
     const medecin = await Medecin.findByIdAndUpdate(
@@ -75,21 +69,14 @@ export const changerStatutMedecin = async (req, res) => {
       { isActive: req.body.isActive },
       { new: true }
     );
-<<<<<<< HEAD
-    res.json(medecin);
-=======
     if (!medecin) return res.status(404).json({ message: "Médecin non trouvé" });
     res.json(formatMedecinResponse(medecin));
->>>>>>> origin/master
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-<<<<<<< HEAD
-=======
 
 // Changer statut Patient
->>>>>>> origin/master
 export const changerStatutPatient = async (req, res) => {
   try {
     const patient = await Patient.findByIdAndUpdate(
@@ -97,17 +84,12 @@ export const changerStatutPatient = async (req, res) => {
       { isActive: req.body.isActive },
       { new: true }
     );
-<<<<<<< HEAD
-=======
     if (!patient) return res.status(404).json({ message: "Patient non trouvé" });
->>>>>>> origin/master
     res.json(patient);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-<<<<<<< HEAD
-=======
 
 // Modifier profil Médecin
 export const modifierMedecin = async (req, res) => {
@@ -202,4 +184,27 @@ export const modifierMedecin = async (req, res) => {
     return res.status(500).json({ message: "Erreur serveur lors de la mise à jour" });
   }
 };
->>>>>>> origin/master
+
+
+
+export const getMedecinById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validation basique de l'id (optionnel, selon Mongoose)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: 'ID médecin invalide' });
+    }
+
+    const medecin = await Medecin.findById(id).select('-motDePasse'); // retire motDePasse de la réponse
+
+    if (!medecin) {
+      return res.status(404).json({ message: 'Médecin non trouvé' });
+    }
+
+    return res.status(200).json(medecin);
+  } catch (error) {
+    console.error('Erreur serveur:', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
+};

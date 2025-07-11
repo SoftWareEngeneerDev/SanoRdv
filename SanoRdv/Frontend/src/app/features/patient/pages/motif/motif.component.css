@@ -1,5 +1,5 @@
 .form-container {
-  border: 2px solid #7f82be;
+  border: 2px solid black;
   border-radius: 10px;
   padding: 30px;
   width: 50%;
@@ -13,10 +13,16 @@
 /* Label */
 label {
   display: block;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 20px;
   margin-bottom: 10px;
-  color: #3663ea;
+  color: black;
+}
+
+.motif {
+  color: #317ef2;
+  font-size: 25px;
+  font-weight: 600;
 }
 
 /* Select */
@@ -28,7 +34,7 @@ select.form-control {
   border: 1px solid #ccc;
   font-size: 1rem;
   background-color: white;
-  color: #333;
+  color: #000000;
   appearance: none;
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%233663ea" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658a.5.5 0 0 1 .374-.658h10.348a.5.5 0 0 1 .374.658l-4.796 5.482a.5.5 0 0 1-.752 0z"/></svg>');
   background-repeat: no-repeat;
@@ -57,9 +63,8 @@ select.form-control:focus {
   background-color: #3663ea;
   color: white;
   border: none;
-   height: 40px;
+  height: 40px;
 }
-
 
 .btn-right:hover {
   background-color: #2c52c3;
@@ -69,14 +74,13 @@ select.form-control:focus {
 .btn-primary.white-bg {
   background-color: white;
   color: black;
-  border: 1px solid #000000; /* Plus visible que 1px */
+  border: 1px solid #000000;
   border-radius: 5px;
   padding: 10px 20px;
   font-size: 15px;
   min-width: 80px;
   height: 40px;
 }
-
 
 .btn-primary.white-bg:hover {
   background-color: #e6f0ff;
@@ -87,4 +91,26 @@ select.form-control:focus {
 .button-wrapper button:disabled,
 button:disabled {
   background-color: #ccc;
+}
+
+/* Espace au-dessus du label "Préciser votre motif" */
+.form-group + .form-group {
+  margin-top: 1.5rem;
+}
+
+/* Bordures noires par défaut pour select et input */
+select.form-control,
+input.form-control {
+  border: 1px solid black !important;
+  box-shadow: none !important;
+  outline: none;
+  transition: none;
+}
+
+/* Supprimer le focus bleu autour du champ input */
+input.form-control:focus,
+select.form-control:focus {
+  border-color: black !important;
+  box-shadow: none !important;
+  outline: none !important;
 }

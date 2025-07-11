@@ -1,15 +1,14 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Admin from '../models/admin.model.js';
-import Medecin from '../models/medecin.model.js'; 
+import Medecin from '../models/medecin.model.js';
 import Patient from '../models/patient.model.js';
 import { sanitizeInput, handleError } from '../utils/helpers.js';
 import { sendResetPasswordEmail } from '../utils/mail.util.js';
 import NodeCache from 'node-cache';
 
-
 // Cache pour les codes de réinitialisation
-const codeCache = new NodeCache({ 
+const codeCache = new NodeCache({
   stdTTL: 25 * 60, // 25 minutes de durée de vie par défaut
   checkperiod: 60 // Vérification et nettoyage toutes les 60 secondes
 });
@@ -32,11 +31,12 @@ const MAX_RESET_ATTEMPTS = 3; // Nombre maximum de tentatives de code
 // Patterns de validation
 const PATTERNS = {
   email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-  IDadmin: /^admin-\d+$/i, // Format: admin-1750251190039
-  IDmedecin: /^MED-\d+$/i, // Format: MED-001
-  IDpatient: /^INE-\d{8}-\d{6}$/i, // Format: INE-20250618-113054
+  IDadmin: /^admin[_-]\d+$/i, // Accepte admin_44810 ou admin-44810 (insensible à la casse)
+  IDmedecin: /^MED-\d+$/i,
+  IDpatient: /^INE-\d{8}-\d{6}$/i,
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 };
+
 // Mapping des modèles
 const USER_MODELS = {
   admin: Admin,
@@ -46,31 +46,24 @@ const USER_MODELS = {
 
 /**
  * Trouve un utilisateur par identifiant (email ou ID spécifique selon le rôle)
- * Version corrigée selon vos champs de base de données
  */
 const findUser = async (identifier) => {
   const cleanId = sanitizeInput(identifier);
-  
+
   try {
     console.log(`🔍 Recherche utilisateur avec identifiant: "${cleanId}"`);
-    
+
     // 1. Recherche par email (Admin, Médecin, Patient)
     if (PATTERNS.email.test(cleanId)) {
       console.log('📧 Recherche par email...');
-      
+
       const escapedEmail = cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const [admin, medecin, patient] = await Promise.all([
-        Admin.findOne({ 
-          email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } 
-        }).select('+motDePasse +password'), // Inclure les deux champs possibles
-        Medecin.findOne({ 
-          email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } 
-        }).select('+motDePasse +password'),
-        Patient.findOne({ 
-          email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } 
-        }).select('+motDePasse +password')
+        Admin.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }).select('+motDePasse +password'),
+        Medecin.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }).select('+motDePasse +password'),
+        Patient.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }).select('+motDePasse +password')
       ]);
-      
+
       if (admin) {
         console.log('✅ Admin trouvé par email');
         return { user: admin, role: 'admin' };
@@ -84,64 +77,60 @@ const findUser = async (identifier) => {
         return { user: patient, role: 'patient' };
       }
     }
-    
-    // 2. Recherche par IDadmin (Admin uniquement)
+
+    // 2. Recherche par IDadmin (Admin uniquement) — ici modif pour insensible à la casse
     if (PATTERNS.IDadmin.test(cleanId)) {
       console.log('👑 Recherche par IDadmin...');
-      const admin = await Admin.findOne({ 
-        IDadmin: cleanId 
+      const admin = await Admin.findOne({
+        IDadmin: { $regex: new RegExp(`^${cleanId}$`, 'i') }
       }).select('+motDePasse +password');
-      
+
       if (admin) {
         console.log('✅ Admin trouvé par IDadmin');
         return { user: admin, role: 'admin' };
       }
     }
-    
+
     // 3. Recherche par IDmedecin (Médecin uniquement)
     if (PATTERNS.IDmedecin.test(cleanId)) {
       console.log('🩺 Recherche par IDmedecin...');
-      const medecin = await Medecin.findOne({ 
-        IDmedecin: cleanId 
-      }).select('+motDePasse +password');
-      
+      const medecin = await Medecin.findOne({ IDmedecin: cleanId }).select('+motDePasse +password');
+
       if (medecin) {
         console.log('✅ Médecin trouvé par IDmedecin');
         return { user: medecin, role: 'medecin' };
       }
     }
-    
+
     // 4. Recherche par IDpatient (Patient uniquement)
     if (PATTERNS.IDpatient.test(cleanId)) {
       console.log('🏥 Recherche par IDpatient...');
-      const patient = await Patient.findOne({ 
-        IDpatient: cleanId 
-      }).select('+motDePasse +password');
-      
+      const patient = await Patient.findOne({ IDpatient: cleanId }).select('+motDePasse +password');
+
       if (patient) {
         console.log('✅ Patient trouvé par IDpatient');
         return { user: patient, role: 'patient' };
       }
     }
-    
-    // 5. Recherche générale (fallback pour tous les formats possibles)
+
+    // 5. Recherche générale (fallback)
     console.log('🔍 Recherche générale dans tous les modèles...');
     const [adminById, medecinById, patientById] = await Promise.all([
-      Admin.findOne({ 
+      Admin.findOne({
         $or: [
           { email: { $regex: new RegExp(`^${cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
-          { IDadmin: cleanId },
+          { IDadmin: { $regex: new RegExp(`^${cleanId}$`, 'i') } },
           { _id: cleanId.match(/^[0-9a-fA-F]{24}$/) ? cleanId : null }
         ]
       }).select('+motDePasse +password'),
-      Medecin.findOne({ 
+      Medecin.findOne({
         $or: [
           { IDmedecin: cleanId },
           { email: { $regex: new RegExp(`^${cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
           { _id: cleanId.match(/^[0-9a-fA-F]{24}$/) ? cleanId : null }
         ]
       }).select('+motDePasse +password'),
-      Patient.findOne({ 
+      Patient.findOne({
         $or: [
           { IDpatient: cleanId },
           { email: { $regex: new RegExp(`^${cleanId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } },
@@ -149,7 +138,7 @@ const findUser = async (identifier) => {
         ]
       }).select('+motDePasse +password')
     ]);
-    
+
     if (adminById) {
       console.log('✅ Admin trouvé par recherche générale');
       return { user: adminById, role: 'admin' };
@@ -176,10 +165,10 @@ const findUser = async (identifier) => {
  */
 const findUserByEmail = async (email) => {
   const cleanEmail = sanitizeInput(email);
-  
+
   try {
     console.log(`🔍 Recherche par email pour reset: "${cleanEmail}"`);
-    
+
     const escapedEmail = cleanEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const [admin, medecin, patient] = await Promise.all([
       Admin.findOne({ email: { $regex: new RegExp(`^${escapedEmail}$`, 'i') } }),
@@ -199,7 +188,7 @@ const findUserByEmail = async (email) => {
       console.log('✅ Patient trouvé pour reset');
       return { user: patient, role: 'patient' };
     }
-    
+
     console.log('❌ Aucun utilisateur trouvé pour reset');
     return { user: null, role: null };
   } catch (error) {
@@ -216,7 +205,7 @@ const updateUser = async (userId, role, updateData) => {
   if (!Model) {
     throw new Error(`Rôle invalide: ${role}`);
   }
-  
+
   try {
     return await Model.findByIdAndUpdate(userId, updateData, { new: true });
   } catch (error) {
@@ -228,24 +217,19 @@ const updateUser = async (userId, role, updateData) => {
 /**
  * CONNEXION
  */
-
 export const login = async (req, res) => {
   try {
     const { UserID, motDePasse } = req.body;
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> origin/master
-    console.log('🔐 Tentative de connexion:', { 
-      UserID: UserID ? 'fourni' : 'manquant', 
-      motDePasse: motDePasse ? 'fourni' : 'manquant' 
+    console.log('🔐 Tentative de connexion:', {
+      UserID: UserID ? 'fourni' : 'manquant',
+      motDePasse: motDePasse ? 'fourni' : 'manquant'
     });
 
     // Validation des données
     if (!UserID || !motDePasse) {
       console.log('❌ Données manquantes');
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Identifiant et mot de passe requis.",
         error: "MISSING_CREDENTIALS"
       });
@@ -253,30 +237,23 @@ export const login = async (req, res) => {
 
     if (typeof motDePasse !== 'string' || motDePasse.trim() === '') {
       console.log('❌ Mot de passe invalide');
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: "Mot de passe invalide.",
         error: "INVALID_PASSWORD"
       });
     }
 
-<<<<<<< HEAD
-    // Vérification des variables d'environnement
-=======
->>>>>>> origin/master
     if (!JWT_SECRET || JWT_SECRET === 'your_jwt_secret_here_change_in_production') {
       console.error('⚠️ JWT_SECRET non configuré en production');
+      throw new Error('JWT_SECRET non configuré');
     }
 
-<<<<<<< HEAD
-    // Recherche de l'utilisateur
-=======
     // Recherche de l'utilisateur dans la base
->>>>>>> origin/master
-    const { user, role } = await findUser(UserID);
+    const { user, role } = await findUser(UserID.trim());
 
     if (!user) {
       console.log('❌ Utilisateur non trouvé');
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: "Identifiant ou mot de passe incorrect.",
         error: "INVALID_CREDENTIALS"
       });
@@ -284,80 +261,51 @@ export const login = async (req, res) => {
 
     console.log(`✅ Utilisateur trouvé: ${role} - ${user.nom} ${user.prenom}`);
 
-<<<<<<< HEAD
-    // Vérifier si le compte est actif
-    if (user.isActive=== false || user.isActives === 'disabled') {
-=======
     // Vérification compte actif
     if (user.isActive === false || user.isActives === 'disabled') {
->>>>>>> origin/master
       console.log('❌ Compte désactivé');
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: "Ce compte est désactivé. Contactez l'administrateur.",
         error: "ACCOUNT_DISABLED"
       });
     }
-<<<<<<< HEAD
-    // Vérifier si le compte est verrouillé
-=======
 
     // Vérification compte verrouillé
->>>>>>> origin/master
     if (user.lockUntil && user.lockUntil > Date.now()) {
       const remainingTime = Math.ceil((user.lockUntil - Date.now()) / 60000);
       console.log(`🔒 Compte verrouillé pour ${remainingTime} minutes`);
-      return res.status(423).json({ 
+      return res.status(423).json({
         message: `Compte verrouillé. Réessayez dans ${remainingTime} minutes.`,
         error: "ACCOUNT_LOCKED",
         remainingTime
       });
     }
 
-<<<<<<< HEAD
-    // Vérifier le mot de passe - gestion des deux champs possibles
-=======
     // Vérification mot de passe
->>>>>>> origin/master
     const userPassword = user.motDePasse || user.password;
     if (!userPassword) {
       console.log('❌ Aucun mot de passe configuré');
-      return res.status(500).json({ 
+      return res.status(500).json({
         message: "Erreur de configuration du compte.",
         error: "NO_PASSWORD_SET"
       });
     }
 
     const isPasswordValid = await bcrypt.compare(motDePasse, userPassword);
-<<<<<<< HEAD
-    
-    if (!isPasswordValid) {
-      console.log('❌ Mot de passe incorrect');
-      // Incrémenter les tentatives échouées
-      const loginAttempts = (user.loginAttempts || 0) + 1;
-      const updateData = { loginAttempts };
-      
-=======
 
     if (!isPasswordValid) {
       console.log('❌ Mot de passe incorrect');
       const loginAttempts = (user.loginAttempts || 0) + 1;
       const updateData = { loginAttempts };
 
->>>>>>> origin/master
       if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
         updateData.lockUntil = Date.now() + LOCKOUT_TIME;
         console.log(`🔒 Compte verrouillé après ${loginAttempts} tentatives`);
       }
-<<<<<<< HEAD
-      
-      await updateUser(user._id, role, updateData);
-      
-=======
 
       await updateUser(user._id, role, updateData);
 
->>>>>>> origin/master
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: "Identifiant ou mot de passe incorrect.",
         error: "INVALID_CREDENTIALS",
         attemptsLeft: Math.max(0, MAX_LOGIN_ATTEMPTS - loginAttempts)
@@ -366,28 +314,17 @@ export const login = async (req, res) => {
 
     console.log('✅ Mot de passe valide');
 
-<<<<<<< HEAD
-    // Réinitialiser les tentatives en cas de succès
-=======
     // Réinitialiser les tentatives après succès
->>>>>>> origin/master
     if (user.loginAttempts > 0) {
       await updateUser(user._id, role, {
         $unset: { loginAttempts: 1, lockUntil: 1 }
       });
     }
 
-<<<<<<< HEAD
-    // Générer le token JWT
-    const token = jwt.sign(
-      { 
-        userId: user._id, 
-=======
     // Générer token JWT
     const token = jwt.sign(
-      { 
+      {
         userId: user._id,
->>>>>>> origin/master
         role,
         email: user.email
       },
@@ -395,35 +332,6 @@ export const login = async (req, res) => {
       { expiresIn: TOKEN_EXPIRY }
     );
 
-<<<<<<< HEAD
-    console.log(`✅ Connexion réussie pour ${role}: ${user.nom} ${user.prenom}`);
-
-    // Construire la réponse utilisateur selon le rôle
-    const userResponse = {
-      id: user._id,
-      role,
-      nom: user.nom,
-      prenom: user.prenom,
-      email: user.email
-    };
-
-    // Ajouter les champs spécifiques selon le rôle
-    if (role === 'admin' && user.IDadmin) {
-      userResponse.IDadmin = user.IDadmin;
-    }
-    if (role === 'medecin' && user.IDmedecin) {
-      userResponse.IDmedecin = user.IDmedecin;
-    }
-    if (role === 'patient' && user.IDpatient) {
-      userResponse.IDpatient = user.IDpatient;
-    }
-
-    // Réponse de succès
-    res.status(200).json({
-      message: "Connexion réussie",
-      token,
-      user: userResponse
-=======
     // Convertir en objet JS pour supprimer mot de passe
     let userObj = user.toObject ? user.toObject() : { ...user };
 
@@ -439,24 +347,17 @@ export const login = async (req, res) => {
       message: "Connexion réussie",
       token,
       user: userObj
->>>>>>> origin/master
     });
 
   } catch (error) {
     console.error('❌ Erreur lors de la connexion:', error);
-<<<<<<< HEAD
-    return handleError(error, res, "Erreur lors de la connexion");
-  }
-};
-
-=======
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: "Erreur serveur lors de la connexion.",
       error: "SERVER_ERROR"
     });
   }
 };
->>>>>>> origin/master
+
 /**
  * DÉCONNEXION
  */
@@ -483,55 +384,11 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-<<<<<<< HEAD
-    // Validation de l'email
-=======
->>>>>>> origin/master
     if (!email || typeof email !== 'string' || !PATTERNS.email.test(email.trim())) {
       return res.status(400).json({ 
         message: 'Email invalide.',
         error: 'INVALID_EMAIL'
       });
-<<<<<<< HEAD
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
-
-    // Recherche de l'utilisateur
-    const { user, role } = await findUserByEmail(normalizedEmail);
-    
-    // Réponse générique pour éviter l'énumération d'emails
-    const genericResponse = {
-      message: "Si cet email existe, un code de réinitialisation a été envoyé.",
-      success: true
-    };
-
-    if (!user) {
-      return res.status(200).json(genericResponse);
-    }
-
-    // Protection contre le spam (rate limiting)
-    const lastRequestTime = user.lastResetRequest || 0;
-    const timeSinceLastRequest = Date.now() - lastRequestTime;
-    
-    if (timeSinceLastRequest < RATE_LIMIT_WINDOW) {
-      const remainingTime = Math.ceil((RATE_LIMIT_WINDOW - timeSinceLastRequest) / 1000);
-      return res.status(429).json({
-        message: `Veuillez attendre ${remainingTime} secondes avant de redemander un code.`,
-        error: 'RATE_LIMIT_EXCEEDED',
-        retryAfter: remainingTime
-      });
-    }
-
-    // Génération d'un code sécurisé à 6 chiffres
-    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const hashedResetCode = await bcrypt.hash(resetCode, BCRYPT_ROUNDS);
-
-    // Configuration de l'expiration
-    const expirationTime = Date.now() + RESET_CODE_EXPIRY;
-
-    // Mise à jour en base de données avec gestion d'erreur
-=======
     }
 
     const normalizedEmail = email.trim().toLowerCase();
@@ -562,7 +419,6 @@ export const forgotPassword = async (req, res) => {
     const hashedResetCode = await bcrypt.hash(resetCode, BCRYPT_ROUNDS);
     const expirationTime = Date.now() + RESET_CODE_EXPIRY;
 
->>>>>>> origin/master
     try {
       await updateUser(user._id, role, {
         resetCode: hashedResetCode,
@@ -571,104 +427,11 @@ export const forgotPassword = async (req, res) => {
         lastResetRequest: Date.now()
       });
     } catch (dbError) {
-<<<<<<< HEAD
-      console.error('Erreur lors de la mise à jour en base:', dbError);
-=======
       console.error('Erreur BDD:', dbError);
->>>>>>> origin/master
       return res.status(500).json({
         message: 'Erreur interne du serveur.',
         error: 'DATABASE_ERROR'
       });
-<<<<<<< HEAD
-    }
-
-    // Stockage en cache avec clé composite pour éviter les collisions
-    const cacheKey = `${resetCode}_${normalizedEmail}`;
-    codeCache.set(cacheKey, {
-      email: normalizedEmail,
-      userId: user._id,
-      role,
-      timestamp: Date.now()
-    });
-
-    // Envoi de l'email avec gestion d'erreur robuste
-    try {
-      await sendResetPasswordEmail(
-        user.email, 
-        resetCode, 
-        role, 
-        user.nom, 
-        user.prenom
-      );
-      
-      console.log(`✅ Code de réinitialisation envoyé à ${normalizedEmail} (Expire: ${new Date(expirationTime).toISOString()})`);
-    } catch (emailError) {
-      console.error('❌ Erreur lors de l\'envoi de l\'email:', emailError);
-      
-      // En cas d'échec d'envoi, on nettoie et on retourne une erreur
-      codeCache.del(cacheKey);
-      await updateUser(user._id, role, {
-        $unset: {
-          resetCode: 1,
-          resetCodeExpire: 1,
-          resetAttempts: 1
-        }
-      });
-      
-      return res.status(500).json({
-        message: 'Erreur lors de l\'envoi de l\'email. Veuillez réessayer.',
-        error: 'EMAIL_SEND_ERROR'
-      });
-    }
-
-    return res.status(200).json(genericResponse);
-
-  } catch (error) {
-    console.error('❌ Erreur dans forgotPassword:', error);
-    return res.status(500).json({
-      message: 'Erreur lors de la demande de réinitialisation.',
-      error: 'SERVER_ERROR'
-    });
-  }
-};
-
-/**
- * VÉRIFICATION DU CODE DE RÉINITIALISATION
- */
-export const verifyResetCode = async (req, res) => {
-  try {
-    const { resetCode } = req.body;
-
-    // 1. Validation basique
-    if (!resetCode || typeof resetCode !== 'string') {
-      return res.status(400).json({ 
-        message: 'Le code est requis.',
-        error: 'MISSING_CODE'
-      });
-    }
-
-    const normalizedCode = resetCode.trim();
-
-    // 2. Recherche dans TOUS les modèles (Admin, Medecin, Patient)
-    const [admin, medecin, patient] = await Promise.all([
-      Admin.findOne({ resetCode: { $exists: true } }),
-      Medecin.findOne({ resetCode: { $exists: true } }),
-      Patient.findOne({ resetCode: { $exists: true } })
-    ]);
-
-    const user = admin || medecin || patient;
-    const role = admin ? 'admin' : medecin ? 'medecin' : patient ? 'patient' : null;
-
-    if (!user) {
-      return res.status(400).json({ 
-        message: 'Code invalide.',
-        error: 'INVALID_CODE' 
-      });
-    }
-
-    // 3. Validation avec bcrypt
-=======
     }
 
     const cacheKey = `${resetCode}_${normalizedEmail}`;
@@ -780,7 +543,6 @@ export const verifyResetCode = async (req, res) => {
       });
     }
 
->>>>>>> origin/master
     const isMatch = await bcrypt.compare(normalizedCode, user.resetCode);
     if (!isMatch) {
       return res.status(400).json({ 
@@ -788,27 +550,6 @@ export const verifyResetCode = async (req, res) => {
         error: 'WRONG_CODE' 
       });
     }
-<<<<<<< HEAD
-
-    // 4. Génération du token
-    const token = jwt.sign(
-      { userId: user._id, role }, 
-      JWT_RESET_SECRET, 
-      { expiresIn: '15m' }
-    );
-
-    // 5. Réponse succès
-    res.status(200).json({
-      success: true,
-      token,
-      message: 'Code validé.'
-    });
-
-  } catch (error) {
-    console.error('Erreur:', error);
-    res.status(500).json({ 
-      message: 'Erreur serveur.', 
-=======
 
     // ✅ Générer le token temporaire
     const token = jwt.sign({ userId, role }, JWT_RESET_SECRET, { expiresIn: '15m' });
@@ -823,16 +564,12 @@ export const verifyResetCode = async (req, res) => {
     console.error('❌ Erreur verifyResetCode:', error);
     return res.status(500).json({ 
       message: 'Erreur serveur.',
->>>>>>> origin/master
       error: 'SERVER_ERROR' 
     });
   }
 };
-<<<<<<< HEAD
-=======
 
 
->>>>>>> origin/master
 /**
  * RÉINITIALISATION DU MOT DE PASSE
  */
@@ -841,69 +578,20 @@ export const resetPassword = async (req, res) => {
     const { motDePasse, confirmationMotDePasse } = req.body;
     const token = req.headers.authorization?.split(' ')[1];
 
-<<<<<<< HEAD
-    // 1. Validation basique
-    if (!motDePasse || !confirmationMotDePasse) {
-      return res.status(400).json({
-        message: 'Mot de passe et confirmation requis',
-=======
     if (!motDePasse || !confirmationMotDePasse) {
       return res.status(400).json({
         message: 'Mot de passe et confirmation requis.',
->>>>>>> origin/master
         error: 'MISSING_PASSWORD'
       });
     }
 
     if (motDePasse !== confirmationMotDePasse) {
       return res.status(400).json({
-<<<<<<< HEAD
-        message: 'Les mots de passe ne correspondent pas',
-=======
         message: 'Les mots de passe ne correspondent pas.',
->>>>>>> origin/master
         error: 'PASSWORD_MISMATCH'
       });
     }
 
-<<<<<<< HEAD
-    // 2. Vérification du token
-    const decoded = jwt.verify(token, JWT_RESET_SECRET);
-    
-    // 3. Trouver le bon modèle selon le rôle
-    const Model = {
-      admin: Admin,
-      medecin: Medecin,
-      patient: Patient
-    }[decoded.role];
-
-    // 4. Mise à jour du mot de passe
-    const hashedPassword = await bcrypt.hash(motDePasse, 10);
-    await Model.findByIdAndUpdate(decoded.userId, {
-      motDePasse: hashedPassword,
-      $unset: { resetCode: 1 } // Nettoyage
-    });
-
-    res.json({ 
-      success: true,
-      message: "Mot de passe réinitialisé avec succès" 
-    });
-
-  } catch (error) {
-    console.error('Erreur:', error);
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ 
-        message: 'Token invalide ou expiré',
-        error: 'INVALID_TOKEN' 
-      });
-    }
-    res.status(500).json({ 
-      message: 'Erreur serveur',
-      error: 'SERVER_ERROR' 
-    });
-  }
-};
-=======
     if (!token) {
       return res.status(401).json({
         message: 'Token manquant.',
@@ -949,7 +637,6 @@ export const resetPassword = async (req, res) => {
   }
 };
 
->>>>>>> origin/master
 /*
  * VÉRIFICATION DU TOKEN DE RÉINITIALISATION
  */

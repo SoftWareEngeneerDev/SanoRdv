@@ -1,0 +1,108 @@
+.confirmation-container {
+  max-width: 800px;
+  height: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 10px;
+  background-color: #fff;
+  border: 1px solid rgb(185, 185, 237);
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #000;
+  position: relative;
+  top: 100px;
+}
+
+.icon-check {
+  font-size: 3rem;
+  background-color: #7CFC7C;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  color: white;
+  line-height: 60px;
+  font-weight: bold;
+  box-shadow: 0 0 8px #7CFC7C;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #007bff; /* bleu */
+  margin-bottom: 1rem;
+}
+
+.message {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.message strong {
+  font-weight: 700;
+}
+
+h3{
+  font-size: 20px;
+  font-weight: 500;
+}
+
+
+.info-box {
+  background-color: #e0e0e0;
+  text-align: left;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  position: relative;
+  top: 10px;
+}
+
+.info-box ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style-type: disc;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+  top: 50px;
+}
+
+.btn {
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border: 2px solid transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.btn-outline:hover {
+  background-color: #007bff;
+  color: white;
+}

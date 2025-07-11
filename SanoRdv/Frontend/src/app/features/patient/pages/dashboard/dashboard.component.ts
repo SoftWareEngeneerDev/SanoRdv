@@ -8,23 +8,25 @@ import { DashboardService } from '../../services/dashboard.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-sidebarOpen: any;
-toggleSidebar() {
-throw new Error('Method not implemented.');
-}
+  sidebarOpen: any;
+  toggleSidebar() {
+    throw new Error('Method not implemented.');
+  }
+
   nbreDossiers = 0;
   totalNotif: number = 0;
-  prenom: string = '';
+  prenom: string = 'Invité';  // valeur par défaut si pas de patientId
   rdvTotal: number = 0;
   prochainRDV: any = null;
   data: any;
   totalDossiers: number = 0;
   isSidebarCollapsed = false;
 
-onSidebarToggle(collapsed: boolean) {
-  this.isSidebarCollapsed = collapsed;
-}
+  isLoading = false;
 
+  onSidebarToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
 
   constructor(
     private dashboardService: DashboardService,
@@ -32,24 +34,29 @@ onSidebarToggle(collapsed: boolean) {
   ) {}
 
   ngOnInit(): void {
+    this.isLoading = true; // Affiche le contenu initial (loader ou pas)
+
     const patientId = localStorage.getItem('patientId');
 
-    if (patientId) {
+    if (patientId && patientId.trim().length > 0) {
       this.dashboardService.getDashboardData(patientId).subscribe({
         next: (data: { prenom: string; rdvTotal: number; prochainRDV: any; totalNotif: number; totalDossiers: number; }) => {
           this.prenom = data.prenom;
           this.rdvTotal = data.rdvTotal;
           this.prochainRDV = data.prochainRDV;
           this.totalNotif = data.totalNotif;
-           this.totalDossiers = data.totalDossiers;
+          this.totalDossiers = data.totalDossiers;
+          this.isLoading = false;
         },
         error: (err: any) => {
           console.error('Erreur lors du chargement des données du dashboard :', err);
+          this.isLoading = false;
         }
       });
     } else {
-      console.warn('Aucun patientId trouvé dans le localStorage.');
-      this.router.navigate(['/login']);
+      // Pas de patientId, on charge juste sans données spécifiques
+      console.warn('patientId non trouvé, chargement sans données spécifiques.');
+      this.isLoading = false;
     }
   }
 

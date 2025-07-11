@@ -1,31 +1,17 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-<<<<<<< HEAD
-import { register, getPatientBasicInfo, getPatientInfo } from '../controllers/patient.controller.js';
-
-
-
-import Patient from '../models/patient.model.js'; // ✅ à ajouter tout en haut
-
-
-const router = express.Router();
-
-/* ==========================================================================
-   📌 INSCRIPTION
-   ========================================================================== */
-=======
 
 import Patient from '../models/patient.model.js'; // Modèle Patient
 import {
   register,
   getPatientBasicInfo,
   getPatientInfo,
-  updateProfile, // <-- À importer depuis ton contrôleur
+  updateProfile,
 } from '../controllers/patient.controller.js';
 
 const router = express.Router();
 
-// Middleware validation pour updateProfile (exemple)
+// Middleware validation pour updateProfile
 const profileUpdateValidation = [
   body('email').optional().isEmail().withMessage('Email invalide'),
   body('motDePasse').optional().isLength({ min: 8 }).withMessage('Mot de passe trop court'),
@@ -47,7 +33,6 @@ const profileUpdateValidation = [
 ];
 
 // Route d'inscription
->>>>>>> origin/master
 router.post(
   '/register',
   [
@@ -82,10 +67,7 @@ router.post(
   register
 );
 
-<<<<<<< HEAD
-=======
-// Route récupération liste patients (sans mot de passe)
->>>>>>> origin/master
+// Récupération liste patients (sans mot de passe)
 router.get('/patients', async (req, res) => {
   try {
     const patients = await Patient.find().select('-motDePasse -__v');
@@ -96,26 +78,13 @@ router.get('/patients', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-
-
-
-// Route pour récupérer les informations de base du patient (nom, prénom, email)
-router.get('/patient/:patientId/info', getPatientBasicInfo);
-
-// Route alternative
-router.get('/patient/:patientId/basic', getPatientInfo);
-
-// Route avec l'ID spécifique de votre patient
-router.get('/patient/685942963ab92ec0447dfc2a/info', getPatientBasicInfo);
-=======
 // Routes récupération infos patient
 router.get('/patient/:patientId/info', getPatientBasicInfo);
 router.get('/patient/:patientId/basic', getPatientInfo);
 
-// Route modification profil patient
+// Route modification profil patient (route FIXE /me)
 router.put(
-  '/patients/:id',
+  '/me',
   profileUpdateValidation,
   (req, res, next) => {
     const errors = validationResult(req);
@@ -124,6 +93,5 @@ router.put(
   },
   updateProfile
 );
->>>>>>> origin/master
 
 export default router;

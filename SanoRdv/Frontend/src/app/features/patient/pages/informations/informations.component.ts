@@ -1,6 +1,6 @@
 import { RecapService } from './../../services/recap.service';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, Navigation } from '@angular/router';
 import { MedecinService } from '../../../../shared/services/medecin.service';
 
 @Component({
@@ -9,7 +9,21 @@ import { MedecinService } from '../../../../shared/services/medecin.service';
   styleUrls: ['./informations.component.css']
 })
 export class ProfilMedecinComponent implements OnInit {
-  medecin: any;
+  medecin: any = {
+    nom: '',
+    prenom: '',
+    photo: '',
+    specialite: '',
+    age: 0,
+    anneeExperience: 0,
+    nationalite: '',
+    telephone: '',
+    email: '',
+    localite: '',
+    adresse: ''
+  };
+  loading = true;       // État de chargement
+  errorMessage: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -19,34 +33,64 @@ export class ProfilMedecinComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Essaye de récupérer depuis navigation.state (priorité)
-    const navigation = this.router.getCurrentNavigation();
-    this.medecin = navigation?.extras?.state?.['medecin'];
+    const hasReloaded = sessionStorage.getItem('hasReloaded');
 
-    // Si pas dans navigation.state, récupère depuis backend via ID url
-    if (!this.medecin) {
+    if (!hasReloaded) {
+      sessionStorage.setItem('hasReloaded', 'true');
+      window.location.reload();
+      return; // stop execution before reload
+    }
+
+    const navigation: Navigation | null = this.router.getCurrentNavigation();
+    const medecinFromState = navigation?.extras?.state?.['medecin'] || null;
+
+    if (medecinFromState) {
+      this.medecin = {
+        ...medecinFromState,
+        age: this.calculerAge(medecinFromState.dateNaissance)
+      };
+      this.loading = false;
+      console.log('Medecin reçu via navigation.state:', this.medecin);
+    } else {
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
-        this.medecinService.getMedecinById(id).subscribe(data => {
-          this.medecin = {
-            ...data,
-            age: this.calculerAge(data.dateNaissance)
-          };
+        this.medecinService.getMedecinById(id).subscribe({
+          next: (data) => {
+            this.medecin = {
+              ...data,
+              age: this.calculerAge(data.dateNaissance)
+            };
+            this.loading = false;
+            console.log('Medecin récupéré depuis API:', this.medecin);
+          },
+          error: (error) => {
+            console.error('Erreur lors de la récupération du médecin par id:', error);
+            this.errorMessage = 'Médecin introuvable ou erreur serveur.';
+            this.loading = false;
+          }
         });
+      } else {
+        this.errorMessage = 'Aucun médecin sélectionné.';
+        this.loading = false;
       }
     }
   }
 
-  prendreRDV() {
-    this.recapService.setMedecin(this.medecin);
-    this.router.navigate(['/motif']);
+  prendreRDV(): void {
+    if (this.medecin && this.medecin.nom) {
+      this.recapService.setMedecin(this.medecin);
+      this.router.navigate(['/patient/motif']);
+    } else {
+      console.warn('Aucun médecin sélectionné pour prise de rendez-vous');
+    }
   }
 
-  retour() {
-    this.router.navigate(['/dashboard']);
+  retour(): void {
+    this.router.navigate(['/patient/dashboard']);
   }
 
   calculerAge(dateNaissance: string): number {
+    if (!dateNaissance) return 0;
     const today = new Date();
     const birthDate = new Date(dateNaissance);
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -55,7 +99,6 @@ export class ProfilMedecinComponent implements OnInit {
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-
     return age;
   }
 }
