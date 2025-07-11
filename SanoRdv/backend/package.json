@@ -27,6 +27,7 @@
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.0",
     "node-cache": "^5.1.2",
+    "node-cron": "^4.2.0",
     "nodemailer": "^7.0.3"
   }
 }

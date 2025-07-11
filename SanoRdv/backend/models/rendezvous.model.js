@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 const rendezVousSchema = new mongoose.Schema({
   patient: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // ou 'Patient'
+    ref: 'Patient', // ou 'Patient'
     required: true,
   },
   medecin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // ou 'Medecin'
+    ref: 'Medecin', // ou 'Medecin'
     required: true,
   },
   creneau: {
