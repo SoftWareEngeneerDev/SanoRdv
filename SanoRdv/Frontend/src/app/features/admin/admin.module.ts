@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminHeaderComponent } from './components/admin-header/admin-header.component';
@@ -48,7 +49,11 @@ import { AjouterSpecialitesComponent } from './pages/ajouter-specialites/ajouter
     AdminRoutingModule,
     NgChartsModule,
     FormsModule,
+<<<<<<< HEAD
     ReactiveFormsModule
+=======
+    RouterModule
+>>>>>>> origin/master
   ]
 })
 export class AdminModule { }

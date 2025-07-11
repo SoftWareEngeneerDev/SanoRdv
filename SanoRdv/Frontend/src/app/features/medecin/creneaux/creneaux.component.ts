@@ -1,57 +1,57 @@
 import { Component, OnInit } from '@angular/core';
 import { MedecinService } from '../medecin.service';
+import { CalendarEvent, CalendarView } from 'angular-calendar';
+import { addMonths, subMonths } from 'date-fns';
+
 @Component({
   selector: 'app-creneaux',
   templateUrl: './creneaux.component.html',
   styleUrls: ['./creneaux.component.css']
 })
-export class CreneauxComponent implements OnInit {
-  jours: string[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-  medecinId = '123'; // à remplacer par ID dynamique plus tard
+export class CreneauxComponent {
+  viewDate: Date = new Date(); // mois affiché
+  selectedDate: Date | null = null;
 
-  nouveauCreneau = {
-    jour: 'Lundi',
-    heureDebut: '',
-    heureFin: ''
-  };
+  timeSlots: string[] = [
+    '08:00', '09:00', '10:00',
+    '11:00', '12:00', '13:00',
+    '14:00', '15:00', '16:00',
+    '17:00', '18:00'
+  ];
+  
+selectedSlots: string[] = [];
 
-  creneaux: any[] = [];
-
-  constructor(private medecinService: MedecinService) {}
-
-  ngOnInit(): void {
-    this.chargerCreneaux();
+  previousMonth(): void {
+    this.viewDate = subMonths(this.viewDate, 1);
   }
 
-  ajouterCreneau(): void {
-    const payload = {
-      ...this.nouveauCreneau,
-      medecinId: this.medecinId
-    };
-
-    this.medecinService.ajouterCreneau(payload).subscribe({
-      next: (res) => {
-        this.chargerCreneaux();
-        this.nouveauCreneau = { jour: 'Lundi', heureDebut: '', heureFin: '' };
-      },
-      error: (err) => {
-        console.error('Erreur lors de l\'ajout', err);
-      }
-    });
+  nextMonth(): void {
+    this.viewDate = addMonths(this.viewDate, 1);
   }
 
-  supprimerCreneau(id: string): void {
-    this.medecinService.supprimerCreneau(id).subscribe({
-      next: () => this.chargerCreneaux(),
-      error: (err) => console.error('Erreur suppression', err)
-    });
+  handleDayClick(date: Date): void {
+    this.selectedDate = date;
+    const dateKey = date.toISOString().split('T')[0];
+    // Appelle ton API ici pour récupérer les créneaux s'il y a une connexion avec le backend
   }
 
-  chargerCreneaux(): void {
-    // Simulation temporaire en attendant GET /creneaux/medecin/:id
-    this.creneaux = [
-      { _id: '1', jour: 'Lundi', heureDebut: '09:00', heureFin: '12:00' },
-      { _id: '2', jour: 'Mercredi', heureDebut: '14:00', heureFin: '18:00' }
-    ];
+  toggleSlot(hour: string): void {
+    const index = this.selectedSlots.indexOf(hour);
+    if (index === -1) {
+      this.selectedSlots.push(hour);
+    } else {
+      this.selectedSlots.splice(index, 1);
+    }
+  }
+
+  isSlotSelected(hour: string): boolean {
+    return this.selectedSlots.includes(hour);
+  }
+
+  saveUnavailability(): void {
+    if (!this.selectedDate) return;
+    const dateKey = this.selectedDate.toISOString().split('T')[0];
+    // Appelle API POST ici
+    alert(`Indisponibilités sauvegardées pour le ${dateKey}`);
   }
 }

@@ -6,17 +6,23 @@ import { CreneauxComponent } from './creneaux/creneaux.component';
 import { MyAppointmentComponent } from './my-appointment/my-appointment.component';
 import { PatientComponent } from './patient/patient.component';
 
-const routes: Routes = [
+import { AuthGuard } from 'src/app/core/guards/auth.guard';
+import { ProfileComponent } from './profile/profile.component';
+import { ProfilViewComponent } from './profil-view/profil-view.component';
 
+const routes: Routes = [
   {
     path: '',
-    component: LayoutComponent, // Le wrapper contenant navbar + sidebar
+    component: LayoutComponent,
+    canActivateChild: [AuthGuard], // <-- Protéger toutes les routes enfants
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'rendez-vous', component: MyAppointmentComponent },
       { path: 'creneaux', component: CreneauxComponent },
       { path: 'patients', component: PatientComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'profil-view', component: ProfilViewComponent },
+      { path: 'profile', component: ProfileComponent },
+      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   }
 ];

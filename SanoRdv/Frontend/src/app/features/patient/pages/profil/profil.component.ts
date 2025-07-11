@@ -5,11 +5,12 @@ import {
   Validators,
   AbstractControl,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '../../../../shared/services/patient.service';
 import { NotificationsService } from '../../../../shared/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Patient } from '../../../../shared/models/patient.model';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-profil',
@@ -20,23 +21,35 @@ export class ProfilComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   registerForm!: FormGroup;
 
+  private API_BASE_URL = 'http://localhost:3000';
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
   isSubmitting = false;
   errorMessages = '';
   successMessage = '';
 
+  medecinId: string | null = null;
+  medecinData: any = null;
+
   constructor(
     private fb: FormBuilder,
     private patientService: PatientService,
     private notificationsService: NotificationsService,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private route: ActivatedRoute,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadUserData();
+
+    this.medecinId = this.route.snapshot.paramMap.get('medecinId');
+
+    if (this.medecinId) {
+      this.loadMedecinData(this.medecinId);
+    }
   }
 
   private initializeForm(): void {
@@ -52,7 +65,7 @@ export class ProfilComponent implements OnInit {
         confirmationMotDePasse: [''],
         localite: ['', Validators.required],
         adresse: ['', Validators.required],
-        dateDeNaissance: ['', Validators.required],
+        dateNaissance: ['', Validators.required],
         groupeSanguin: [''],
         allergies: [''],
       },
@@ -61,45 +74,52 @@ export class ProfilComponent implements OnInit {
   }
 
   private loadUserData(): void {
+    const localUser = localStorage.getItem('user');
+    if (localUser) {
+      try {
+        const patient: Patient = JSON.parse(localUser);
+        this.patchFormWithPatient(patient);
+        return;
+      } catch (err) {
+        console.error('Erreur parsing localStorage:', err);
+      }
+    }
+
     this.patientService.getMonProfil().subscribe({
       next: (patient: Patient) => {
-        const rawDate = patient.dateNaissance
-          ? new Date(patient.dateNaissance)
-          : null;
-        const formattedDate = rawDate
-          ? `${String(rawDate.getDate()).padStart(2, '0')}-${String(
-              rawDate.getMonth() + 1
-            ).padStart(2, '0')}-${rawDate.getFullYear()}`
-          : '';
-
-        this.registerForm.patchValue({
-          nom: patient.nom || '',
-          prenom: patient.prenom || '',
-          email: patient.email || '',
-          telephone: patient.telephone || '',
-          sex: patient.sex || '',
-          localite: patient.localite || '',
-          adresse: patient.adresse || '',
-          motDePasse: '', // jamais prérempli
-          dateNaissance: formattedDate,
-          groupeSanguin: patient.groupeSanguin || '',
-          allergies: patient.allergies || '',
-        });
-
-        // Photo de profil
-        if (patient.photo && typeof patient.photo === 'string') {
-          this.previewUrl = patient.photo.startsWith('http')
-            ? patient.photo
-            : `http://localhost:3000/uploads/${patient.photo}`;
-        } else {
-          this.errorMessages = 'Photo de profil introuvable ou invalide.';
-          this.previewUrl = null;
-        }
+        this.patchFormWithPatient(patient);
       },
       error: () => {
-        this.errorMessages = '';
+        this.errorMessages = 'Erreur lors du chargement du profil.';
       },
     });
+  }
+
+  private patchFormWithPatient(patient: Patient): void {
+    const rawDate = patient.dateNaissance
+      ? new Date(patient.dateNaissance)
+      : null;
+    const formattedDate = rawDate
+      ? `${String(rawDate.getDate()).padStart(2, '0')}-${String(
+          rawDate.getMonth() + 1
+        ).padStart(2, '0')}-${rawDate.getFullYear()}`
+      : '';
+
+    this.registerForm.patchValue({
+      nom: patient.nom || '',
+      prenom: patient.prenom || '',
+      email: patient.email || '',
+      telephone: patient.telephone || '',
+      sexe: patient.sex || '',
+      localite: patient.localite || '',
+      adresse: patient.adresse || '',
+      motDePasse: '',
+      dateNaissance: formattedDate,
+      groupeSanguin: patient.groupeSanguin || '',
+      allergies: patient.allergies || '',
+    });
+
+    this.previewUrl = patient.photo || 'assets/images/default-avatar.png';
   }
 
   passwordsMatch(form: AbstractControl) {
@@ -138,7 +158,7 @@ export class ProfilComponent implements OnInit {
       confirmationMotDePasse: 'Confirmation du mot de passe',
       localite: 'Localité',
       adresse: 'Adresse',
-      dateDeNaissance: 'Date de naissance',
+      dateNaissance: 'Date de naissance',
       groupeSanguin: 'Groupe sanguin',
       allergies: 'Allergies',
     };
@@ -188,12 +208,8 @@ export class ProfilComponent implements OnInit {
     if (confirm('Êtes-vous sûr de vouloir annuler les modifications ?')) {
       this.registerForm.reset();
       this.loadUserData();
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/patient/dashboard']);
     }
-  }
-
-  enregistre() {
-    this.router.navigate(['/modifier']);
   }
 
   onSubmit(): void {
@@ -230,10 +246,20 @@ export class ProfilComponent implements OnInit {
       formData.append('photo', this.selectedFile);
     }
 
-    this.patientService.saveProfile(formData).subscribe({
+    this.patientService.updateProfile(formData).subscribe({
       next: () => {
         this.successMessage = 'Profil mis à jour avec succès !';
 
+        // Mise à jour du localStorage
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = {
+          ...currentUser,
+          ...value,
+          photo: this.previewUrl,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        // Notification
         this.notificationsService
           .creerNotification({
             message:
@@ -251,6 +277,23 @@ export class ProfilComponent implements OnInit {
       complete: () => {
         this.isSubmitting = false;
       },
+    });
+  }
+
+  loadMedecinData(id: string): void {
+    this.http.get<any>(`${this.API_BASE_URL}/api/medecins/${id}`).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.medecinData = response.data;
+          console.log('Données du médecin chargées:', this.medecinData);
+        } else {
+          this.errorMessages = response.message || 'Médecin non trouvé.';
+        }
+      },
+      error: (err) => {
+        this.errorMessages = 'Erreur lors du chargement des données du médecin.';
+        console.error(err);
+      }
     });
   }
 }

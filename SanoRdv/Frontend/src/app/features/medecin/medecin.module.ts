@@ -11,6 +11,12 @@ import { NavbarComponent } from './shared/navbar/navbar.component';
 import { LayoutComponent } from './shared/layout/layout.component';
 import { FormsModule } from '@angular/forms';
 
+import { CalendarModule, DateAdapter, CalendarMonthModule, CalendarWeekModule, CalendarDayModule } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { ProfileComponent } from './profile/profile.component';
+import { ProfilViewComponent } from './profil-view/profil-view.component';
+
+
 
 @NgModule({
   declarations: [
@@ -20,12 +26,21 @@ import { FormsModule } from '@angular/forms';
     PatientComponent,
     SidebarComponent,
     NavbarComponent,
-    LayoutComponent
+    LayoutComponent,
+    ProfileComponent,
+    ProfilViewComponent
   ],
   imports: [
     CommonModule,
     MedecinRoutingModule,
-    FormsModule
+    FormsModule,
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory,
+    }),
+    CalendarMonthModule,
+    CalendarWeekModule,
+    CalendarDayModule
   ]
 })
 export class MedecinModule { }

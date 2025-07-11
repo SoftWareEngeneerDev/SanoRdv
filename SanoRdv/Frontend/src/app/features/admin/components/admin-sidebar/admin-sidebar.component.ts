@@ -1,6 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { AdminService } from '../../admin.service';
 import { Admin } from '../../models/admin.model';
 
 @Component({
@@ -10,7 +9,7 @@ import { Admin } from '../../models/admin.model';
 })
 export class AdminSidebarComponent implements OnInit {
 
-       admin!: Admin;
+  admin!: Admin;
   isCollapsed: boolean = false;
 
   @Output() collapseChange = new EventEmitter<boolean>();
@@ -25,15 +24,19 @@ export class AdminSidebarComponent implements OnInit {
     { title: 'Rapports', icon: 'bi-file-earmark-text-fill', link: '/admin/rapports' }
   ];
 
-  constructor(private adminService: AdminService, private router: Router) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.adminService.getAdmin().subscribe({
-      next: (data) => this.admin = data,
-      error: (err) => {
-        console.error('Erreur lors du chargement du profil admin :', err);
+    const adminData = localStorage.getItem('user'); // <-- ici 'user' au lieu de 'admin'
+    if (adminData) {
+      try {
+        this.admin = JSON.parse(adminData);
+      } catch (error) {
+        console.error('Erreur de parsing admin depuis localStorage :', error);
       }
-    });
+    } else {
+      console.warn('Aucun admin trouvé dans le localStorage');
+    }
   }
 
   toggleSidebar(): void {

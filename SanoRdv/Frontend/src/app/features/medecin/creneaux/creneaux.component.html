@@ -1,34 +1,38 @@
-<div class="creneaux-container">
-  <h2>MES CRENEAUX</h2>
-  <p>Gérez vos horaires disponibles pour les prises de rendez-vous.</p>
 
-  <form (ngSubmit)="ajouterCreneau()" #formCreneau="ngForm" class="form-creneau">
-    <label>Jour
-      <select name="jour" [(ngModel)]="nouveauCreneau.jour" required>
-        <option *ngFor="let j of jours" [value]="j">{{ j }}</option>
-      </select>
-    </label>
 
-    <label>Heure début
-      <input type="time" name="heureDebut" [(ngModel)]="nouveauCreneau.heureDebut" required />
-    </label>
+<div class="calendar-container">
+  <h2>Gérer mes indisponibilités</h2>
 
-    <label>Heure fin
-      <input type="time" name="heureFin" [(ngModel)]="nouveauCreneau.heureFin" required />
-    </label>
+  <!-- Mois en haut -->
+  <div class="month-label">
+    <button (click)="previousMonth()">&#8592;</button>
+    <span>{{ viewDate | date: 'MMMM yyyy' : undefined : 'fr' }}</span>
+    <button (click)="nextMonth()">&#8594;</button>
+  </div>
 
-    <button type="submit" [disabled]="formCreneau.invalid">Ajouter créneaux</button>
-  </form>
+  <!-- Calendrier -->
+  <mwl-calendar-month-view
+    [viewDate]="viewDate"
+    [locale]="'fr'"
+    [weekStartsOn]="1"
+    (dayClicked)="handleDayClick($event.day.date)"
+    [activeDayIsOpen]="true">
+  </mwl-calendar-month-view>
 
-  <hr />
+  <!-- Créneaux horaires -->
+  <div *ngIf="selectedDate" class="time-slots">
+    <h3>Créneaux pour le {{ selectedDate | date: 'fullDate' : undefined : 'fr' }}</h3>
+    <p>Définir les créneaux indisponibles</p>
 
-  <h3 class="section-title">Créneaux enregistrés</h3>
-  <table class="table-creneaux" *ngIf="creneaux.length > 0">
-    <tr *ngFor="let c of creneaux">
-      <td>{{ c.jour }} : {{ c.heureDebut }} - {{ c.heureFin }}</td>
-      <td><a (click)="supprimerCreneau(c._id)" class="supprimer">Supprimer</a></td>
-    </tr>
-  </table>
+    <div class="slots">
+      <button
+        *ngFor="let hour of timeSlots"
+        [class.selected]="isSlotSelected(hour)"
+        (click)="toggleSlot(hour)">
+        {{ hour }}
+      </button>
+    </div>
 
-  <p *ngIf="creneaux.length === 0" class="vide">Aucun créneau enregistré.</p>
+    <button class="save-btn" (click)="saveUnavailability()">Sauvegarder les indisponibilités</button>
+  </div>
 </div>

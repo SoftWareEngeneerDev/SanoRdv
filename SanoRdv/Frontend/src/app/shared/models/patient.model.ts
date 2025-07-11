@@ -7,9 +7,8 @@ export interface Patient {
   dateNaissance?: string;
   avatar?: string;
  localite?: string;
-  allergies?: string;
-  groupeSanguin?: string;
+ allergies?: string;
+ groupeSanguin?: string;
  photo?: string;
  adresse?: string;
-
 }

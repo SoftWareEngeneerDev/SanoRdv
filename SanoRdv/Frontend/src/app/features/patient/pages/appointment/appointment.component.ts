@@ -101,7 +101,7 @@ export class RendezvousComponent implements OnInit {
 
   // Modification d’un RDV
  modifierRdv(id: number) {
-    this.router.navigate(['/creneau']);
+    this.router.navigate(['/patient/creneau']);
   }
 
 

@@ -21,6 +21,7 @@
             "assets": ["src/favicon.ico", "src/assets"],
 
             "styles": [
+              "node_modules/angular-calendar/css/angular-calendar.css",
   "@angular/material/prebuilt-themes/indigo-pink.css",
   "src/styles.css",
   "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
@@ -93,5 +94,12 @@
         }
       }
     }
+  },
+  "cli": {
+<<<<<<< HEAD
+    "analytics": "b76467be-cf1d-405a-9f31-d0c1bcfe34f2"
+=======
+    "analytics": "c56deaee-76eb-4f99-ab73-d0992bdc4a34"
+>>>>>>> origin/master
   }
 }
