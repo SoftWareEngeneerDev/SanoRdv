@@ -184,3 +184,27 @@ export const modifierMedecin = async (req, res) => {
     return res.status(500).json({ message: "Erreur serveur lors de la mise à jour" });
   }
 };
+
+
+
+export const getMedecinById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validation basique de l'id (optionnel, selon Mongoose)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: 'ID médecin invalide' });
+    }
+
+    const medecin = await Medecin.findById(id).select('-motDePasse'); // retire motDePasse de la réponse
+
+    if (!medecin) {
+      return res.status(404).json({ message: 'Médecin non trouvé' });
+    }
+
+    return res.status(200).json(medecin);
+  } catch (error) {
+    console.error('Erreur serveur:', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
+};

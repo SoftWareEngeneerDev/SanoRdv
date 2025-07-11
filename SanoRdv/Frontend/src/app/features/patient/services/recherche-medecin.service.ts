@@ -87,7 +87,8 @@ export class RechercheMedecinService {
           id: s.data?._id || s.data?.id,
           nom: s.data?.nom || 'N/A',
           specialite: s.data?.specialite || 'N/A',
-          localite: s.data?.localite || 'N/A'
+          localite: s.data?.localite || 'N/A',
+          photo: s.data?.photo || 'N/A'
         }));
 
         this.suggestionsSubject.next(suggestions);

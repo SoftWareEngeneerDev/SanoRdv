@@ -1,39 +1,51 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-login',                 // Le sélecteur du composant (balise HTML)
-  templateUrl: './login.component.html', // Le fichier HTML associé
-  styleUrls: ['./login.component.css']   // Le fichier CSS associé
+  selector: 'app-login',                 
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']   
 })
 export class LoginComponent {
-  loginForm: FormGroup;                  // Formulaire de connexion
-  password: string = '';                 // Variable pour stocker le mot de passe
-  showPassword: boolean = false;         // Contrôle l'affichage du mot de passe
+  loginForm: FormGroup;                  
+  password: string = '';                 
+  showPassword: boolean = false;         
+  redirectUrl: string | null = null;    
 
   constructor(
-    private fb: FormBuilder,             // FormBuilder pour créer le formulaire
-    private authService: AuthService,    // Service d'authentification
-    private router: Router               // Pour la navigation
+    private fb: FormBuilder,             
+    private authService: AuthService,    
+    private router: Router,
+    private route: ActivatedRoute         // Pour récupérer les query params
   ) {
-    // Initialisation du formulaire avec validations
     this.loginForm = this.fb.group({
-      UserID: ['', [Validators.required]],      // Champ UserID requis
-      motDePasse: ['', Validators.required]     // Champ motDePasse requis
+      UserID: ['', [Validators.required]],
+      motDePasse: ['', Validators.required]
     });
   }
 
-  //  Méthode appelée à la soumission du formulaire
+  ngOnInit() {
+    // Récupérer le paramètre 'redirect' dans l'URL
+    this.redirectUrl = this.route.snapshot.queryParamMap.get('redirect');
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
           const role = response?.user?.role;
-          // Rediriger selon le rôle
+
+          if (this.redirectUrl) {
+            // Redirige vers le chemin passé en query param 'redirect'
+            this.router.navigateByUrl(`/${this.redirectUrl}`);
+            return;
+          }
+
+          // Sinon redirection classique selon rôle
           if (role === 'admin') {
-            this.router.navigate(['/admin-dashboard']);
+            this.router.navigate(['/admin/dashboard']);
           } else if (role === 'medecin') {
             this.router.navigate(['/medecin']);
           } else if (role === 'patient') {
@@ -44,13 +56,12 @@ export class LoginComponent {
         },
         error: (err) => {
           console.error('Erreur de connexion :', err);
-          // 👉 Tu peux afficher un message d'erreur à l'utilisateur ici
+          // Ajouter gestion erreur utilisateur ici si besoin
         }
       });
     }
   }
 
-  //  Méthode pour basculer la visibilité du mot de passe
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }

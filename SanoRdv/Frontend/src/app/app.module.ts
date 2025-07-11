@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,29 +10,33 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PatientModule } from './features/patient/patient.module';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
-import { LOCALE_ID } from '@angular/core';
+import { AboutComponent } from './features/about/about.component';
+// ✅ Ajout manquant pour le calendrier
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
 
-
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent // Composant accueil déclaré ici
+    HomeComponent,
+    AboutComponent // Composant accueil déclaré ici
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,        // Nécessaire pour HttpClient
+    HttpClientModule,
     FormsModule,
-    ReactiveFormsModule,     // Utile pour les formulaires dans Auth
+    ReactiveFormsModule,
     SharedModule,
     BrowserAnimationsModule,
-
+    PatientModule,
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
   ],
   providers: [
-     { provide: LOCALE_ID, useValue: 'fr' }
+    { provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]
 })

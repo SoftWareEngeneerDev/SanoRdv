@@ -5,11 +5,12 @@ import {
   Validators,
   AbstractControl,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '../../../../shared/services/patient.service';
 import { NotificationsService } from '../../../../shared/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Patient } from '../../../../shared/models/patient.model';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-profil',
@@ -20,6 +21,7 @@ export class ProfilComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   registerForm!: FormGroup;
 
+  private API_BASE_URL = 'http://localhost:3000';
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
   isSubmitting = false;
@@ -28,17 +30,28 @@ export class ProfilComponent implements OnInit {
   isSidebarCollapsed: boolean = false; // ou récupéré via service
 
 
+  medecinId: string | null = null;
+  medecinData: any = null;
+
   constructor(
     private fb: FormBuilder,
     private patientService: PatientService,
     private notificationsService: NotificationsService,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private route: ActivatedRoute,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadUserData();
+
+    this.medecinId = this.route.snapshot.paramMap.get('medecinId');
+
+    if (this.medecinId) {
+      this.loadMedecinData(this.medecinId);
+    }
   }
 
   private initializeForm(): void {
@@ -197,79 +210,92 @@ export class ProfilComponent implements OnInit {
     if (confirm('Êtes-vous sûr de vouloir annuler les modifications ?')) {
       this.registerForm.reset();
       this.loadUserData();
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/patient/dashboard']);
     }
   }
 
   onSubmit(): void {
-  if (this.registerForm.invalid) {
-    this.registerForm.markAllAsTouched();
-    return;
-  }
-
-  this.isSubmitting = true;
-  this.errorMessages = '';
-  this.successMessage = '';
-
-  const formData = new FormData();
-  const value = this.registerForm.value;
-
-  if (value.nouveauMotDePasse && !value.motDePasse) {
-    this.errorMessages =
-      'Veuillez saisir votre mot de passe actuel pour le modifier.';
-    this.isSubmitting = false;
-    return;
-  }
-
-  for (const key in value) {
-    if (
-      value.hasOwnProperty(key) &&
-      value[key] !== null &&
-      key !== 'confirmationMotDePasse'
-    ) {
-      formData.append(key, value[key].toString());
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
     }
-  }
 
-  if (this.selectedFile) {
-    formData.append('photo', this.selectedFile);
-  }
+    this.isSubmitting = true;
+    this.errorMessages = '';
+    this.successMessage = '';
 
-  this.patientService.saveProfile(formData).subscribe({
-    next: () => {
-      this.successMessage = 'Profil mis à jour avec succès !';
+    const formData = new FormData();
+    const value = this.registerForm.value;
 
-      // Mise à jour du localStorage
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const updatedUser = {
-        ...currentUser,
-        ...value,
-        photo: this.previewUrl,
-      };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-
-      // Notification
-      this.notificationsService
-        .creerNotification({
-          message:
-            'Vos informations personnelles ont été modifiées avec succès.',
-          dateNotification: new Date().toISOString(),
-          read: false,
-        })
-        .subscribe();
-
-      // Redirection avec délai (2s)
-      setTimeout(() => {
-        this.router.navigate(['/patient/profil']);
-      }, 2000);
-    },
-    error: () => {
-      this.errorMessages = 'Erreur lors de la mise à jour';
-    },
-    complete: () => {
+    if (value.nouveauMotDePasse && !value.motDePasse) {
+      this.errorMessages =
+        'Veuillez saisir votre mot de passe actuel pour le modifier.';
       this.isSubmitting = false;
-    },
-  });
-}
+      return;
+    }
 
+    for (const key in value) {
+      if (
+        value.hasOwnProperty(key) &&
+        value[key] !== null &&
+        key !== 'confirmationMotDePasse'
+      ) {
+        formData.append(key, value[key].toString());
+      }
+    }
+
+    if (this.selectedFile) {
+      formData.append('photo', this.selectedFile);
+    }
+
+    this.patientService.updateProfile(formData).subscribe({
+      next: () => {
+        this.successMessage = 'Profil mis à jour avec succès !';
+
+        // Mise à jour du localStorage
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = {
+          ...currentUser,
+          ...value,
+          photo: this.previewUrl,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        // Notification
+        this.notificationsService
+          .creerNotification({
+            message:
+              'Vos informations personnelles ont été modifiées avec succès.',
+            dateNotification: new Date().toISOString(),
+            read: false,
+          })
+          .subscribe();
+
+        this.router.navigate(['/patient/dashboard']);
+      },
+      error: () => {
+        this.errorMessages = 'Erreur lors de la mise à jour';
+      },
+      complete: () => {
+        this.isSubmitting = false;
+      },
+    });
+  }
+
+  loadMedecinData(id: string): void {
+    this.http.get<any>(`${this.API_BASE_URL}/api/medecins/${id}`).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.medecinData = response.data;
+          console.log('Données du médecin chargées:', this.medecinData);
+        } else {
+          this.errorMessages = response.message || 'Médecin non trouvé.';
+        }
+      },
+      error: (err) => {
+        this.errorMessages = 'Erreur lors du chargement des données du médecin.';
+        console.error(err);
+      }
+    });
+  }
 }
