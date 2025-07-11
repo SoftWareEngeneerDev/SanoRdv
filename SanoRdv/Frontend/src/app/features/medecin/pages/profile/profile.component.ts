@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { MedecinService } from '../medecin.service';
+import { MedecinService } from '../../medecin.service';
 
 @Component({
   selector: 'app-profile',
@@ -9,9 +9,7 @@ import { MedecinService } from '../medecin.service';
 })
 export class ProfileComponent {
   defaultPhoto = 'https://via.placeholder.com/100';
-
-
- profile: any;
+  profile: any;
 
   constructor(private router: Router, private medecinService: MedecinService) {
     this.profile = { ...this.medecinService.getProfile() };
@@ -35,6 +33,6 @@ export class ProfileComponent {
     };
     reader.readAsDataURL(file);
   }
-}
+ }
 
 }

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { MedecinService } from '../medecin.service';
+import { Component} from '@angular/core';
+import { MedecinService } from '../../medecin.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,24 +9,15 @@ import { Router } from '@angular/router';
 })
 export class ProfilViewComponent {
 
-
-   profile: any;
+  profile: any;
 
   constructor(private medecinService: MedecinService, private router: Router) {
     this.profile = this.medecinService.getProfile();
   }
 
-//   editProfile() {
-//   this.router.navigate(['profile']);
-//   console.log('ProfileViewComponent chargé');
-
-// }
-editProfile(){
-  this.router.navigate(['/medecin/profile']);
-  console.log('Redirection vers l\'édition du profil');
-}
-
-
+  editProfile(){
+    this.router.navigate(['/medecin/profile']);
+  }
 
   calculateAge(dateNaissance: string): number {
     const birthDate = new Date(dateNaissance);
