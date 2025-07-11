@@ -3,9 +3,8 @@ export interface Medecin {
   nom: string;
   prenom: string;
   specialite: string;
+  etat: 'Actif' | 'Inactif';
+   telephone: string;
+  motDePasse: string;
   email: string;
-  telephone: string;
-  motDePasse?: string;
-  actif?: boolean;
-  rendezVousMensuels?: number;
 }

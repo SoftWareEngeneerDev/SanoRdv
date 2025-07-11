@@ -1,0 +1,35 @@
+<div class="container py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-white border-bottom-0 pt-4">
+      <h1 class="h4 mb-0">Modifier une spécialité</h1>
+    </div>
+
+    <div class="card-body">
+      <!-- Nom de la spécialité -->
+      <div class="mb-4">
+        <h2 class="h5 mb-3">Nom de la spécialité*</h2>
+        <input type="text" class="form-control form-control-lg" 
+               [(ngModel)]="specialite.nom" required>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <h2 class="h5 mb-3">Description</h2>
+        <textarea class="form-control" rows="4"
+                  [(ngModel)]="specialite.description"></textarea>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex justify-content-end gap-3 mt-4">
+        <button type="button" class="btn btn-outline-secondary btn-lg px-4"
+                (click)="annuler()">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-primary btn-lg px-4"
+                (click)="mettreAJour()" [disabled]="!specialite.nom.trim()">
+          Mettre à jour
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
