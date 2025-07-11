@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminLayoutComponent } from './pages/admin-layout/admin-layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -13,6 +13,8 @@ import { ModifierMedecinComponent } from './pages/modifier-medecin/modifier-mede
 import { AjouterPatientComponent } from './pages/ajouter-patient/ajouter-patient.component';
 import { DetailPatientComponent } from './pages/detail-patient/detail-patient.component';
 import { DetailRendezVousComponent } from './pages/detail-rendez-vous/detail-rendez-vous.component';
+import { ModifierSpecialitesComponent } from './pages/modifier-specialites/modifier-specialites.component';
+import { AjouterSpecialitesComponent } from './pages/ajouter-specialites/ajouter-specialites.component';
 
 const routes: Routes = [
   { path: '', 
@@ -29,6 +31,8 @@ const routes: Routes = [
            { path: 'detail-patient', component: DetailPatientComponent},
            { path: 'profil', component: ProfilComponent},
            { path: 'specialites', component: SpecialitesComponent},
+           { path: 'ajouter-specialites', component:   AjouterSpecialitesComponent},
+           { path: 'modifier-specialites', component: ModifierSpecialitesComponent},
            { path: 'notifications', component: NotificationsComponent},
        ]
   }
