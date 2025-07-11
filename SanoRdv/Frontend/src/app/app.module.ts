@@ -19,7 +19,8 @@ registerLocaleData(localeFr);
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent // Composant accueil déclaré ici
+    HomeComponent,
+    AboutComponent // Composant accueil déclaré ici
   ],
   imports: [
     BrowserModule,
@@ -29,7 +30,8 @@ registerLocaleData(localeFr);
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
     SharedModule,
     BrowserAnimationsModule,
-    
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+
   ],
   providers: [
      { provide: LOCALE_ID, useValue: 'fr' }

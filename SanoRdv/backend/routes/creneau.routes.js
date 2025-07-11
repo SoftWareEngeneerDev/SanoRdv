@@ -48,6 +48,7 @@ router.delete('/supprimer', async (req, res) => {
   }
 });
 
+
 //-------------------Ajouter une route pour appeler--------------
 router.get('/parDate/:agendaId/:date', async (req, res) => {
   const { agendaId, date } = req.params;

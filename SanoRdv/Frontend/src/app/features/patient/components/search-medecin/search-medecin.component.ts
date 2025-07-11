@@ -32,14 +32,12 @@ export class RechercheMedecinComponent {
     this.rechercheMedecinService.medecinDetails$.subscribe(data => this.medecinDetails = data);
   }
 
-  // Voir profil du médecin sélectionné
-  voirProfil(medecin: any) {
-    console.log('👉 CLIC détecté - Médecin :', medecin);  
-    this.router.navigate(['/patient/informations'], {
-      state: { medecin }
-    });
-  }
-
+voirProfil(medecin: any) {
+  console.log('👉 CLIC détecté - Médecin :', medecin);
+  this.router.navigate(['/patient/informations', medecin.id], {
+    state: { medecin }
+  });
+}
 
   // Sélection de suggestion
   selectSuggestion(suggestion: any) {
