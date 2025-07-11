@@ -1,0 +1,67 @@
+.modifier-form {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.photo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.photo-section img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+h4 {
+  margin-top: 30px;
+  color: #007bff;
+  font-size: 18px;
+}
+
+.grid-3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.grid-3 input,
+.grid-3 select {
+  flex: 1 1 300px;
+  padding: 8px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+}
+
+.statut {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+button {
+  padding: 10px 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .grid-3 {
+    flex-direction: column;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PatientService } from '../../services/patient.service';
 import { Patient } from '../../models/patient.model';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-patients',
@@ -10,63 +11,76 @@ import { Router } from '@angular/router';
 })
 export class PatientsComponent implements OnInit {
 
-      patients: Patient[] = [];
-  patientASupprimer: string | null = null;
+     patients: Patient[] = [];
+  filteredPatients: Patient[] = [];
   searchTerm: string = '';
-  router: any;
+  addPatientForm: FormGroup;
+  isAddingPatient: boolean = false;
+  showForm: boolean = false;
 
-  constructor(private patientService: PatientService, route: Router) {}
+  constructor(private router: Router,
+    private patientService: PatientService,
+    private fb: FormBuilder
+  ) {
+    this.addPatientForm = this.fb.group({
+      lastName: ['', Validators.required],
+      firstName: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      gender: ['Homme', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
-     this.listePatients();
+    this.loadPatients();
   }
 
-  listePatients() {
-    this.patientService.getPatients().subscribe(data => {
-      this.patients = data;
-    });
+  loadPatients(): void {
+    this.patientService.getPatients().subscribe(
+      patients => {
+        this.patients = patients;
+        this.filteredPatients = [...patients];
+      }
+    );
   }
 
-  ouvrirConfirmation(id: string) {
-  this.patientASupprimer = id;
-}
+  searchPatients(): void {
+    if (!this.searchTerm) {
+      this.filteredPatients = [...this.patients];
+      return;
+    }
 
-annulerSuppression() {
-  this.patientASupprimer = null;
-}
-
-confirmerSuppression() {
-  if (this.patientASupprimer) {
-    this.patientService.supprimerPatient(this.patientASupprimer).subscribe(() => {
-      this.listePatients();  // Recharge la liste
-      this.patientASupprimer = null;  // Ferme la modale
-    });
+    this.patientService.searchPatients(this.searchTerm).subscribe(
+      patients => this.filteredPatients = patients
+    );
   }
+
+ toggleAddPatientForm(): void {
+  this.router.navigate(['/admin/ajouter-patient']);
 }
 
-  activerDesactiver(p: Patient) {
-    const action = p.actif ? 'désactiver' : 'activer';
-    if (confirm(`Voulez-vous ${action} ce patient ?`)) {
-      this.patientService.toggleEtat(p.id).subscribe(() => {
-        this.listePatients();
+  onSubmit(): void {
+    if (this.addPatientForm.valid) {
+      this.isAddingPatient = true;
+      const newPatient: Patient = {
+        id: 0, // Will be set by the server
+        ...this.addPatientForm.value
+      };
+
+      this.patientService.addPatient(newPatient).subscribe({
+        next: (patient) => {
+          this.patients.unshift(patient);
+          this.filteredPatients.unshift(patient);
+          this.addPatientForm.reset({
+            gender: 'Homme'
+          });
+          this.showForm = false;
+          this.isAddingPatient = false;
+        },
+        error: () => {
+          this.isAddingPatient = false;
+        }
       });
     }
   }
-
- filteredPatients(): Patient[] {
-  if (!this.searchTerm) return this.patients;
-  const term = this.searchTerm.toLowerCase();
-  return this.patients.filter(p =>
-    p.nom.toLowerCase().includes(term) || p.email.toLowerCase().includes(term)
-  );
-}
-
-
-  voirHistorique(id: string) {
-    // 🚧 Rediriger vers la page de l’historique
-     this.router.navigate(['/admin/patients', id, 'historique']);
-    console.log("Historique du patient :", id);
-  }
-
-
 }

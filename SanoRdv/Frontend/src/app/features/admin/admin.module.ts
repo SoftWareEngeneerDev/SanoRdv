@@ -14,6 +14,11 @@ import { SpecialitesComponent } from './pages/specialites/specialites.component'
 import { NotificationsComponent } from './pages/notifications/notifications.component'; // Assurez-vous d'avoir installé ng2-charts
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProfilComponent } from './pages/profil/profil.component';
+import { AjouterMedecinComponent } from './pages/ajouter-medecin/ajouter-medecin.component';
+import { ModifierMedecinComponent } from './pages/modifier-medecin/modifier-medecin.component';
+import { AjouterPatientComponent } from './pages/ajouter-patient/ajouter-patient.component';
+import { DetailPatientComponent } from './pages/detail-patient/detail-patient.component';
+import { DetailRendezVousComponent } from './pages/detail-rendez-vous/detail-rendez-vous.component';
 
 
 @NgModule({
@@ -27,7 +32,12 @@ import { ProfilComponent } from './pages/profil/profil.component';
     MedecinsComponent,
     SpecialitesComponent,
     NotificationsComponent,
-    ProfilComponent
+    ProfilComponent,
+    AjouterMedecinComponent,
+    ModifierMedecinComponent,
+    AjouterPatientComponent,
+    DetailPatientComponent,
+    DetailRendezVousComponent
   ],
   imports: [
     CommonModule,
