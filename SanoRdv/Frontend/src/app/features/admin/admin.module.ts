@@ -49,11 +49,7 @@ import { AjouterSpecialitesComponent } from './pages/ajouter-specialites/ajouter
     AdminRoutingModule,
     NgChartsModule,
     FormsModule,
-<<<<<<< HEAD
     ReactiveFormsModule
-=======
-    RouterModule
->>>>>>> origin/master
   ]
 })
 export class AdminModule { }
