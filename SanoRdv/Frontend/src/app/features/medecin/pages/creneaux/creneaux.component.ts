@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MedecinService } from '../../medecin.service';
+import { MedecinService } from '../../Medecin.service';
 import { CalendarEvent, CalendarView } from 'angular-calendar';
 import { addMonths, subMonths } from 'date-fns';
 

@@ -88,5 +88,18 @@
         <button class="btn-success" (click)="closeModal()"><span class="icon">✅</span> Fermer</button>
       </ng-container>
     </div>
+
+    <div class="action-buttons" *ngIf="selectedAppointment">
+  <button *ngIf="selectedAppointment.statut !== 'annulé'" class="btn-danger"
+    (click)="annulerRendezVous(selectedAppointment)">
+    ❌ Annuler
+  </button>
+  <button class="btn-primary" (click)="modifierRendezVous(selectedAppointment)">
+  ✏️ Modifier le rendez-vous
+</button>
+
+  <button (click)="closeModal()" class="btn-secondary">Fermer</button>
+</div>
+
   </div>
 </div>

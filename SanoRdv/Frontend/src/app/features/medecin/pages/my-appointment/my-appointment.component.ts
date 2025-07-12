@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MedecinService } from '../../medecin.service';
+import { MedecinService } from '../../Medecin.service';
 
 interface Appointment {
   _id: string;
@@ -36,7 +36,7 @@ export class MyAppointmentComponent implements OnInit {
   }
 
   loadAppointments(): void {
-    const medecinId = '64bfb40c4cb1d174d3b1bcf0'; // Remplace ceci dynamiquement si besoin
+    const medecinId = '64bfb40c4cb1d174d3b1bcf0'; // ⚠️ À remplacer par un ID dynamique
     this.medecinService.getRendezVousParMedecin(medecinId).subscribe({
       next: (groupedData) => {
         const allRdv: Appointment[] = [];
@@ -81,5 +81,39 @@ export class MyAppointmentComponent implements OnInit {
       'confirmé': '✅ Confirmé',
       'annulé': '❌ Annulé'
     }[status] || status;
+  }
+
+  annulerRendezVous(appointment: Appointment): void {
+    if (!appointment._id) return;
+
+    this.medecinService.annulerRendezVous(appointment._id).subscribe({
+      next: () => {
+        appointment.statut = 'annulé';
+        this.closeModal();
+      },
+      error: err => {
+        console.error('Erreur annulation :', err);
+      }
+    });
+  }
+
+  modifierRendezVous(appointment: Appointment): void {
+    if (!appointment._id) return;
+
+    const nouveauMotif = prompt("Entrez le nouveau motif du rendez-vous :", appointment.motif);
+
+    if (nouveauMotif && nouveauMotif.trim() !== '' && nouveauMotif !== appointment.motif) {
+      this.medecinService.modifierRendezVous(appointment._id, { motif: nouveauMotif }).subscribe({
+        next: () => {
+          appointment.motif = nouveauMotif;
+          alert("Rendez-vous modifié avec succès.");
+          this.closeModal();
+        },
+        error: (err) => {
+          console.error("Erreur lors de la modification :", err);
+          alert("Échec de la modification du rendez-vous.");
+        }
+      });
+    }
   }
 }

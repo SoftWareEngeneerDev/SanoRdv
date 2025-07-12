@@ -6,23 +6,36 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MedecinService {
-  private apiUrl = 'http://localhost:3000/api/medecins';
+  private baseUrl = 'http://localhost:3000/api';
+  private apiUrl = `${this.baseUrl}/medecins`;
+  private rdvUrl = `${this.baseUrl}/rendezvous`;
 
   constructor(private http: HttpClient) {}
 
   getRendezVousParMedecin(medecinId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/rendezvous/medecin/${medecinId}`);
+    return this.http.get(`${this.rdvUrl}/medecin/${medecinId}`);
+  }
+
+  annulerRendezVous(rendezvousId: string): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/annuler`, { id: rendezvousId });
+  }
+
+  modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/modifier`, {
+      id: rendezvousId,
+      ...data
+    });
   }
 
   ajouterCreneau(payload: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/creneaux`, payload); // utilise apiUrl, pas baseUrl
-}
+    return this.http.post(`${this.apiUrl}/creneaux`, payload);
+  }
 
-getCreneauxParMedecin(medecinId: string): Observable<any[]> {
+  getCreneauxParMedecin(medecinId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/creneaux/medecin/${medecinId}`);
   }
 
-   profile = {
+  profile = {
     photo: '',
     nom: 'Kabore',
     prenom: 'Faical',
@@ -43,6 +56,4 @@ getCreneauxParMedecin(medecinId: string): Observable<any[]> {
   updateProfile(data: any) {
     this.profile = { ...this.profile, ...data };
   }
-
 }
-
