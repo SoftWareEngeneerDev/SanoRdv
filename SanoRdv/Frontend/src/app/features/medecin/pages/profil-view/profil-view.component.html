@@ -12,7 +12,7 @@
       <h4>Information personnelles</h4>
       <p><strong>Sexe:</strong> {{ profile.sexe }}</p>
       <p><strong>Âge:</strong> {{ calculateAge(profile.dateNaissance) }} ans</p>
-      <p><strong>Expérience:</strong> {{ profile.experience }} ans</p>
+      <p><strong>Expérience:</strong> {{ profile.anneeExperience }} ans</p>
     </div>
     <div class="box">
       <h4>Contact</h4>
@@ -34,3 +34,4 @@
     <button class="edit-btn" (click)="editProfile()">Modifier le profil</button>
   </div>
 </div>
+
