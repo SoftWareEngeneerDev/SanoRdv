@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { RendezVous } from '../models/rendez-vous.model'; // Assurez-vous que le modèle RendezVous est correctement importé
 import { environment } from 'src/environment/environments';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +15,20 @@ export class RendezVousService {
   constructor(private http: HttpClient) {}
 
   getRendezVous(): Observable<RendezVous[]> {
-    return this.http.get<RendezVous[]>(this.apiUrl);
+    return this.http.get<RendezVous[]>(this.apiUrl).pipe(
+      catchError(() => of([]))
+    );
   }
 
-  annulerRendezVous(id: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/annuler`, {});
+  getDetailsRendezVous(id: number): Observable<RendezVous> {
+    return this.http.get<RendezVous>(`${this.apiUrl}/${id}`).pipe(
+      catchError(() => throwError(() => new Error('Erreur lors du chargement du rendez-vous')))
+    );
   }
 
-  // Bonus : Modifier un rendez-vous
-  modifierRendezVous(id: string, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+  searchRendezVous(term: string): Observable<RendezVous[]> {
+    return this.http.get<RendezVous[]>(`${this.apiUrl}?q=${term}`).pipe(
+      catchError(() => of([]))
+    );
   }
 }
