@@ -22,7 +22,8 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent // Composant accueil déclaré ici
+    AboutComponent
+
   ],
   imports: [
     BrowserModule,

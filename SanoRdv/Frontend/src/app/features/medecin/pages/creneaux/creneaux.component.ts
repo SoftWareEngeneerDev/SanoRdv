@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MedecinService } from '../medecin.service';
+import { MedecinService } from '../../Medecin.service';
 import { CalendarEvent, CalendarView } from 'angular-calendar';
 import { addMonths, subMonths } from 'date-fns';
 
@@ -18,8 +18,8 @@ export class CreneauxComponent {
     '14:00', '15:00', '16:00',
     '17:00', '18:00'
   ];
-  
-selectedSlots: string[] = [];
+
+  selectedSlots: string[] = [];
 
   previousMonth(): void {
     this.viewDate = subMonths(this.viewDate, 1);
