@@ -13,7 +13,7 @@
   margin-top: -50px;
   padding-top: 95px;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   transition: margin-left 0.3s ease;
 }
 

@@ -1,10 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  AbstractControl,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '../../../../shared/services/patient.service';
 import { NotificationsService } from '../../../../shared/services/notifications.service';
@@ -27,8 +22,7 @@ export class ProfilComponent implements OnInit {
   isSubmitting = false;
   errorMessages = '';
   successMessage = '';
-  isSidebarCollapsed: boolean = false; // ou récupéré via service
-
+  isSidebarCollapsed: boolean = false;
 
   medecinId: string | null = null;
   medecinData: any = null;
@@ -48,31 +42,24 @@ export class ProfilComponent implements OnInit {
     this.loadUserData();
 
     this.medecinId = this.route.snapshot.paramMap.get('medecinId');
-
     if (this.medecinId) {
       this.loadMedecinData(this.medecinId);
     }
   }
 
   private initializeForm(): void {
-    this.registerForm = this.fb.group(
-      {
-        nom: ['', [Validators.required, Validators.minLength(2)]],
-        prenom: ['', [Validators.required, Validators.minLength(2)]],
-        telephone: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-        sexe: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        motDePasse: [''],
-        nouveauMotDePasse: [''],
-        confirmationMotDePasse: [''],
-        localite: ['', Validators.required],
-        adresse: ['', Validators.required],
-        dateNaissance: ['', Validators.required],
-        groupeSanguin: [''],
-        allergies: [''],
-      },
-      { validators: this.passwordsMatch }
-    );
+    this.registerForm = this.fb.group({
+      nom: ['', [Validators.required, Validators.minLength(2)]],
+      prenom: ['', [Validators.required, Validators.minLength(2)]],
+      telephone: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+      sexe: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      localite: ['', Validators.required],
+      adresse: ['', Validators.required],
+      dateNaissance: ['', Validators.required],
+      groupeSanguin: [''],
+      allergies: [''],
+    });
   }
 
   private loadUserData(): void {
@@ -102,9 +89,9 @@ export class ProfilComponent implements OnInit {
       ? new Date(patient.dateNaissance)
       : null;
     const formattedDate = rawDate
-      ? `${String(rawDate.getDate()).padStart(2, '0')}-${String(
+      ? `${String(rawDate.getFullYear())}-${String(
           rawDate.getMonth() + 1
-        ).padStart(2, '0')}-${rawDate.getFullYear()}`
+        ).padStart(2, '0')}-${String(rawDate.getDate()).padStart(2, '0')}`
       : '';
 
     this.registerForm.patchValue({
@@ -115,19 +102,12 @@ export class ProfilComponent implements OnInit {
       sexe: patient.sex || '',
       localite: patient.localite || '',
       adresse: patient.adresse || '',
-      motDePasse: '',
       dateNaissance: formattedDate,
       groupeSanguin: patient.groupeSanguin || '',
       allergies: patient.allergies || '',
     });
 
     this.previewUrl = patient.photo || 'assets/images/default-avatar.png';
-  }
-
-  passwordsMatch(form: AbstractControl) {
-    const pass = form.get('nouveauMotDePasse')?.value;
-    const confirm = form.get('confirmationMotDePasse')?.value;
-    return pass === confirm ? null : { passwordMismatch: true };
   }
 
   getFieldError(fieldName: string): string {
@@ -155,9 +135,6 @@ export class ProfilComponent implements OnInit {
       telephone: 'Téléphone',
       sexe: 'Sexe',
       email: 'Email',
-      motDePasse: 'Mot de passe',
-      nouveauMotDePasse: 'Nouveau mot de passe',
-      confirmationMotDePasse: 'Confirmation du mot de passe',
       localite: 'Localité',
       adresse: 'Adresse',
       dateNaissance: 'Date de naissance',
@@ -165,13 +142,6 @@ export class ProfilComponent implements OnInit {
       allergies: 'Allergies',
     };
     return displayNames[fieldName] || fieldName;
-  }
-
-  get passwordMismatchError(): boolean {
-    return (
-      this.registerForm.errors?.['passwordMismatch'] &&
-      this.registerForm.get('confirmationMotDePasse')?.touched
-    );
   }
 
   triggerFileInput(): void {
@@ -210,7 +180,7 @@ export class ProfilComponent implements OnInit {
     if (confirm('Êtes-vous sûr de vouloir annuler les modifications ?')) {
       this.registerForm.reset();
       this.loadUserData();
-      this.router.navigate(['/patient/dashboard']);
+      this.router.navigate(['/patient/modifier']);
     }
   }
 
@@ -227,19 +197,8 @@ export class ProfilComponent implements OnInit {
     const formData = new FormData();
     const value = this.registerForm.value;
 
-    if (value.nouveauMotDePasse && !value.motDePasse) {
-      this.errorMessages =
-        'Veuillez saisir votre mot de passe actuel pour le modifier.';
-      this.isSubmitting = false;
-      return;
-    }
-
     for (const key in value) {
-      if (
-        value.hasOwnProperty(key) &&
-        value[key] !== null &&
-        key !== 'confirmationMotDePasse'
-      ) {
+      if (value.hasOwnProperty(key) && value[key] !== null) {
         formData.append(key, value[key].toString());
       }
     }
@@ -252,7 +211,6 @@ export class ProfilComponent implements OnInit {
       next: () => {
         this.successMessage = 'Profil mis à jour avec succès !';
 
-        // Mise à jour du localStorage
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         const updatedUser = {
           ...currentUser,
@@ -261,7 +219,6 @@ export class ProfilComponent implements OnInit {
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
 
-        // Notification
         this.notificationsService
           .creerNotification({
             message:
@@ -293,9 +250,10 @@ export class ProfilComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.errorMessages = 'Erreur lors du chargement des données du médecin.';
+        this.errorMessages =
+          'Erreur lors du chargement des données du médecin.';
         console.error(err);
-      }
+      },
     });
   }
 }

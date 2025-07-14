@@ -1,4 +1,7 @@
-<div class="page-container" [ngClass]="{ 'sidebar-collapsed': isSidebarCollapsed }">
+<div
+  class="page-container"
+  [ngClass]="{ 'sidebar-collapsed': isSidebarCollapsed }"
+>
   <div class="main-content">
     <div class="container">
       <div class="form-container">
@@ -111,44 +114,46 @@
               </div>
             </div>
 
- <!-- Coordonnées -->
-<h3 class="section-title">Coordonnées</h3>
-<hr />
-<div class="form-row three-cols" style="display: flex; gap: 20px; flex-wrap: nowrap;">
-  <div class="form-group third-width" style="flex: 1;">
-    <label>Téléphone <span class="required-star">*</span></label>
-    <div class="input-wrapper">
-      <input formControlName="telephone" type="tel" />
-      <i class="bi bi-telephone input-icon"></i>
-    </div>
-    <div class="field-error" *ngIf="getFieldError('telephone')">
-      {{ getFieldError("telephone") }}
-    </div>
-  </div>
+            <!-- Coordonnées -->
+            <h3 class="section-title">Coordonnées</h3>
+            <hr />
+            <div
+              class="form-row three-cols"
+              style="display: flex; gap: 20px; flex-wrap: nowrap"
+            >
+              <div class="form-group third-width" style="flex: 1">
+                <label>Téléphone <span class="required-star">*</span></label>
+                <div class="input-wrapper">
+                  <input formControlName="telephone" type="tel" />
+                  <i class="bi bi-telephone input-icon"></i>
+                </div>
+                <div class="field-error" *ngIf="getFieldError('telephone')">
+                  {{ getFieldError("telephone") }}
+                </div>
+              </div>
 
-  <div class="form-group third-width" style="flex: 1;">
-    <label>Localité <span class="required-star">*</span></label>
-    <div class="input-wrapper">
-      <input formControlName="localite" type="text" />
-      <i class="bi bi-geo-alt input-icon"></i>
-    </div>
-    <div class="field-error" *ngIf="getFieldError('localite')">
-      {{ getFieldError("localite") }}
-    </div>
-  </div>
+              <div class="form-group third-width" style="flex: 1">
+                <label>Localité <span class="required-star">*</span></label>
+                <div class="input-wrapper">
+                  <input formControlName="localite" type="text" />
+                  <i class="bi bi-geo-alt input-icon"></i>
+                </div>
+                <div class="field-error" *ngIf="getFieldError('localite')">
+                  {{ getFieldError("localite") }}
+                </div>
+              </div>
 
-  <div class="form-group third-width" style="flex: 1;">
-    <label>Email <span class="required-star">*</span></label>
-    <div class="input-wrapper">
-      <input formControlName="email" type="email" />
-      <i class="bi bi-envelope input-icon"></i>
-    </div>
-    <div class="field-error" *ngIf="getFieldError('email')">
-      {{ getFieldError("email") }}
-    </div>
-  </div>
-</div>
-
+              <div class="form-group third-width" style="flex: 1">
+                <label>Email <span class="required-star">*</span></label>
+                <div class="input-wrapper">
+                  <input formControlName="email" type="email" />
+                  <i class="bi bi-envelope input-icon"></i>
+                </div>
+                <div class="field-error" *ngIf="getFieldError('email')">
+                  {{ getFieldError("email") }}
+                </div>
+              </div>
+            </div>
 
             <!-- Infos médicales -->
             <h3 class="section-title">Informations médicales (Optionnel)</h3>
@@ -191,20 +196,21 @@
             </div>
 
             <!-- Messages -->
-            <!-- <div class="form-messages">
+             <div class="form-messages">
               <p class="success-message" *ngIf="successMessage">
                 {{ successMessage }}
               </p>
               <p class="error-message" *ngIf="errorMessages">
                 {{ errorMessages }}
               </p>
-            </div> -->
+            </div>
 
             <!-- Boutons -->
             <div class="form-buttons">
               <button type="button" class="btn btn-cancel" (click)="onCancel()">
                 Annuler
               </button>
+              
               <button
                 type="submit"
                 class="btn btn-submit"

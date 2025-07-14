@@ -19,7 +19,8 @@
   margin-left: 70px;
   margin-top: -50px;
   padding-top: 95px;
-  min-height: 100vh;
+  /* min-height: 100vh; */
+  height: auto;
   width: 100%;
   max-width: 720px;
   background: #fff;
@@ -87,7 +88,7 @@ hr {
 /* Infos profil */
 .info-row {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 60px;
   margin-bottom: 20px;
 }
