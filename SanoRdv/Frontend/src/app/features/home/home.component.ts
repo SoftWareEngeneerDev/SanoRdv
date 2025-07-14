@@ -17,7 +17,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
   suggestions: any[] = [];
   isLoading = false;
   errorMessage = '';
-  private API_BASE_URL = 'http://localhost:3000'; // adapte selon ton backend
+  private API_BASE_URL = 'https://sanordv.onrender.com'; 
   alphabet: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   private searchTerms = new Subject<string>();
