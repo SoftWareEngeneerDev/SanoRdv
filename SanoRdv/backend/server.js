@@ -12,7 +12,7 @@ import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
 import rendezvousRoutes from './routes/rendezvous.routes.js';
 import creneauRouter from './routes/creneau.routes.js';
 import statistiquesRoutes from './routes/statistiques.routes.js';
-import agendaRouter from './routes/agenda.routes.js';
+import agendaRoutes from './routes/agenda.routes.js';
 import medecinRouter from './routes/medecin.routes.js';
 import notificationRouter from './routes/notification.routes.js';
 
@@ -52,7 +52,7 @@ const port = process.env.PORT || 3000;
   app.use('/api/rendezvous', rendezvousRoutes);  
   app.use('/api/creneaux', creneauRouter); 
   app.use('/api/statistiques', statistiquesRoutes);
-  app.use('/api/agenda', agendaRouter);
+  app.use('/api/agenda', agendaRoutes);
   app.use('/api/notifications', notificationRouter);
 
   // Gestion des erreurs 404
