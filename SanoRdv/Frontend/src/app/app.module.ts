@@ -12,6 +12,7 @@ import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID } from '@angular/core';
 import { AboutComponent } from './features/about/about.component';
+import { MedecinDetailComponent } from './features/medecin-detail/medecin-detail.component';
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -21,7 +22,8 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent // Composant accueil déclaré ici
+    AboutComponent,
+    MedecinDetailComponent // Composant accueil déclaré ici
   ],
   imports: [
     BrowserModule,

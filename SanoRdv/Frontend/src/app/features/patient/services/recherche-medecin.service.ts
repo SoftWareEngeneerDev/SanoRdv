@@ -43,7 +43,7 @@ export class RechercheMedecinService {
       phoneticEnabled: true
     };
 
-    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
+    this.http.get('https://sanordv.onrender.com/api/recherche/recherche-avancee', { params }).subscribe({
       next: (data: any) => {
         const results = data.suggestions || [];
         const nextLetters = data.nextLetters || [];
@@ -80,7 +80,7 @@ export class RechercheMedecinService {
       phoneticEnabled: true
     };
 
-    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
+    this.http.get('https://sanordv.onrender.com/api/recherche/recherche-avancee', { params }).subscribe({
       next: (data: any) => {
         const suggestions = data.suggestions || [];
         const medecinDetails = suggestions.map((s: any) => ({

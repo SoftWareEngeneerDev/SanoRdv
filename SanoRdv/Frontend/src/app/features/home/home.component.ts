@@ -28,14 +28,6 @@ export class HomeComponent implements AfterViewInit, OnInit {
       }));
 
       // Exemple 2 : Si les résultats ont directement les propriétés (décommenter si besoin)
-      /*
-      this.medecins = results.map((r: any) => ({
-        id: r._id || r.id,
-        nom: r.nom || 'N/A',
-        specialite: r.specialite || 'N/A',
-        localite: r.localite || 'N/A'
-      }));
-      */
 
       console.log('Médecins formatés:', this.medecins);
     });
