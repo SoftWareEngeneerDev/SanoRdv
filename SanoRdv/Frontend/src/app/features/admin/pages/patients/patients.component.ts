@@ -1,8 +1,8 @@
+// patients.component.ts
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { PatientService } from '../../services/patient.service';
 import { Patient } from '../../models/patient.model';
-import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-patients',
@@ -10,77 +10,59 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./patients.component.css']
 })
 export class PatientsComponent implements OnInit {
+  patients: Patient[] = [];
+  recherche: string = '';
+  patientsFiltres: Patient[] = [];
+  isLoading = true;
 
-     patients: Patient[] = [];
-  filteredPatients: Patient[] = [];
-  searchTerm: string = '';
-  addPatientForm: FormGroup;
-  isAddingPatient: boolean = false;
-  showForm: boolean = false;
-
-  constructor(private router: Router,
-    private patientService: PatientService,
-    private fb: FormBuilder
-  ) {
-    this.addPatientForm = this.fb.group({
-      lastName: ['', Validators.required],
-      firstName: ['', Validators.required],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      email: ['', [Validators.required, Validators.email]],
-      gender: ['Homme', Validators.required]
-    });
-  }
+  constructor(private patientService: PatientService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadPatients();
   }
 
   loadPatients(): void {
-    this.patientService.getPatients().subscribe(
-      patients => {
-        this.patients = patients;
-        this.filteredPatients = [...patients];
+    this.isLoading = true;
+    this.patientService.getPatients().subscribe({
+      next: (data) => {
+        this.patients = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement patients', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
 
-  searchPatients(): void {
-    if (!this.searchTerm) {
-      this.filteredPatients = [...this.patients];
-      return;
-    }
-
-    this.patientService.searchPatients(this.searchTerm).subscribe(
-      patients => this.filteredPatients = patients
-    );
+  voirDetails(id: string): void {
+    this.router.navigate(['/admin/detail-patient', id]);
   }
 
- toggleAddPatientForm(): void {
-  this.router.navigate(['/admin/ajouter-patient']);
-}
+  activer(id: string): void {
+    this.patientService.activerPatient(id).subscribe(() => this.loadPatients());
+  }
 
-  onSubmit(): void {
-    if (this.addPatientForm.valid) {
-      this.isAddingPatient = true;
-      const newPatient: Patient = {
-        id: 0, // Will be set by the server
-        ...this.addPatientForm.value
-      };
+  desactiver(id: string): void {
+    this.patientService.desactiverPatient(id).subscribe(() => this.loadPatients());
+  }
 
-      this.patientService.addPatient(newPatient).subscribe({
-        next: (patient) => {
-          this.patients.unshift(patient);
-          this.filteredPatients.unshift(patient);
-          this.addPatientForm.reset({
-            gender: 'Homme'
-          });
-          this.showForm = false;
-          this.isAddingPatient = false;
-        },
-        error: () => {
-          this.isAddingPatient = false;
-        }
-      });
+  supprimer(id: string): void {
+    if (confirm('Confirmer la suppression de ce patient ?')) {
+      this.patientService.supprimerPatient(id).subscribe(() => this.loadPatients());
     }
   }
+
+  filtrerPatients(): void {
+  // implémentation basique
+  this.patientsFiltres = this.patients.filter(p =>
+    p.nom.toLowerCase().includes(this.recherche.toLowerCase())
+  );
+  }
+
+  ajouterPatient(): void {
+    this.router.navigate(['/admin/ajouter-patient']);
+  }
+
+  
 }

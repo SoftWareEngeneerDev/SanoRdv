@@ -9,7 +9,7 @@ import { Specialite } from '../models/specialites.model';
 })
 export class SpecialiteService {
 
-  private apiUrl = `${environment.apiUrl}/specialites`;
+  private apiUrl = `${environment.apiUrl}/admins/specialites`;
 
   constructor(private http: HttpClient) {}
 

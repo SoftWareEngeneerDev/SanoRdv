@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { tap, map } from 'rxjs/operators'; // ✅ Il manquait `map`
+import { tap, map } from 'rxjs/operators';
 
-// Interfaces des données utilisées pour l'authentification
+// Interfaces
 export interface Register {
   nom: string;
   prenom: string;
@@ -42,8 +42,9 @@ export interface ResetPassword {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/api/auth';
-  private url = 'http://localhost:3000/api/patients';
+  // URL base pointant sur Render (backend déployé)
+  private baseUrl = 'https://sanordv.onrender.com/api/auth';
+  private url = 'https://sanordv.onrender.com/api/patients';
 
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -65,11 +66,10 @@ export class AuthService {
         }
         if (res.user) {
           localStorage.setItem('user', JSON.stringify(res.user));
-          // Stocke l'objet 'user' complet en JSON stringifié
         }
         console.log("Réponse du backend:", res);
       }),
-      map(res => res) // ✅ Important pour transmettre les données au `subscribe`
+      map(res => res)
     );
   }
 
