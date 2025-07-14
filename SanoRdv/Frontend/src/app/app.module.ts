@@ -19,9 +19,10 @@ import { RouterModule } from '@angular/router';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { AboutComponent } from './features/about/about.component';
-// ✅ Ajout manquant pour le calendrier
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { AdminModule } from './features/admin/admin.module';
+
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -43,10 +44,11 @@ registerLocaleData(localeFr);
     PatientModule,
     BrowserAnimationsModule,
     PatientModule,
-    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+    RouterModule, // utile pour les routerLink
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }) // calendrier
   ],
   providers: [
-    { provide: LOCALE_ID, useValue: 'fr' }
+    { provide: LOCALE_ID, useValue: 'fr' } // format des dates, etc.
   ],
   bootstrap: [AppComponent]
 })
