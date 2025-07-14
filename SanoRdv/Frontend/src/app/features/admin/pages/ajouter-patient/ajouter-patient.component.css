@@ -18,6 +18,12 @@
   width: 1.2em;
   height: 1.2em;
   margin-top: 0.15em;
+  cursor: pointer;
+}
+
+.form-check-label {
+  margin-left: 0.25rem;
+  cursor: pointer;
 }
 
 .btn {
@@ -54,6 +60,10 @@
   .d-md-flex {
     flex-direction: column;
     gap: 0.5rem !important;
+  }
+
+    .form-check-inline {
+    display: block;
   }
   
   .btn {

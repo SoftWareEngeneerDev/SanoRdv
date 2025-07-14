@@ -17,5 +17,8 @@ export class AdminHeaderComponent {
     this.router.navigate(['/admin/notifications']);
   }
 
+  deconnexion(){
+    this.router.navigate(['/auth/login']);
+  }
 
 }

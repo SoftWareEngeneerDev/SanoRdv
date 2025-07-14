@@ -1,10 +1,20 @@
 export interface Medecin {
-  id: string;
+  _id?: string;
   nom: string;
   prenom: string;
-  specialite: string;
-  etat: 'Actif' | 'Inactif';
-   telephone: string;
-  motDePasse: string;
   email: string;
+  telephone: string;
+  specialite: string;
+  anneeExperience: number;
+  motDePasse?: string;
+  localite?: string;
+  dateNaissance?: string; // format ISO ("YYYY-MM-DD")
+  photo?: string;
+  adresse?: string;
+  nationalite?: string;
+  IDmedecin?: string;
+  role?: string;
+  dateCreation?: string;
+  etat?: 'Actif' | 'Inactif';
+  isActive?: boolean;
 }

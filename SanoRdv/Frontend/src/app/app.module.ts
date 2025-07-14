@@ -1,13 +1,21 @@
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { HomeComponent } from './features/home/home.component';
+
+
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PatientModule } from './features/patient/patient.module';
+
+
+import { RouterModule } from '@angular/router';
+
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { AboutComponent } from './features/about/about.component';
@@ -23,7 +31,6 @@ registerLocaleData(localeFr);
     AppComponent,
     HomeComponent,
     AboutComponent
-
   ],
   imports: [
     BrowserModule,
@@ -32,6 +39,8 @@ registerLocaleData(localeFr);
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
+    RouterModule,
+    PatientModule,
     BrowserAnimationsModule,
     PatientModule,
     CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),

@@ -1,100 +1,54 @@
 <div class="container py-4">
-  <div *ngIf="isLoading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Chargement...</span>
-    </div>
-  </div>
-
-  <div *ngIf="patient && !isLoading" class="card shadow-sm">
-    <!-- En-tête -->
-    <div class="card-header bg-white border-bottom-0 pt-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="h4 mb-0">Fiche du patient</h1>
-        <button class="btn btn-outline-secondary" routerLink="/admin/patients">
-          <i class="bi bi-arrow-left"></i> Retour
-        </button>
-      </div>
-    </div>
-
+  <div class="card shadow-lg">
     <div class="card-body">
-      <!-- Informations personnelles -->
-      <div class="mb-5">
-        <h2 class="h5 mb-4 text-primary">Informations personnelles</h2>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <p class="mb-1"><strong>Nom complet :</strong></p>
-            <p>{{ patient.lastName }} {{ patient.firstName }}</p>
-          </div>
-          <div class="col-md-6 mb-3">
-            <p class="mb-1"><strong>Téléphone :</strong></p>
-            <p>{{ patient.phone }}</p>
-          </div>
-          <div class="col-md-6 mb-3">
-            <p class="mb-1"><strong>Email :</strong></p>
-            <p>{{ patient.email }}</p>
-          </div>
-          <div class="col-md-6 mb-3">
-            <p class="mb-1"><strong>Date de naissance :</strong></p>
-            <p>{{ formatDate(patient.birthDate) }}</p>
-          </div>
-          <div class="col-md-6 mb-3">
-            <p class="mb-1"><strong>Sexe :</strong></p>
-            <p>{{ patient.gender }}</p>
-          </div>
-          <div class="col-md-6 mb-3">
-            <p class="mb-1"><strong>Localité :</strong></p>
-            <p>{{ patient.address }}</p>
-          </div>
+      <div class="d-flex flex-column flex-md-row align-items-center">
+        <!-- Photo du patient -->
+        <div class="me-md-4 mb-3 mb-md-0 text-center">
+          <img
+            [src]="patient?.photo || defaultAvatar"
+            alt="Photo patient"
+            class="rounded-circle border shadow"
+            width="150"
+            height="150"
+          />
+          <span
+            class="badge mt-2"
+            [ngClass]="{
+              'bg-success': patient?.isActive,
+              'bg-danger': !patient?.isActive
+            }"
+          >
+            {{ patient?.isActive ? 'Actif' : 'Inactif' }}
+          </span>
         </div>
-      </div>
 
-      <!-- Historique médical -->
-      <div class="mb-5">
-        <h2 class="h5 mb-4 text-primary">Historique médical</h2>
-        <div class="list-group">
-          <div *ngFor="let entry of patient.medicalHistory" class="list-group-item border-0 px-0">
-            <div class="d-flex">
-              <span class="badge bg-light text-dark me-3 align-self-start">
-                {{ formatDate(entry.date) }}
-              </span>
-              <span>{{ entry.description }}</span>
+        <!-- Infos patient -->
+        <div class="w-100">
+          <h4 class="fw-bold text-primary">
+            {{ patient?.prenom }} {{ patient?.nom }}
+          </h4>
+
+          <div class="row mt-3">
+            <div class="col-md-6 mb-2">
+              <strong>Email :</strong> {{ patient?.email }}
+            </div>
+            <div class="col-md-6 mb-2">
+              <strong>Téléphone :</strong> {{ patient?.telephone || '—' }}
+            </div>
+            <div class="col-md-6 mb-2">
+              <strong>Adresse :</strong> {{ patient?.adresse || '—' }}
+            </div>
+            <div class="col-md-6 mb-2">
+              <strong>Sexe :</strong> {{ patient?.sexe || '—' }}
+            </div>
+            <div class="col-md-6 mb-2">
+              <strong>Date de naissance :</strong>
+              {{ patient?.dateNaissance | date: 'dd/MM/yyyy' }}
+            </div>
+            <div class="col-md-6 mb-2">
+              <strong>Nationalité :</strong> {{ patient?.nationalite || '—' }}
             </div>
           </div>
-          <div *ngIf="patient.medicalHistory.length === 0" class="text-muted">
-            Aucun historique médical enregistré
-          </div>
-        </div>
-      </div>
-
-      <!-- Rendez-vous à venir -->
-      <div>
-        <h2 class="h5 mb-4 text-primary">Rendez-vous à venir</h2>
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Heure</th>
-                <th>Médecin</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let appointment of patient.upcomingAppointments">
-                <td>{{ formatDate(appointment.date) }}</td>
-                <td>{{ appointment.time }}</td>
-                <td>{{ appointment.doctor }}</td>
-                <td class="text-end">
-                  <button class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-pencil"></i> Modifier
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="patient.upcomingAppointments.length === 0">
-                <td colspan="4" class="text-muted">Aucun rendez-vous prévu</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

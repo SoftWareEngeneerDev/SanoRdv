@@ -10,7 +10,7 @@ import { Medecin } from '../../models/medecin.model';
 })
 export class MedecinsComponent implements OnInit {
 
-      medecins: Medecin[] = [];
+  medecins: Medecin[] = [];
 
   constructor(
     private router: Router,
@@ -21,12 +21,6 @@ export class MedecinsComponent implements OnInit {
     this.chargerMedecins();
   }
 
-  loadMedecins(): void {
-  this.medecinService.getMedecins().subscribe((data) => {
-    this.medecins = data;
-  });
-}
-
   chargerMedecins(): void {
     this.medecinService.getMedecins().subscribe(data => {
       this.medecins = data;
@@ -34,32 +28,43 @@ export class MedecinsComponent implements OnInit {
   }
 
   activer(medecin: Medecin): void {
-  this.medecinService.activerMedecin(medecin.id).subscribe(() => {
-    this.loadMedecins();
-  });
-}
+    if (!medecin._id) return;
+    this.medecinService.activerMedecin(medecin._id).subscribe(() => {
+      this.chargerMedecins();
+    });
+  }
 
   ajouterMedecin(): void {
     this.router.navigate(['/admin/ajouter-medecin']);
   }
 
   modifier(medecin: Medecin): void {
-    this.router.navigate(['/admin/modifier-medecin'], { queryParams: { id: medecin.id } });
-  }
-
- supprimer(id: string): void {
-  if (confirm('Voulez-vous vraiment supprimer ce médecin ?')) {
-    this.medecinService.supprimerMedecin(id).subscribe(() => {
-      this.loadMedecins();
+    if (!medecin._id) return;
+    this.router.navigate(['/admin/modifier-medecin'], {
+      queryParams: { id: medecin._id }
     });
   }
-}
+
+  supprimer(id: string): void {
+    if (confirm('Voulez-vous vraiment supprimer ce médecin ?')) {
+      this.medecinService.supprimerMedecin(id).subscribe(() => {
+        this.chargerMedecins();
+      });
+    }
+  }
 
   toggleEtat(medecin: Medecin): void {
+    if (!medecin._id) return;
+
     const action = medecin.etat === 'Actif' ? 'désactiver' : 'activer';
     const confirmToggle = confirm(`Voulez-vous vraiment ${action} ce médecin ?`);
+
     if (confirmToggle) {
-      this.medecinService.activerMedecin(medecin.id).subscribe(() => {
+      const actionObservable = medecin.etat === 'Actif'
+        ? this.medecinService.desactiverMedecin(medecin._id)
+        : this.medecinService.activerMedecin(medecin._id);
+
+      actionObservable.subscribe(() => {
         this.chargerMedecins();
       });
     }
