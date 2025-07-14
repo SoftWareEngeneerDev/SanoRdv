@@ -42,8 +42,8 @@ export interface ResetPassword {
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/api/auth';
-  private url = 'http://localhost:3000/api/patients';
+  private baseUrl = 'https://sanordv.onrender.com/api/auth';
+  private url = 'https://sanordv.onrender.com/api/patients';
 
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
