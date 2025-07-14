@@ -1,41 +1,49 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Medecin } from '../models/medecin.model'; // 🔁 adapte le chemin selon ton projet
+import { Medecin } from '../models/medecin.model';
 import { environment } from 'src/environment/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MedecinService {
-
-  private apiUrl = 'http://localhost:3000/api/medecins'; // Modifie selon ton backend
+  private apiUrl = `${environment.apiUrl}/admins/medecins`;
 
   constructor(private http: HttpClient) {}
 
+  // Récupérer tous les médecins
   getMedecins(): Observable<Medecin[]> {
     return this.http.get<Medecin[]>(this.apiUrl);
   }
 
-  ajouterMedecin(medecin: Medecin): Observable<Medecin> {
-    return this.http.post<Medecin>(this.apiUrl, medecin);
+  // Ajouter un médecin
+  ajouterMedecin(medecin: Medecin): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/admins/ajouter`, medecin);
   }
 
+  // Supprimer un médecin
   supprimerMedecin(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  activerMedecin(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/activer`, {});
+  // Désactiver un médecin
+  desactiverMedecin(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/desactivation`, {});
   }
 
+  // Activer un médecin
+  activerMedecin(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/activation`, {});
+  }
+
+  // Récupérer un médecin par ID
   getMedecinById(id: string): Observable<Medecin> {
-  return this.http.get<Medecin>(`${this.apiUrl}/${id}`);
-}
+    return this.http.get<Medecin>(`${this.apiUrl}/${id}`);
+  }
 
-modifierMedecin(id: string, medecin: Medecin): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${id}`, medecin);
-}
-
-
+  // Modifier un médecin
+  modifierMedecin(id: string, medecin: Medecin): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, medecin);
+  }
 }

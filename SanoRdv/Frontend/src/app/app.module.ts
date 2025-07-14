@@ -20,6 +20,13 @@ import { RouterModule } from '@angular/router';
 
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
+import { LOCALE_ID } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AboutComponent } from './features/about/about.component';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { AdminModule } from './features/admin/admin.module';
+
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -37,6 +44,8 @@ registerLocaleData(localeFr);
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
+    RouterModule,
+    PatientModule,
     BrowserAnimationsModule,
     PatientModule,
     RouterModule, // utile pour les routerLink

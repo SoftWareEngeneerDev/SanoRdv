@@ -21,19 +21,14 @@ export class AjouterMedecinComponent {
   ];
 
   constructor(private fb: FormBuilder, private medecinService: MedecinService, private router: Router) {
-    this.medecinForm = this.fb.group({
+   this.medecinForm = this.fb.group({
   nom: ['', Validators.required],
   prenom: ['', Validators.required],
-  sexe: ['Homme'],
-  dateNaissance: [''],
-  anneesExperience: [''],
   specialite: ['', Validators.required],
   email: ['', [Validators.required, Validators.email]],
-  telephone: ['', Validators.required],
-  localisation: [''],
-  description: [''],
-  etat: ['Inactif']
-})
+  telephone: ['', Validators.required]
+});
+
   }
 
   onSubmit(): void {
