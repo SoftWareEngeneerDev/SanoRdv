@@ -7,14 +7,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { HomeComponent } from './features/home/home.component';
-import { AboutComponent } from './features/about/about.component'; // <-- import ajouté
+import { AboutComponent } from './features/about/about.component';
 
 import { SharedModule } from './shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PatientModule } from './features/patient/patient.module';
 
-import { CalendarModule, DateAdapter } from 'angular-calendar'; // <-- import ajouté
-import { adapterFactory } from 'angular-calendar/date-adapters/date-fns'; // <-- import ajouté
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+
+import { RouterModule } from '@angular/router';
 
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
@@ -26,7 +28,7 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent // Composant accueil déclaré ici
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -37,10 +39,11 @@ registerLocaleData(localeFr);
     SharedModule,
     BrowserAnimationsModule,
     PatientModule,
-    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }), // calendrier
+    RouterModule, // utile pour les routerLink
+    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }) // calendrier
   ],
   providers: [
-     { provide: LOCALE_ID, useValue: 'fr' }
+    { provide: LOCALE_ID, useValue: 'fr' } // format des dates, etc.
   ],
   bootstrap: [AppComponent]
 })

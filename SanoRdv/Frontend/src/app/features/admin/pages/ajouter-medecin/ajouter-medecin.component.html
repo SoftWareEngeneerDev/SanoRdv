@@ -1,0 +1,47 @@
+<div class="ajouter-medecin">
+  <h3><i class="fa fa-user-md"></i> Ajouter un médecin</h3>
+
+  <form [formGroup]="medecinForm" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nom *</label>
+        <input formControlName="nom" placeholder="Nom" />
+      </div>
+
+      <div class="form-group">
+        <label>Prénom *</label>
+        <input formControlName="prenom" placeholder="Prénom" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Spécialité *</label>
+      <select formControlName="specialite">
+        <option value="">Sélectionner</option>
+        <option *ngFor="let sp of specialites" [value]="sp">{{ sp }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Adresse mail *</label>
+      <input formControlName="email" type="email" placeholder="ex: medecin@clinique.com" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Téléphone *</label>
+        <input formControlName="telephone" type="tel" placeholder="+226..." />
+      </div>
+
+      <div class="form-group">
+        <label>Mot de passe *</label>
+        <input formControlName="motDePasse" type="password" />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="annuler" (click)="onCancel()">Annuler</button>
+      <button type="submit" [disabled]="!medecinForm.valid">Enregistrer</button>
+    </div>
+  </form>
+</div>

@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 const rendezVousSchema = new mongoose.Schema({
   patient: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // ou 'Patient'
+    ref: 'User',
     required: true,
   },
   medecin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // ou 'Medecin'
+    ref: 'User',
     required: true,
   },
   creneau: {
@@ -16,9 +16,13 @@ const rendezVousSchema = new mongoose.Schema({
     ref: 'Creneau',
     required: true,
   },
+  date: {
+    type: Date,
+    required: true
+  },
   time: {
     type: String,
-    required: true, // '08:30'
+    required: true 
   },
   motif: {
     type: String,
@@ -29,5 +33,6 @@ const rendezVousSchema = new mongoose.Schema({
     default: 'confirmé',
   },
 }, { timestamps: true });
+
 const RendezVous = mongoose.model('RendezVous', rendezVousSchema);
 export default RendezVous;

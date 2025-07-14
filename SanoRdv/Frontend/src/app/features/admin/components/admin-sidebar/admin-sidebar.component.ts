@@ -48,10 +48,5 @@ export class AdminSidebarComponent implements OnInit {
     this.router.navigate(['/admin/profil']);
   }
 
-  deconnexion(): void {
-    // Nettoyage localStorage et redirection
-    localStorage.removeItem('token');
-    localStorage.removeItem('admin');
-    this.router.navigate(['/login']);
-  }
+
 }
