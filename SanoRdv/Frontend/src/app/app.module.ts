@@ -27,7 +27,8 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent // Composant accueil déclaré ici
+    AboutComponent
+
   ],
   imports: [
     BrowserModule,
@@ -38,9 +39,9 @@ registerLocaleData(localeFr);
     SharedModule,
     RouterModule,
     PatientModule,
-    AdminModule,
     BrowserAnimationsModule,
-    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+    // CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+    RouterModule.forRoot([]),
 
   ],
   providers: [
