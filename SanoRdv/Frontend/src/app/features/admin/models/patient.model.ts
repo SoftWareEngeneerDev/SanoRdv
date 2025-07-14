@@ -1,26 +1,16 @@
 export interface Patient {
-    id: number;
-  lastName: string;
-  firstName: string;
-  phone: string;
+  _id: string;
+  nom: string;
+  prenom: string;
   email: string;
-  password: string;
-   address: string;
-    birthDate: Date;
-  gender: 'Homme' | 'Femme' | 'Autre';
-  createdAt?: Date;
-  updatedAt?: Date;
-  medicalHistory: MedicalEntry[];
-  upcomingAppointments: Appointment[];
-}
-
-export interface MedicalEntry {
-  date: Date;
-  description: string;
-}
-
-export interface Appointment {
-  date: Date;
-  time: string;
-  doctor: string;
+  telephone: string;
+   photo?: string;
+  sexe?: string;
+  genre: 'Homme' | 'Femme';
+  dateNaissance?: string;
+  adresse?: string;
+  localite?: string;
+  nationalite?: string;
+  isActive: boolean;
+  dateCreation?: Date;
 }
