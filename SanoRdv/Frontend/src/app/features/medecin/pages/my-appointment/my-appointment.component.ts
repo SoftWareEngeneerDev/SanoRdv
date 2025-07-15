@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MedecinService } from '../../Medecin.service';
 
 interface Appointment {
+date: any;
   _id: string;
   time: string;
   motif: string;
@@ -32,18 +33,20 @@ export class MyAppointmentComponent implements OnInit {
   constructor(private medecinService: MedecinService) {}
 
   ngOnInit(): void {
-    this.loadAppointments();
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const medecinId = user._id;
+
+    if (medecinId) {
+      this.loadAppointments(medecinId);
+    } else {
+      console.error("Identifiant médecin non trouvé !");
+    }
   }
 
-  loadAppointments(): void {
-    const medecinId = '64bfb40c4cb1d174d3b1bcf0'; // ⚠️ À remplacer par un ID dynamique
+ loadAppointments(medecinId: string): void {
     this.medecinService.getRendezVousParMedecin(medecinId).subscribe({
-      next: (groupedData) => {
-        const allRdv: Appointment[] = [];
-        Object.values(groupedData).forEach((rdvList: any) => {
-          allRdv.push(...(rdvList as Appointment[]));
-        });
-        this.appointments = allRdv;
+      next: (rendezVous: Appointment[]) => {
+        this.appointments = rendezVous;
         this.filteredAppointments = [...this.appointments];
       },
       error: (err) => {
@@ -53,19 +56,24 @@ export class MyAppointmentComponent implements OnInit {
   }
 
   viewAppointmentDetails(appointment: Appointment): void {
-    this.selectedAppointment = { ...appointment };
+      this.selectedAppointment = { ...appointment };
   }
 
   closeModal(): void {
-    this.selectedAppointment = null;
+      this.selectedAppointment = null;
   }
 
-  formatDate(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  formatDate(dateInput: any): string {
+    const date = new Date(dateInput); // Convertir en Date JS
+    if (isNaN(date.getTime())) {
+      return 'Date invalide';
+    }
+
+    return date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
     });
   }
 
@@ -76,7 +84,7 @@ export class MyAppointmentComponent implements OnInit {
     }[status] || '';
   }
 
-  getStatusLabel(status: string): string {
+ getStatusLabel(status: string): string {
     return {
       'confirmé': '✅ Confirmé',
       'annulé': '❌ Annulé'
