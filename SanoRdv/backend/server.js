@@ -11,11 +11,6 @@ import specialiteRoutes from './routes/specialite.routes.js';
 import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
 import rendezvousRoutes from './routes/rendezvous.routes.js';
 import creneauRouter from './routes/creneau.routes.js';
-import statistiquesRoutes from './routes/statistiques.routes.js';
-
-
-
-
 import agendaRouter from './routes/agenda.routes.js';
 import medecinRouter from './routes/medecin.routes.js'; // corrigé : medecinRouter au lieu de medecinRoutes
 import notificationRouter from './routes/notification.routes.js';
@@ -42,21 +37,6 @@ const port = process.env.PORT || 3000;
     credentials: true,
   }));
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-
-  // IMPORTANT : Utilise des routes distinctes pour éviter les conflits
-  app.use('/api/auth', userRoutes);        // ex: gestion des utilisateurs
-  app.use('/api/auth', patientRoutes);  // gestion patients
-  app.use('/api/auth', adminRoutes);      // gestion admins
-  app.use('/api/specialites', specialiteRoutes);
-  app.use('/api/recherche', systemeDeRechercheRoutes);
-  app.use('/api/rendezvous', rendezvousRoutes);
-  app.use('/api/creneau', creneauRouter);
-  app.use('/api/statistiques', statistiquesRoutes);
-
-  
-  // Gestion 404
   // Middleware pour parser le JSON et les données url-encoded
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

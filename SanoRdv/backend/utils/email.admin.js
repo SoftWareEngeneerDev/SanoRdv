@@ -30,7 +30,6 @@ const createTransport = () => {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
-
       tls: {
         rejectUnauthorized: false // Permet de désactiver les vérifications de certificat (utile pour le dev)
       },
@@ -45,7 +44,6 @@ const createTransport = () => {
       user: 'ethereal.user@ethereal.email',
       pass: 'ethereal.pass',
     },
-
     tls: {
       rejectUnauthorized: false // Permet de désactiver les vérifications de certificat (utile pour le dev)
     },
@@ -186,4 +184,3 @@ export const testEmailConfig = async () => {
     return { success: false, message: `Configuration email invalide: ${error.message}` };
   }
 };
-

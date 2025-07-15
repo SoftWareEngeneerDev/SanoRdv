@@ -24,7 +24,7 @@ export class RechercheMedecinService {
   nextLetters$ = this.nextLettersSubject.asObservable();
   medecinDetails$ = this.medecinDetailsSubject.asObservable();
 
-  private readonly baseUrl = 'https://sanordv.onrender.com/api/recherche';
+  private readonly baseUrl = 'https://localhost:3000/api/recherche';
 
   constructor(private http: HttpClient) {}
 

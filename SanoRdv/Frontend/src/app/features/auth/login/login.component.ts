@@ -4,19 +4,19 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-login',                 
+  selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']   
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  loginForm: FormGroup;                  
-  password: string = '';                 
-  showPassword: boolean = false;         
-  redirectUrl: string | null = null;    
+  loginForm: FormGroup;
+  password: string = '';
+  showPassword: boolean = false;
+  redirectUrl: string | null = null;
 
   constructor(
-    private fb: FormBuilder,             
-    private authService: AuthService,    
+    private fb: FormBuilder,
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute         // Pour récupérer les query params
   ) {
@@ -65,4 +65,5 @@ export class LoginComponent {
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
+
 }
