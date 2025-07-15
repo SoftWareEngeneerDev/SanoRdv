@@ -5,7 +5,7 @@ import {
   modifierRendezVous,
   getRendezVousParMedecin,
   getRendezVousParPatient,
-  getTousLesRendezVous
+  getTousLesRendezVousPourAdmin
 } from '../controllers/rendezvous.controller.js';
 
 const router = express.Router();
@@ -26,6 +26,6 @@ router.get('/medecin/:medecinId', getRendezVousParMedecin);
 router.get('/patient/:patientId', getRendezVousParPatient);
 
 // ✔️ Tous les RDV (admin) avec détails
-router.get('/admin/tous', getTousLesRendezVous);
+router.get('/admin/tous', getTousLesRendezVousPourAdmin);
 
 export default router;
