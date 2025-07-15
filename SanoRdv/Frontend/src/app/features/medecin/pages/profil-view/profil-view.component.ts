@@ -1,4 +1,4 @@
-import { Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MedecinService } from '../../Medecin.service';
 import { Router } from '@angular/router';
 
@@ -7,15 +7,34 @@ import { Router } from '@angular/router';
   templateUrl: './profil-view.component.html',
   styleUrls: ['./profil-view.component.css']
 })
-export class ProfilViewComponent {
+export class ProfilViewComponent implements OnInit {
 
-  profile: any;
+  profile: any = null;
 
-  constructor(private medecinService: MedecinService, private router: Router) {
-    this.profile = this.medecinService.getProfile();
+  constructor(
+    private medecinService: MedecinService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const medecinId = user._id;
+
+    if (medecinId) {
+      this.medecinService.getMedecinById(medecinId).subscribe({
+        next: data => {
+          this.profile = data;
+        },
+        error: (err: any) => {
+          console.error('Erreur lors du chargement du profil :', err);
+        }
+      });
+    } else {
+      console.warn("Aucun médecin connecté.");
+    }
   }
 
-  editProfile(){
+  editProfile() {
     this.router.navigate(['/medecin/profile']);
   }
 

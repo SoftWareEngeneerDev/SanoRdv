@@ -53,6 +53,7 @@ import { StatistiquesComponent } from './pages/statistiques/statistiques.compone
     FormsModule,
     ReactiveFormsModule,
 
+
   ]
 })
 export class AdminModule { }

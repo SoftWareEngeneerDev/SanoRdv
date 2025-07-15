@@ -34,6 +34,8 @@ const formatMedecinResponse = (medecin) => {
     adresse,
     nationalite,
     role,
+    sexe,
+    parcours,
     IDmedecin,
     isActive,
     createdAt,
@@ -52,6 +54,8 @@ const formatMedecinResponse = (medecin) => {
     photo,
     adresse,
     nationalite,
+    sexe,
+    parcours,
     role,
     IDmedecin,
     isActive,
@@ -108,7 +112,9 @@ export const modifierMedecin = async (req, res) => {
       dateNaissance,
       photo,
       adresse,
-      nationalite
+      nationalite,
+      sexe,
+      parcours
     } = req.body;
 
     nom = nom ? sanitizeInput(nom) : undefined;
@@ -123,6 +129,9 @@ export const modifierMedecin = async (req, res) => {
     photo = photo ? sanitizeInput(photo) : undefined;
     adresse = adresse ? sanitizeInput(adresse) : undefined;
     nationalite = nationalite ? sanitizeInput(nationalite) : undefined;
+    sexe = sexe ? sanitizeInput(sexe) : undefined; // 🔧 nettoyage
+    parcours = parcours ? sanitizeInput(parcours) : undefined; // ✅ Ajout ici
+
 
     const medecin = await Medecin.findById(medecinId);
     if (!medecin) return res.status(404).json({ message: "Médecin non trouvé" });
@@ -165,6 +174,9 @@ export const modifierMedecin = async (req, res) => {
     if (photo) medecin.photo = photo;
     if (adresse) medecin.adresse = adresse;
     if (nationalite) medecin.nationalite = nationalite;
+    if (sexe) medecin.sexe = sexe; // 🔧 attribution
+     if (parcours) medecin.parcours = parcours; // ✅ Affectation ici
+
 
     if (motDePasse) {
       if (motDePasse.length < 8) {

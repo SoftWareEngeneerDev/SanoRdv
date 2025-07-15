@@ -11,9 +11,8 @@ import specialiteRoutes from './routes/specialite.routes.js';
 import systemeDeRechercheRoutes from './routes/SystemeDeRecherche.routes.js';
 import rendezvousRoutes from './routes/rendezvous.routes.js';
 import creneauRouter from './routes/creneau.routes.js';
-import statistiquesRoutes from './routes/statistiques.routes.js';
-import agendaRoutes from './routes/agenda.routes.js';
-import medecinRouter from './routes/medecin.routes.js';
+import agendaRouter from './routes/agenda.routes.js';
+import medecinRouter from './routes/medecin.routes.js'; // corrigé : medecinRouter au lieu de medecinRoutes
 import notificationRouter from './routes/notification.routes.js';
 
 // Configuration des variables d'environnement
@@ -26,10 +25,10 @@ const port = process.env.PORT || 3000;
   try {
     // Connexion à la base de données
     await connectDB();
-    console.log('✅ Base de données connectée avec succès');
+    console.log('Base de données connectée avec succès');
   } catch (error) {
-    console.error('❌ Erreur de connexion à la base de données:', error);
-    process.exit(1);
+    console.error('Erreur de connexion à la base de données:', error);
+    process.exit(1); // Arrêt de l'application en cas d'erreur
   }
 
   // Middleware CORS
@@ -43,19 +42,18 @@ const port = process.env.PORT || 3000;
   app.use(express.urlencoded({ extended: true }));
 
   // Définition des routes
-  app.use('/api/auth', userRoutes);           // Authentification / utilisateurs
-  app.use('/api/patients', patientRoutes);    // Patients
-  app.use('/api/admins', adminRoutes);        // Admins
-  app.use('/api/medecins', medecinRouter);    // Médecins
-  app.use('/api/specialites', specialiteRoutes); 
-  app.use('/api/recherche', systemeDeRechercheRoutes); 
-  app.use('/api/rendezvous', rendezvousRoutes);  
-  app.use('/api/creneaux', creneauRouter); 
-  app.use('/api/statistiques', statistiquesRoutes);
-  app.use('/api/agenda', agendaRoutes);
-  app.use('/api/notifications', notificationRouter);
+  app.use('/api/auth', userRoutes);        // Routes pour les utilisateurs
+  app.use('/api/patients', patientRoutes); // Routes pour les patients
+  app.use('/api/medecins', medecinRouter); // Routes pour les médecins
+  app.use('/api/admins', adminRoutes);     // Routes pour les administrateurs
+  app.use('/api/specialites', specialiteRoutes); // Routes pour les spécialités
+  app.use('/api/recherche', systemeDeRechercheRoutes); // Système de recherche
+  app.use('/api/rendezvous', rendezvousRoutes);  // Routes pour les rendez-vous
+  app.use('/api/creneaux', creneauRouter); // Routes pour les créneaux horaires
+  app.use('/api/agenda', agendaRouter);   // Routes pour l'agenda
+  app.use('/api/notifications', notificationRouter); // Routes pour les notifications
 
-  // Gestion des erreurs 404
+  // Gestion des erreurs 404 (Route non trouvée)
   app.use((req, res) => {
     res.status(404).json({
       success: false,
@@ -65,13 +63,13 @@ const port = process.env.PORT || 3000;
 
   // Démarrage du serveur
   const server = app.listen(port, () => {
-    console.log(`🚀 Serveur démarré sur http://localhost:${port}`);
+    console.log(`Serveur démarré sur http://localhost:${port}`);
   });
 
   // Gestion propre de l'arrêt du processus
   process.on('SIGTERM', () => {
     server.close(() => {
-      console.log('🛑 Processus terminé');
+      console.log('Processus terminé');
       process.exit(0);
     });
   });
