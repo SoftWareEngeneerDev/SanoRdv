@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Medecin } from '../models/medecin.model';
 import { environment } from 'src/environment/environments';
 
@@ -14,8 +15,9 @@ export class MedecinService {
 
   // Récupérer tous les médecins
   getMedecins(): Observable<Medecin[]> {
-    return this.http.get<Medecin[]>(this.apiUrl);
-  }
+  return this.http.get<{ message: string, medecins: Medecin[] }>(this.apiUrl)
+    .pipe(map(res => res.medecins));
+}
 
   // Ajouter un médecin
   ajouterMedecin(medecin: Medecin): Observable<any> {

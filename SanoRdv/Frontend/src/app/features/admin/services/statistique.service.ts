@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environment/environments';
 
 export interface StatsHebdo {
   date: string;
@@ -12,7 +13,7 @@ export interface StatsHebdo {
 })
 export class StatistiqueService {
 
-   private apiUrl = 'https://sanordv.onrender.com/api/statistiques';
+    private apiUrl = `${environment.apiUrl}/admins/statistiques`;
   constructor(private http: HttpClient) { }
 
    getRapportHebdomadaire(): Observable<StatsHebdo[]> {

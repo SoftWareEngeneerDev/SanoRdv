@@ -23,6 +23,7 @@ import { DetailRendezVousComponent } from './pages/detail-rendez-vous/detail-ren
 import { ModifierSpecialitesComponent } from './pages/modifier-specialites/modifier-specialites.component';
 import { AjouterSpecialitesComponent } from './pages/ajouter-specialites/ajouter-specialites.component';
 import { StatistiquesComponent } from './pages/statistiques/statistiques.component';
+import { DetailMedecinComponent } from './pages/detail-medecin/detail-medecin.component';
 
 
 @NgModule({
@@ -45,6 +46,7 @@ import { StatistiquesComponent } from './pages/statistiques/statistiques.compone
     ModifierSpecialitesComponent,
     AjouterSpecialitesComponent,
     StatistiquesComponent,
+    DetailMedecinComponent,
   ],
   imports: [
     CommonModule,

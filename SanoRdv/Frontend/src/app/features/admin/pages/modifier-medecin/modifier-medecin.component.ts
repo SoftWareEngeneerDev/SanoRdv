@@ -11,10 +11,14 @@ import { Medecin } from '../../models/medecin.model';
 })
 export class ModifierMedecinComponent implements OnInit {
 
-    medecinForm: FormGroup;
+  photoPreview: string | ArrayBuffer | null = null;
+  selectedFile: File | null = null;
+  medecinForm: FormGroup;
   id: string = '';
-
-  specialites = ['Médecin généraliste', 'Dermatologie', 'Cardiologie', 'Pédiatrie', 'Gynécologie'];
+  specialites = [
+    'Médecin généraliste', 'Dermatologie', 'Cardiologie',
+    'Pédiatrie', 'Gynécologie', 'Neurologie'
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -25,25 +29,39 @@ export class ModifierMedecinComponent implements OnInit {
     this.medecinForm = this.fb.group({
       nom: ['', Validators.required],
       prenom: ['', Validators.required],
-      sexe: ['Homme'],
-      dateNaissance: [''],
-      anneesExperience: [''],
+      sexe: ['Homme', Validators.required],
+      dateNaissance: ['', Validators.required],
+      anneesExperience: ['', Validators.required],
       specialite: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', Validators.required],
-      localisation: [''],
+      localisation: ['', Validators.required],
       description: [''],
-      etat: ['Inactif']
+      etat: ['Actif', Validators.required]
     });
   }
 
+  onFileSelected(event: any): void {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = e => this.photoPreview = reader.result;
+    reader.readAsDataURL(file);
+  }
+}
+
   ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get('id') || '';
-    if (this.id) {
-      this.medecinService.getMedecinById(this.id).subscribe((medecin: Medecin) => {
-        this.medecinForm.patchValue(medecin);
-      });
-    }
+    this.route.queryParams.subscribe(params => {
+  this.id = params['id'];
+  if (this.id) {
+    this.medecinService.getMedecinById(this.id).subscribe((medecin: Medecin) => {
+      this.medecinForm.patchValue(medecin);
+    });
+  }
+});
+
   }
 
   onSubmit(): void {
@@ -53,6 +71,18 @@ export class ModifierMedecinComponent implements OnInit {
         this.router.navigate(['/admin/medecins']);
       });
     }
+
+    const formValue = { ...this.medecinForm.value };
+
+if (this.photoPreview) {
+  formValue.photo = this.photoPreview.toString(); // base64
+}
+
+this.medecinService.modifierMedecin(this.id, formValue).subscribe(() => {
+  alert('Médecin modifié avec succès.');
+  this.router.navigate(['/admin/medecins']);
+});
+
   }
 
   onCancel(): void {

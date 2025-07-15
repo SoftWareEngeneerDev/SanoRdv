@@ -27,12 +27,12 @@ h4 {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  margin-bottom: 20px;
 }
 
 .grid-3 input,
 .grid-3 select {
   flex: 1 1 300px;
-  padding: 8px;
 }
 
 textarea {
@@ -41,18 +41,14 @@ textarea {
 }
 
 .statut {
-  margin-top: 20px;
   font-weight: bold;
+  margin-top: 20px;
 }
 
 .form-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
-}
-
-button {
-  padding: 10px 20px;
 }
 
 @media screen and (max-width: 768px) {
