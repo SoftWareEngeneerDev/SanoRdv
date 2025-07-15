@@ -1,6 +1,6 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
-import { login, forgotPassword, logout, resetPassword, verifyResetCode } from '../controllers/user.controller.js';
+import { login, forgotPassword, logout, resetPassword, verifyResetCode } from '../controllers/utilisateur.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js'; 
 
 const router = express.Router();
@@ -207,6 +207,7 @@ router.post(
   },
   resetPassword
 );
+
 /* ==========================================================================
     ROUTE GET /validate-token - VALIDATION DU TOKEN (optionnelle)
    ========================================================================== */

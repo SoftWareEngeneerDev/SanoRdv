@@ -124,16 +124,20 @@ export const getRendezVousParMedecin = async (req, res) => {
     }
 
     const rendezVous = await RendezVous.find(match)
-      .populate('patient', 'nom prenom email')
-      .populate('creneau', 'date')
-      .sort({ date: -1, time: -1 });
+    .populate('patient', 'prenom nom email')
+    .populate('creneau', 'date')
+    .sort({ date: -1, time: -1 });
+
+
+    console.log("✅ Données rendez-vous envoyées :", rendezVous);
 
     res.status(200).json(rendezVous);
   } catch (error) {
-    console.error("Erreur récupération des RDV médecin :", error);
+    console.error("💥 Erreur dans getRendezVousParMedecin :", error.message, error.stack); // 🟢 trace complète
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
+
 
 
 export const getRendezVousParPatient = async (req, res) => {
@@ -154,6 +158,10 @@ export const getRendezVousParPatient = async (req, res) => {
       .populate('medecin', 'nom prenom email')
       .populate('creneau', 'date')
       .sort({ date: -1, time: -1 });
+
+
+      console.log("✅ Données rendez-vous envoyées :", rendezVous);
+      
 
     res.status(200).json(rendezVous);
   } catch (error) {
