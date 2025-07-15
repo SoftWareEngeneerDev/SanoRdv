@@ -49,6 +49,13 @@ export class MedecinService {
     parcours: `Diplômée de la faculté de médecine de Paris en 2003. Spécialisation en dermatologie obtenue en 2008. Ancienne interne des Hôpitaux de Paris. Membre de la Société Française de Dermatologie. Spécialiste des maladies de peau et des traitements laser.`
   };
 
+  getMedecinById(id: string): Observable<any> {
+  return this.http.get(`${this.apiUrl}/${id}`);
+}
+  updateMedecin(id: string, data: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${id}`, data);
+}
+
   getProfile() {
     return this.profile;
   }
