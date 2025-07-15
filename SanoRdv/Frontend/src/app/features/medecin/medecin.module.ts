@@ -16,6 +16,7 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ProfilViewComponent } from './pages/profil-view/profil-view.component';
 import { HttpClientModule } from '@angular/common/http';
+import { LogOutComponent } from './pages/log-out/log-out.component';
 
 
 
@@ -29,7 +30,8 @@ import { HttpClientModule } from '@angular/common/http';
     NavbarComponent,
     LayoutComponent,
     ProfileComponent,
-    ProfilViewComponent
+    ProfilViewComponent,
+    LogOutComponent
     ],
   imports: [
     CommonModule,

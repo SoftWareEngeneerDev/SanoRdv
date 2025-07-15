@@ -5,8 +5,10 @@ import {
   modifierRendezVous,
   getRendezVousParMedecin,
   getRendezVousParPatient,
-  getTousLesRendezVous
+  getTousLesRendezVousPourAdmin
 } from '../controllers/rendezvous.controller.js';
+
+import { authentifier } from '../middlewares/auth.middleware.js'; // 🔐 Ajout du middleware
 
 const router = express.Router();
 
@@ -14,18 +16,18 @@ const router = express.Router();
 router.post('/', prendreRendezVous);
 
 // ✔️ Annuler un rendez-vous
-router.put('/annuler', annulerRendezVous);
+router.put('/annuler',authentifier, annulerRendezVous);
 
 // ✔️ Modifier un rendez-vous
-router.put('/modifier', modifierRendezVous);
+router.put('/modifier', authentifier, modifierRendezVous);
 
-// ✔️ Liste des RDV d’un médecin (groupés par mois)
-router.get('/medecin/:medecinId', getRendezVousParMedecin);
+// ✔️ Liste des RDV d’un médecin
+router.get('/medecin/:medecinId', authentifier, getRendezVousParMedecin);
 
 // ✔️ Liste des RDV d’un patient
-router.get('/patient/:patientId', getRendezVousParPatient);
+router.get('/patient/:patientId', authentifier, getRendezVousParPatient);
 
-// ✔️ Tous les RDV (admin) avec détails
-router.get('/admin/tous', getTousLesRendezVous);
+// ✔️ Tous les RDV (admin uniquement)
+router.get('/admin/tous', authentifier, getTousLesRendezVousPourAdmin);
 
 export default router;
