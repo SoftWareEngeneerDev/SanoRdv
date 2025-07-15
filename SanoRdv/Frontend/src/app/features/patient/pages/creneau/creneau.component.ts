@@ -80,12 +80,12 @@ export class CreneauComponent implements OnInit {
     this.messageErreur = null;
 
     /* --- Simulation backend --- */
-    this.horairesDispo = this.getFakeCreneaux(dateString);
-    if (this.horairesDispo.length === 0) {
-      this.messageErreur = "Aucun créneau disponible pour cette date.";
-    }
+    // this.horairesDispo = this.getFakeCreneaux(dateString);
+    // if (this.horairesDispo.length === 0) {
+    //   this.messageErreur = "Aucun créneau disponible pour cette date.";
+    // }
 
-    /* ------ Exemple si tu repasses à l’API réelle ------
+    //  Exemple si tu repasses à l’API réelle
     if (!this.agendaId) {
       this.messageErreur = "L’agenda du médecin n’est pas encore chargé. Veuillez patienter.";
       return;
@@ -103,7 +103,7 @@ export class CreneauComponent implements OnInit {
         this.messageErreur = "Une erreur est survenue lors du chargement des créneaux.";
       }
     });
-    ------------------------------------------------------ */
+
   }
 
   /* ======================= SÉLECTION CRÉNEAU ====================== */
@@ -112,14 +112,14 @@ export class CreneauComponent implements OnInit {
   }
 
   /* ========================= FAKE DONNÉES ========================= */
-  private getFakeCreneaux(dateString: string): string[] {
-    const sample: Record<string, string[]> = {
-      '2025-07-09': ['09:00', '10:30', '14:00', '16:30'],
-      '2025-07-10': ['08:00', '12:00', '15:00'],
-      '2025-07-11': ['11:00', '13:30', '17:00'],
-    };
-    return sample[dateString] ?? ['09:00', '10:00', '11:00', '14:00', '15:00'];
-  }
+  // private getFakeCreneaux(dateString: string): string[] {
+  //   const sample: Record<string, string[]> = {
+  //     '2025-07-09': ['09:00', '10:30', '14:00', '16:30'],
+  //     '2025-07-10': ['08:00', '12:00', '15:00'],
+  //     '2025-07-11': ['11:00', '13:30', '17:00'],
+  //   };
+  //   return sample[dateString] ?? ['09:00', '10:00', '11:00', '14:00', '15:00'];
+  // }
 
   /* ======================= NAVIGATION ÉTAPES ====================== */
   retourMotif(): void {

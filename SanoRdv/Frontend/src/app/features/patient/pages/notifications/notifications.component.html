@@ -16,8 +16,6 @@
         <div *ngFor="let groupe of notificationsGroupes" class="notif-card mb-4"
              [ngClass]="{
                'rappel': groupe.type === 'rappel',
-               'succes': groupe.type === 'confirmation' || groupe.type === 'mise_a_jour',
-               'echec': groupe.type === 'annulation'
              }"
         >
           <!-- Titre du groupe -->
