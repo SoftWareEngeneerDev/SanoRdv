@@ -43,7 +43,7 @@ registerLocaleData(localeFr);
     RouterModule,
     PatientModule,
     BrowserAnimationsModule,
-    PatientModule,
+    // PatientModule,
     RouterModule, // utile pour les routerLink
     CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }) // calendrier
   ],
