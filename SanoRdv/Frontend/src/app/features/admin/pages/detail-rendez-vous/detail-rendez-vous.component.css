@@ -1,0 +1,34 @@
+.card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+  background-color: transparent;
+}
+
+.table th {
+  font-weight: 500;
+  padding-left: 0;
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+@media (max-width: 768px) {
+  .card {
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid #dee2e6;
+  }
+  
+  .container {
+    padding: 0;
+  }
+  
+  .row > div {
+    margin-bottom: 1rem;
+  }
+}

@@ -1,33 +1,3 @@
-// import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
-// import { Observable } from 'rxjs';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class MedecinService {
-
-//   private apiUrl = 'http://localhost:3000/api';
-//   baseUrl: any;
-
-//   constructor(private http: HttpClient) {}
-
-
-//   getRendezVousDuJour() {
-//   return this.http.get<any[]>('/api/medecin/rendez-vous');
-// }
-
-//   ajouterCreneau(payload: any): Observable<any> {
-//   return this.http.post(`${this.baseUrl}/creneaux`, payload);
-// }
-
-
-// }
-
-
-
-
-// src/app/medecin/medecin.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -36,25 +6,36 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MedecinService {
-  private apiUrl = 'http://localhost:3000/api'; // API base URL
+  private baseUrl = 'http://localhost:3000/api';
+  private apiUrl = `${this.baseUrl}/medecins`;
+  private rdvUrl = `${this.baseUrl}/rendezvous`;
 
   constructor(private http: HttpClient) {}
 
   getRendezVousParMedecin(medecinId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/rendezvous/medecin/${medecinId}`);
+    return this.http.get(`${this.rdvUrl}/medecin/${medecinId}`);
+  }
+
+  annulerRendezVous(rendezvousId: string): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/annuler`, { id: rendezvousId });
+  }
+
+  modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/modifier`, {
+      id: rendezvousId,
+      ...data
+    });
   }
 
   ajouterCreneau(payload: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/creneaux`, payload); // utilise apiUrl, pas baseUrl
-}
+    return this.http.post(`${this.apiUrl}/creneaux`, payload);
+  }
 
-getCreneauxParMedecin(medecinId: string): Observable<any[]> {
+  getCreneauxParMedecin(medecinId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/creneaux/medecin/${medecinId}`);
   }
 
-
-
-   profile = {
+  profile = {
     photo: '',
     nom: 'Kabore',
     prenom: 'Faical',
@@ -68,6 +49,13 @@ getCreneauxParMedecin(medecinId: string): Observable<any[]> {
     parcours: `Diplômée de la faculté de médecine de Paris en 2003. Spécialisation en dermatologie obtenue en 2008. Ancienne interne des Hôpitaux de Paris. Membre de la Société Française de Dermatologie. Spécialiste des maladies de peau et des traitements laser.`
   };
 
+  getMedecinById(id: string): Observable<any> {
+  return this.http.get(`${this.apiUrl}/${id}`);
+}
+  updateMedecin(id: string, data: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${id}`, data);
+}
+
   getProfile() {
     return this.profile;
   }
@@ -76,4 +64,3 @@ getCreneauxParMedecin(medecinId: string): Observable<any[]> {
     this.profile = { ...this.profile, ...data };
   }
 }
-

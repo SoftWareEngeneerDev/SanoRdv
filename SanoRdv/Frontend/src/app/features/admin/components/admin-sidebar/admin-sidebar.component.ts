@@ -15,13 +15,13 @@ export class AdminSidebarComponent implements OnInit {
   @Output() collapseChange = new EventEmitter<boolean>();
 
   menuItems = [
-    { title: 'Tableau de bord', icon: 'bi-grid-fill', link: '/admin/dashboard' },
-    { title: 'Rendez-vous', icon: 'bi-calendar-event', link: '/admin/rendez-vous' },
-    { title: 'Patients', icon: 'bi-people-fill', link: '/admin/patients' },
-    { title: 'Médecins', icon: 'bi-person-badge', link: '/admin/medecins' },
-    { title: 'Spécialités', icon: 'bi-diagram-3', link: '/admin/specialites' },
-    { title: 'Notifications', icon: 'bi-bell-fill', link: '/admin/notifications' },
-    { title: 'Rapports', icon: 'bi-file-earmark-text-fill', link: '/admin/rapports' }
+    { title: 'TABLEAU DE BORD', icon: 'bi-grid-fill', link: '/admin/dashboard' },
+    { title: 'RENDEZ-VOUS', icon: 'bi-calendar-event', link: '/admin/rendez-vous' },
+    { title: 'PATIENTS', icon: 'bi-people-fill', link: '/admin/patients' },
+    { title: 'MEDECINS', icon: 'bi-person-badge', link: '/admin/medecins' },
+    { title: 'SPECIALITES', icon: 'bi-diagram-3', link: '/admin/specialites' },
+    { title: 'NOTIFICATIONS', icon: 'bi-bell-fill', link: '/admin/notifications' },
+    { title: 'RAPPORTS', icon: 'bi-file-earmark-text-fill', link: '/admin/rapports' }
   ];
 
   constructor(private router: Router) {}
@@ -48,10 +48,5 @@ export class AdminSidebarComponent implements OnInit {
     this.router.navigate(['/admin/profil']);
   }
 
-  deconnexion(): void {
-    // Nettoyage localStorage et redirection
-    localStorage.removeItem('token');
-    localStorage.removeItem('admin');
-    this.router.navigate(['/login']);
-  }
+
 }

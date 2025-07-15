@@ -1,0 +1,72 @@
+.card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.form-control, .form-select {
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.15em;
+  cursor: pointer;
+}
+
+.form-check-label {
+  margin-left: 0.25rem;
+  cursor: pointer;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-lg {
+  padding: 0.5rem 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card {
+    box-shadow: none;
+    border: 1px solid #dee2e6;
+  }
+  
+  .container {
+    padding: 0;
+  }
+  
+  .col-lg-6 {
+    padding: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .d-md-flex {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+
+    .form-check-inline {
+    display: block;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}

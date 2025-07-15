@@ -1,0 +1,81 @@
+<form [formGroup]="medecinForm" (ngSubmit)="onSubmit()" class="container mt-4">
+
+  <!-- Photo section -->
+  <div class="d-flex align-items-center mb-4">
+    <img src="assets/images/photo-placeholder.png" class="rounded-circle me-3" width="80" height="80" alt="Photo médecin" />
+    <button type="button" class="btn btn-outline-secondary">Changer de photo</button>
+  </div>
+
+  <h5 class="text-primary mb-3">Informations personnelles et professionnelles</h5>
+
+  <div class="row mb-3">
+    <div class="col-md-6 mb-2">
+      <label class="form-label">Nom</label>
+      <input class="form-control" formControlName="nom" placeholder="Nom" />
+    </div>
+    <div class="col-md-6 mb-2">
+      <label class="form-label">Prénom</label>
+      <input class="form-control" formControlName="prenom" placeholder="Prénom" />
+    </div>
+
+    <div class="col-md-6 mb-2">
+      <label class="form-label">Sexe</label>
+      <select class="form-select" formControlName="sexe">
+        <option>Homme</option>
+        <option>Femme</option>
+      </select>
+    </div>
+
+    <div class="col-md-6 mb-2">
+      <label class="form-label">Date de naissance</label>
+      <input class="form-control" formControlName="dateNaissance" type="date" />
+    </div>
+
+    <div class="col-md-6 mb-2">
+      <label class="form-label">Années d’expérience</label>
+      <input class="form-control" formControlName="anneesExperience" type="number" placeholder="15" />
+    </div>
+
+    <div class="col-md-6 mb-2">
+      <label class="form-label">Spécialité</label>
+      <select class="form-select" formControlName="specialite">
+        <option *ngFor="let sp of specialites" [value]="sp">{{ sp }}</option>
+      </select>
+    </div>
+  </div>
+
+  <h5 class="text-primary mt-4 mb-3">Coordonnées</h5>
+
+  <div class="row mb-3">
+    <div class="col-md-4 mb-2">
+      <label class="form-label">Adresse mail</label>
+      <input class="form-control" formControlName="email" type="email" />
+    </div>
+    <div class="col-md-4 mb-2">
+      <label class="form-label">Téléphone</label>
+      <input class="form-control" formControlName="telephone" />
+    </div>
+    <div class="col-md-4 mb-2">
+      <label class="form-label">Localisation</label>
+      <input class="form-control" formControlName="localisation" />
+    </div>
+  </div>
+
+  <h5 class="text-primary mt-4 mb-2">Parcours professionnel</h5>
+  <div class="mb-3">
+    <textarea class="form-control" formControlName="description" rows="4" placeholder="Description..."></textarea>
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label fw-bold">Statut :</label>
+    <select class="form-select w-auto d-inline-block ms-2" formControlName="etat">
+      <option value="Actif">✅ Activer</option>
+      <option value="Inactif">❌ Inactif</option>
+    </select>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">Annuler</button>
+    <button type="submit" class="btn btn-primary" [disabled]="!medecinForm.valid">Enregistrer</button>
+  </div>
+</form>

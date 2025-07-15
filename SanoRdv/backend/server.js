@@ -4,7 +4,7 @@ import connectDB from './config/db.js';
 import dotenv from 'dotenv';
 
 // Importation des routes
-import userRoutes from './routes/utilisateur.routes.js';
+import userRoutes from './routes/user.routes.js';
 import patientRoutes from './routes/patient.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import specialiteRoutes from './routes/specialite.routes.js';

@@ -1,10 +1,9 @@
 .admin-header {
   background-color: #00a3e0;
-;
   color: white;
   height: 60px;
   max-width: 90%;
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 1000;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);

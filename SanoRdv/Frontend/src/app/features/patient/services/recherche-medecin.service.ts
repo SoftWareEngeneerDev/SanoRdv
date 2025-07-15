@@ -7,9 +7,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class RechercheMedecinService {
   medecinService: any;
+
   uploadPhoto(formData: FormData, medecinId: string): Observable<any> {
     return this.medecinService.uploadPhoto(formData, medecinId);
   }
+
   private querySubject = new BehaviorSubject<string>('');
   private resultsSubject = new BehaviorSubject<any[]>([]);
   private suggestionsSubject = new BehaviorSubject<any[]>([]);
@@ -21,6 +23,8 @@ export class RechercheMedecinService {
   suggestions$ = this.suggestionsSubject.asObservable();
   nextLetters$ = this.nextLettersSubject.asObservable();
   medecinDetails$ = this.medecinDetailsSubject.asObservable();
+
+  private readonly baseUrl = 'https://localhost:3000/api/recherche';
 
   constructor(private http: HttpClient) {}
 
@@ -34,7 +38,7 @@ export class RechercheMedecinService {
       return;
     }
 
-    const params: any = {
+    const params = {
       q: query,
       type: 'all',
       limit: 10,
@@ -43,7 +47,7 @@ export class RechercheMedecinService {
       phoneticEnabled: true
     };
 
-    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
+    this.http.get(`${this.baseUrl}/recherche-avancee`, { params }).subscribe({
       next: (data: any) => {
         const results = data.suggestions || [];
         const nextLetters = data.nextLetters || [];
@@ -71,7 +75,7 @@ export class RechercheMedecinService {
       return;
     }
 
-    const params: any = {
+    const params = {
       q: query,
       type: 'all',
       limit: 10,
@@ -80,7 +84,7 @@ export class RechercheMedecinService {
       phoneticEnabled: true
     };
 
-    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
+    this.http.get(`${this.baseUrl}/recherche-avancee`, { params }).subscribe({
       next: (data: any) => {
         const suggestions = data.suggestions || [];
         const medecinDetails = suggestions.map((s: any) => ({

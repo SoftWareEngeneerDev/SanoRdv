@@ -255,7 +255,7 @@ export const login = async (req, res) => {
       console.log('❌ Utilisateur non trouvé');
       return res.status(401).json({
         message: "Identifiant ou mot de passe incorrect.",
-        error: "INVALID_CREDENTIALS"
+        error: "INVALID_CREDENTIALS" 
       });
     }
 

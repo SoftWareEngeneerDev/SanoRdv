@@ -1,0 +1,54 @@
+<div class="profile-container">
+  <div class="photo-section">
+  <img [src]="profile.photo || defaultPhoto" alt="Photo de profil" class="profile-photo">
+
+  <!-- input file caché -->
+  <input type="file" #fileInput accept="image/*" style="display: none" (change)="onFileSelected($event)">
+
+  <!-- bouton qui déclenche l'input file -->
+  <button class="change-photo-btn" (click)="fileInput.click()">Changer de photo</button>
+</div>
+
+
+  <h3 class="section-title">Information personnelles et professionnelles</h3>
+  <hr>
+  <div class="form-grid">
+    <label>Nom <input [(ngModel)]="profile.nom"></label>
+    <label>Prénom <input [(ngModel)]="profile.prenom"></label>
+    <label>Sexe
+      <select [(ngModel)]="profile.sexe">
+        <option>Homme</option>
+        <option>Femme</option>
+        <option>Autre</option>
+      </select>
+    </label>
+    <label>Date de naissance <input type="date" [(ngModel)]="profile.dateNaissance"></label>
+    <label>Année d’experience <input type="number" [(ngModel)]="profile.anneeExperience"></label>
+    <label>Spécialité
+      <select [(ngModel)]="profile.specialite">
+        <option>Médecin généraliste</option>
+        <option>Dentiste</option>
+        <option>Dermatologue</option>
+        <option>Pédiatre</option>
+        <option>Cardiologue</option>
+      </select>
+    </label>
+  </div>
+
+  <h3 class="section-title">Coordonnées</h3>
+  <hr>
+  <div class="form-grid">
+    <label>Adresse mail <input type="email" [(ngModel)]="profile.email"></label>
+    <label>Téléphone <input [(ngModel)]="profile.telephone"></label>
+    <label>Localisation <input [(ngModel)]="profile.localite"></label>
+  </div>
+
+  <h3 class="section-title">Parcours professionnel</h3>
+  <hr>
+  <textarea rows="5" [(ngModel)]="profile.parcours"></textarea>
+
+  <div class="button-row">
+    <button class="cancel-btn" (click)="onCancel()">Annuler</button>
+    <button class="save-btn" (click)="onSave()">Enregistrer</button>
+  </div>
+</div>

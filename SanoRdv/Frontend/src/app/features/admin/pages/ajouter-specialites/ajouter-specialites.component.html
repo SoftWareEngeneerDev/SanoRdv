@@ -1,0 +1,40 @@
+<div class="container py-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white border-0 pt-4">
+      <h1 class="h4 mb-0 text-center">Ajouter une nouvelle spécialité</h1>
+    </div>
+
+    <div class="card-body px-5">
+      <!-- Nom de la spécialité -->
+      <div class="mb-4">
+        <h2 class="h5 mb-3 fw-bold">Nom de la spécialité<span class="text-danger">*</span></h2>
+        <div class="ps-3 border-start border-3 border-primary">
+          <input type="text" class="form-control border-0 fs-4 px-0" 
+                 [(ngModel)]="nouvelleSpecialite.nom" required
+                 style="box-shadow: none; font-weight: 500;">
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <h2 class="h5 mb-3 fw-bold">Description</h2>
+        <div class="ps-3 border-start border-3 border-primary">
+          <textarea class="form-control border-0 px-0" rows="4"
+                    [(ngModel)]="nouvelleSpecialite.description"
+                    style="box-shadow: none; resize: none;"></textarea>
+        </div>
+      </div>
+
+      <!-- Ligne de séparation -->
+      <div class="border-top my-4"></div>
+
+      <!-- Bouton Enregistrer -->
+      <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-primary px-4 py-2"
+                (click)="enregistrer()" [disabled]="!nouvelleSpecialite.nom.trim()">
+          Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,131 @@
+/* ---------- HEADER GÉNÉRAL--------- */
+.patient-header {
+  background-color: #00a3e0;
+  color: white;
+  height: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* ----------HEADER COLLAPSÉ & EXPANDÉ--------------- */
+.patient-header.header-collapsed {
+  margin-left: 100px;
+  width: calc(100% - 100px);
+}
+.patient-header.header-expanded {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+.patient-header.header-collapsed .patient-icons {
+  margin-right: 40px;
+  transition: margin-right 0.3s ease;
+}
+.patient-header.header-expanded .patient-icons {
+  margin-right: 0;
+  transition: margin-right 0.3s ease;
+}
+
+/* ------------ICÔNES & LIENS -------------------- */
+.patient-header .patient-icons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex-grow: 1;
+  flex-wrap: nowrap;
+}
+
+.patient-icons a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.patient-icons a:hover {
+  color: black;
+}
+
+.patient-icons a.active-link {
+  color: #0d6efd;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Icône de cloche */
+.patient-icons i.bi {
+  font-size: 18px;
+}
+
+/*------------- RESPONSIVE ---------------*/
+
+/* ✅ Grand écran jusqu'à tablette */
+@media (max-width: 1024px) {
+  .patient-header {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 0 1rem;
+  }
+
+  .patient-icons {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .patient-icons a {
+    font-size: 15px;
+  }
+}
+
+/* ✅ Tablettes portrait (768px et moins) */
+@media (max-width: 768px) {
+  .patient-icons {
+    gap: 10px;
+  }
+
+  .patient-icons a {
+    font-size: 14px;
+  }
+
+  .patient-icons i.bi {
+    font-size: 16px;
+  }
+}
+
+/* ✅ Mobiles (≤ 480px) */
+@media (max-width: 480px) {
+  .patient-icons {
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .patient-icons a {
+    font-size: 13px;
+    padding: 4px;
+  }
+
+  .patient-icons i.bi {
+    font-size: 14px;
+  }
+
+  .patient-header {
+    padding: 0 0.5rem;
+  }
+}

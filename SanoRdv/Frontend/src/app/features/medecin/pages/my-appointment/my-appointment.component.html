@@ -1,0 +1,105 @@
+<div class="container">
+  <h1><span class="icon">📅</span> Gestion des Rendez-vous Patients</h1>
+
+  <!-- Section de recherche -->
+  <div class="search-section">
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="query"
+        placeholder="Rechercher par spécialité ou nom de patient"
+        class="search-input"
+      />
+      <button title="Rechercher" class="search-button">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tableau des rendez-vous -->
+  <h1>Liste des Rendez-vous</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Patient</th>
+        <th>Date/Heure</th>
+        <th>Motif</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="filteredAppointments.length === 0">
+        <td colspan="6" class="no-appointments">Aucun rendez-vous trouvé</td>
+      </tr>
+      <tr *ngFor="let appointment of filteredAppointments">
+        <td>{{ appointment._id }}</td>
+        <td>{{ appointment.patient.prenom }} {{ appointment.patient.nom }}</td>
+        <td>{{ formatDate(appointment.date) }} à {{ appointment.time }}</td>
+        <td>{{ appointment.motif }}</td>
+        <td [ngClass]="getStatusClass(appointment.statut)">
+          {{ getStatusLabel(appointment.statut) }}
+        </td>
+        <td>
+          <button (click)="viewAppointmentDetails(appointment)" class="btn-secondary">
+            <span class="icon">👁️</span> Voir
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal des détails -->
+<div class="modal" [style.display]="selectedAppointment ? 'block' : 'none'">
+  <div class="modal-content">
+    <span class="close" (click)="closeModal()">&times;</span>
+    <h2><span class="icon">📄</span> Détails du Rendez-vous</h2>
+
+    <div class="appointment-details" *ngIf="selectedAppointment">
+      <div class="detail-row">
+        <div class="detail-label">Patient :</div>
+        <div class="detail-value">{{ selectedAppointment.patient.prenom }} {{ selectedAppointment.patient.nom }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Contact :</div>
+        <div class="detail-value">{{ selectedAppointment.patient.email }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Date/Heure :</div>
+        <div class="detail-value">{{ formatDate(selectedAppointment.creneau.date) }} à {{ selectedAppointment.time }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Motif :</div>
+        <div class="detail-value">{{ selectedAppointment.motif }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Statut :</div>
+        <div class="detail-value">{{ getStatusLabel(selectedAppointment.statut) }}</div>
+      </div>
+    </div>
+
+    <!-- <div class="action-buttons">
+      <ng-container *ngIf="selectedAppointment?.statut === 'confirmé'">
+        <button class="btn-danger" (click)="closeModal()"><span class="icon">❌</span> Fermer</button>
+      </ng-container>
+      <ng-container *ngIf="selectedAppointment?.statut === 'annulé'">
+        <button class="btn-success" (click)="closeModal()"><span class="icon">✅</span> Fermer</button>
+      </ng-container>
+    </div> -->
+
+    <div class="action-buttons" *ngIf="selectedAppointment">
+  <button *ngIf="selectedAppointment.statut !== 'annulé'" class="btn-danger"
+    (click)="annulerRendezVous(selectedAppointment)">
+    ❌ Annuler
+  </button>
+  <button class="btn-primary" (click)="modifierRendezVous(selectedAppointment)">
+  ✏️ Modifier le rendez-vous
+</button>
+
+  <button (click)="closeModal()" class="btn-secondary">Fermer</button>
+</div>
+
+  </div>
+</div>

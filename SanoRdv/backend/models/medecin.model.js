@@ -14,11 +14,13 @@ const medecinSchema = new mongoose.Schema({
   photo: { type: String, required: false, trim: true },
   adresse: { type: String, required: false, trim: true },
   nationalite: { type: String, required: false, trim: true },
+  sexe: { type: String, required: false, enum: ['Homme', 'Femme', 'Autre'] }, // ✅ Ajouté ici
   dateCreation: { type: Date, default: Date.now },
   dateNaissance: { type: Date, required: false },
   lockUntil: { type: Date },
   isActive: { type: Boolean, default: true },
   role: { type: String, default: 'medecin' },
+  parcours: { type: String, required: false, trim: true }, // ✅ Champ ajouté ici
 }, { timestamps: true });
 
 export default mongoose.model('Medecin', medecinSchema);

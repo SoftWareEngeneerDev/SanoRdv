@@ -11,6 +11,10 @@ import { PatientModule } from './features/patient/patient.module';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AboutComponent } from './features/about/about.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor'; // ajuste le chemin si besoin
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -20,7 +24,8 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent // Composant accueil déclaré ici
+    AboutComponent
+
   ],
   imports: [
     BrowserModule,
@@ -30,11 +35,13 @@ registerLocaleData(localeFr);
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
     SharedModule,
     BrowserAnimationsModule,
-    CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+    // CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+    RouterModule.forRoot([]),
 
   ],
   providers: [
-     { provide: LOCALE_ID, useValue: 'fr' }
+     { provide: LOCALE_ID, useValue: 'fr' },
+     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

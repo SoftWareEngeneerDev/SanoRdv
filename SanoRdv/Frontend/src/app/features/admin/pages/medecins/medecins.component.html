@@ -1,49 +1,49 @@
-<!-- medecins.component.html -->
-<div class="container mt-4">
-  <div class="card shadow p-4">
-    <!-- Titre -->
-    <h2 class="fw-bold mb-4">GESTIONS DES MEDECINS</h2>
+<div class="medecin-container">
+  <h3>Gestion des médecins</h3>
 
-    <!-- Bouton Ajouter -->
-    <button class="btn btn-primary mb-4" (click)="ajouterMedecin()">
-      <i class="bi bi-plus-circle me-1"></i> Ajouter un médecin
-    </button>
+  <div class="search-bar">
+    <input type="text" placeholder="Rechercher un médecin..." />
+    <button><i class="fa fa-search"></i></button>
+  </div>
 
-    <!-- Tableau des médecins -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>NOM</th>
-            <th>Spécialité</th>
-            <th>Etat</th>
-            <th>Rendez-vous passés</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let medecin of medecins">
-            <td>Dr {{ medecin.nom }} {{ medecin.prenom }}</td>
-            <td>{{ medecin.specialite }}</td>
-            <td [ngClass]="{'text-success': medecin.actif, 'text-danger': !medecin.actif}" class="fw-bold">
-              {{ medecin.actif ? 'Actif' : 'Inactif' }}
-            </td>
-            <td class="text-center">
-              {{ medecin.rendezVousMensuels ?? '-' }}
-            </td>
-            <td>
-              <ng-container *ngIf="medecin.actif; else inactifActions">
-                <span class="text-danger me-3 action-link" (click)="supprimer(medecin)">Supprimer</span>
-                <span class="text-primary me-3 action-link" (click)="modifier(medecin)">Modifier</span>
-                <span class="text-warning action-link" (click)="toggleEtat(medecin)">Désactiver</span>
-              </ng-container>
-              <ng-template #inactifActions>
-                <span class="text-primary action-link" (click)="toggleEtat(medecin)">Activer</span>
-              </ng-template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="top-bar">
+    <h4>Liste des médecins</h4>
+    <button class="add-btn" (click)="ajouterMedecin()">Ajouter un médecin</button>
+  </div>
+
+  <div class="table-container">
+    <table *ngIf="medecins.length > 0; else vide">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Spécialité</th>
+          <th>État</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let medecin of medecins">
+          <td>{{ medecin.nom }}</td>
+          <td>{{ medecin.specialite }}</td>
+          <td [ngClass]="{'etat actif': medecin.etat === 'Actif', 'etat inactif': medecin.etat === 'Inactif'}">
+            {{ medecin.etat }}
+          </td>
+          <td>{{ medecin.email }}</td>
+          <td class="actions">
+            <ng-container *ngIf="medecin.etat === 'Inactif'; else actifActions">
+              <a (click)="activer(medecin)" style="cursor:pointer">Activer</a>
+            </ng-container>
+            <ng-template #actifActions>
+              <a (click)="supprimer(medecin._id!)" style="cursor:pointer">Supprimer</a>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #vide>
+      <p>Aucun médecin trouvé.</p>
+    </ng-template>
   </div>
 </div>

@@ -26,32 +26,28 @@ export class MedecinService {
     return this.http.get<any[]>(`${this.apiUrl}/recherche`, { params });
   }
 
-  //  Obtenir médecins par nom
+  // Obtenir médecins par nom
   getMedecinsParNom(nom: string): Observable<any[]> {
     const params = new HttpParams().set('nom', nom);
     return this.http.get<any[]>(`${this.apiUrl}/recherche`, { params });
   }
 
-  //  Obtenir médecins par prénom
+  // Obtenir médecins par prénom
   getMedecinsParPrenom(prenom: string): Observable<any[]> {
     const params = new HttpParams().set('prenom', prenom);
     return this.http.get<any[]>(`${this.apiUrl}/recherche`, { params });
   }
 
   uploadPhoto(formData: FormData, medecinId: string): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${medecinId}/photo`, formData);
+    return this.http.put(`${this.apiUrl}/${medecinId}/photo`, formData);
+  }
+
+  // Obtenir les créneaux disponibles à partir de l'agenda
+  getAgendaIdByMedecinId(medecinId: string): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/medecins/${medecinId}/agenda`);
+  }
+
+  getCreneauxDispoByAgenda(agendaId: string, date: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/agendas/${agendaId}/disponibilites?date=${date}`);
+  }
 }
-
-// Obtenir les creneaux disponibles a partir de l'agenda
-getAgendaIdByMedecinId(medecinId: string): Observable<string> {
-  return this.http.get<string>(`${this.apiUrl}/medecins/${medecinId}/agenda`);
-}
-
-getCreneauxDispoByAgenda(agendaId: string, date: string): Observable<string[]> {
-  return this.http.get<string[]>(`${this.apiUrl}/agendas/${agendaId}/disponibilites?date=${date}`);
-}
-
-}
-
-
-

@@ -1,0 +1,37 @@
+
+ <div class="view-container" *ngIf="profile">
+  <div class="header">
+    <img [src]="profile.photo || 'https://via.placeholder.com/100'" alt="Photo" class="profile-photo">
+    <div class="info">
+      <h3>Dr. {{ profile.nom }} {{ profile.prenom }}</h3>
+      <p class="speciality">{{ profile.specialite }}</p>
+    </div>
+  </div>
+
+  <div class="info-boxes">
+    <div class="box">
+      <h4>Information personnelles</h4>
+      <p><strong>Sexe:</strong> {{ profile.sexe }}</p>
+      <p><strong>Âge:</strong> {{ calculateAge(profile.dateNaissance) }} ans</p>
+      <p><strong>Expérience:</strong> {{ profile.anneeExperience }} ans</p>
+    </div>
+    <div class="box">
+      <h4>Contact</h4>
+      <p><strong>Téléphone:</strong> {{ profile.telephone }}</p>
+      <p><strong>Email:</strong> {{ profile.email }}</p>
+    </div>
+  </div>
+
+  <div class="box full">
+    <h4>Localisation</h4>
+    <p>{{ profile.localite }}</p>
+  </div>
+
+  <hr>
+  <h4>Parcours professionnel</h4>
+  <p>{{ profile.parcours }}</p>
+
+  <div class="actions">
+    <button class="edit-btn" (click)="editProfile()">Modifier le profil</button>
+  </div>
+</div>
