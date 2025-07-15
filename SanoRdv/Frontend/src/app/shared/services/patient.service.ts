@@ -7,7 +7,7 @@ import { Patient } from '../models/patient.model';
   providedIn: 'root'
 })
 export class PatientService {
-  private apiUrl = 'http://localhost:3000/api/patients';
+  private apiUrl = 'https://sanordv.onrender.com/api/patients';
 
   constructor(private http: HttpClient) {}
 

@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router'; // ✅ pour la redirection
 import { Admin } from '../../models/admin.model';
-
+import { AdminService } from '../../admin.service';
+// import { AdminService } from '../../services/admin.service'; // à utiliser si tu veux envoyer vers un backend
 
 @Component({
   selector: 'app-profil',
@@ -10,10 +12,14 @@ import { Admin } from '../../models/admin.model';
 })
 export class ProfilComponent {
 
-       profileForm: FormGroup;
+  profileForm: FormGroup;
   selectedFile: File | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router // ✅ injecte le Router
+    // private adminService: AdminService // si tu utilises un service
+  ) {
     this.profileForm = this.fb.group({
       nom: ['', Validators.required],
       prenom: ['', Validators.required],
@@ -38,9 +44,11 @@ export class ProfilComponent {
         formData.append('photo', this.selectedFile);
       }
 
-      // 🔁 Ici, envoie au backend via un service HTTP
+      // 🔁 Appel au backend (à implémenter si besoin)
       console.log('Formulaire prêt à être envoyé :', formData);
+
+      // ✅ Redirection vers dashboard après enregistrement
+      this.router.navigate(['/admin/dashboard']);
     }
   }
-
 }

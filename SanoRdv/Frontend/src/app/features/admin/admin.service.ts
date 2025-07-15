@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Admin } from './models/admin.model'; // 🔁 adapte le chemin selon ton projet
 import { of } from 'rxjs';
+import { environment } from 'src/environment/environments'; // 🔁 adapte le chemin selon ton projet
 
 
 
@@ -12,7 +13,7 @@ import { of } from 'rxjs';
 })
 export class AdminService {
 
-    private apiUrl = 'http://localhost:3000/api/admin'; // 🔁 adapte à ton backend
+    private apiUrl = `${environment.apiUrl}/admins`; // 🔁 adapte à ton backend
 
   constructor(private http: HttpClient) {}
 

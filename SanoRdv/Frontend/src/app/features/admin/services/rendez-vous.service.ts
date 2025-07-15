@@ -10,7 +10,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class RendezVousService {
 
-   private apiUrl = `${environment.apiUrl}/rendezvous`;
+   private apiUrl = `${environment.apiUrl}/admins/rendezvous`;
 
   constructor(private http: HttpClient) {}
 
