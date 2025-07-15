@@ -43,8 +43,8 @@ export interface ResetPassword {
 })
 export class AuthService {
   // URL base pointant sur Render (backend déployé)
-  private baseUrl = 'https://localhost:3000/api/auth';
-  private url = 'https://localhost:3000/api/patients';
+  private baseUrl = 'http://localhost:3000/api/auth';
+  private url = 'http://localhost:3000/api/patients';
 
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
