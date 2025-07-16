@@ -3,6 +3,7 @@ import { RecapService } from '../../services/recap.service';
 import { Router } from '@angular/router';
 import { parseISO } from 'date-fns';
 import { NotificationsService } from '../../../../shared/services/notifications.service';
+import { RendezVousService } from '../../../../shared/services/rendez-vous.service';
 import { Notification } from 'src/app/shared/models/notifications.model';
 
 @Component({
@@ -12,6 +13,7 @@ import { Notification } from 'src/app/shared/models/notifications.model';
 })
 export class ConfirmationComponent implements OnInit {
   medecin: any;
+  patient: any;
   dateAffichee: string = '';
   heure: string = '';
   date: Date | null = null;
@@ -19,45 +21,76 @@ export class ConfirmationComponent implements OnInit {
   constructor(
     private recapService: RecapService,
     private router: Router,
-     private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private rendezVousService: RendezVousService
   ) {}
 
- ngOnInit(): void {
-  this.medecin = this.recapService.getMedecin();
-  const dateStr = this.recapService.getDate();
-  if (dateStr) {
-    this.date = parseISO(dateStr);
-    this.dateAffichee = this.date.toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  }
-  this.heure = this.recapService.getHeure()!;
+  ngOnInit(): void {
+    // Récupération des données
+    this.medecin = this.recapService.getMedecin();
+    const patientData = localStorage.getItem('patient');
+    this.patient = patientData ? JSON.parse(patientData) : null;
 
-  if (this.medecin && this.date && this.heure) {
-  const notification: Notification = {
-        id: '',
-        message: `Rendez-vous avec Dr. ${this.medecin.nom} demain à ${this.heure}.`,
-        dateNotification: new Date().toISOString(),
-        type: 'rappel',
-        medecin: `Dr. ${this.medecin.nom}`,
-        read: false
-      };
+    if (!this.patient) {
+      console.error('Patient non trouvé dans le localStorage');
+      return;
+    }
 
+    const dateStr = this.recapService.getDate();
+    if (dateStr) {
+      this.date = parseISO(dateStr);
+      this.dateAffichee = this.date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
 
-    this.notificationsService.creerNotification(notification).subscribe({
-      next: () => {
-        console.log('Notification de rappel créée avec succès');
+    this.heure = this.recapService.getHeure() || '';
+
+    if (!this.date) {
+      console.error('Date du rendez-vous invalide.');
+      return;
+    }
+
+    // Création du rendez-vous
+    this.rendezVousService.creerRendezVous({
+       patientId: this.patient.id,
+      medecinId: this.medecin.id,
+      date: this.date.toISOString(),
+      status: 'confirmé'
+    }).subscribe({
+  next: (rdv) => {
+    console.log('RDV créé ', rdv);
+
+// Incrémente les statistiques de rendez vous
+this.rendezVousService.increment();
+
+    const rdvId = (rdv as any).id ?? (rdv as any)._id ?? '';
+    const notification: Notification = {
+      rendezVousId: rdvId,
+      type: 'rappel',
+      message: `Rappel : Rendez‑vous avec Dr. ${this.medecin.nom} demain à ${this.heure}.`,
+      dateNotification: new Date().toISOString(),
+      medecin: `Dr. ${this.medecin.nom}`,
+      read: false
+    };
+
+        this.notificationsService.creerNotification(notification).subscribe({
+          next: () => {
+            console.log('Notification de rappel créée avec succès');
+          },
+          error: (err) => {
+            console.error('Erreur lors de la création de la notification', err);
+          }
+        });
       },
       error: (err) => {
-        console.error('Erreur lors de la création de la notification', err);
+        console.error(' Erreur lors de la création du rendez-vous', err);
       }
     });
   }
-}
-
 
   goToAccueil() {
     this.router.navigate(['/patient/dashboard']);

@@ -14,7 +14,7 @@ export class RendezvousComponent implements OnInit {
   loading = false;
   error = '';
 
-  // Onglet actif : 'avenir' ou 'passes' (initialisation par défaut)
+  // Onglet actif
   ongletActif: 'avenir' | 'passes' = 'avenir';
 
   constructor(private rendezVousService: RendezVousService,
@@ -22,51 +22,47 @@ export class RendezvousComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Option temporaire pour tests IHM
-    this.chargerRendezvousMock();
-
   }
 
-  // Données mock pour test IHM
-  chargerRendezvousMock(): void {
-    this.loading = false;
-    this.error = '';
+  // chargerRendezvousMock(): void {
+  //   this.loading = false;
+  //   this.error = '';
 
-    this.rendezvousAVenir = [
-      {
-        id: 1,
-        date: '2025-06-28T10:30:00',
-        status: 'confirmé',
-        medecin: {
-          nom: 'Dr. Fatou Traoré',
-          specialite: 'Dermatologie'
-        }
-      },
-      {
-        id: 2,
-        date: '2025-06-29T15:00:00',
-        status: 'confirmé',
-        medecin: {
-          nom: 'Dr. Issa Kaboré',
-          specialite: 'Cardiologie'
-        }
-      }
-    ];
+  //   this.rendezvousAVenir = [
+  //     {
+  //       id: 1,
+  //       date: '2025-06-28T10:30:00',
+  //       status: 'confirmé',
+  //       medecin: {
+  //         nom: 'Dr. Fatou Traoré',
+  //         specialite: 'Dermatologie'
+  //       }
+  //     },
+  //     {
+  //       id: 2,
+  //       date: '2025-06-29T15:00:00',
+  //       status: 'confirmé',
+  //       medecin: {
+  //         nom: 'Dr. Issa Kaboré',
+  //         specialite: 'Cardiologie'
+  //       }
+  //     }
+  //   ];
 
-    this.rendezvousPasses = [
-      {
-        id: 3,
-        date: '2025-06-15T09:00:00',
-        status: 'passé',
-        medecin: {
-          nom: 'Dr. Salif Ouédraogo',
-          specialite: 'Pédiatrie'
-        }
-      }
-    ];
-  }
+  //   this.rendezvousPasses = [
+  //     {
+  //       id: 3,
+  //       date: '2025-06-15T09:00:00',
+  //       status: 'passé',
+  //       medecin: {
+  //         nom: 'Dr. Salif Ouédraogo',
+  //         specialite: 'Pédiatrie'
+  //       }
+  //     }
+  //   ];
+  // }
 
-  // Utilisation backend réel
+  //backend réel
   loadRendezvous(): void {
     this.loading = true;
     this.error = '';
@@ -85,7 +81,7 @@ export class RendezvousComponent implements OnInit {
     });
   }
 
-  // Méthode appelée depuis le HTML pour changer l’onglet (avec preventDefault)
+  // Changement de l’onglet (avec preventDefault)
   selectOnglet(event: Event, onglet: 'avenir' | 'passes'): void {
     event.preventDefault();
     this.ongletActif = onglet;
@@ -95,7 +91,7 @@ export class RendezvousComponent implements OnInit {
   annulerRdv(id: number): void {
     this.rendezVousService.annulerRendezVous(id).subscribe(() => {
       // Recharger les données après annulation
-      this.chargerRendezvousMock(); // ou this.loadRendezvous()
+       this.loadRendezvous();
     });
   }
 
@@ -105,7 +101,7 @@ export class RendezvousComponent implements OnInit {
   }
 
 
-  // Formatage de la date
+  // Formater la date
   formatDate(dateStr: string): string {
     const date = new Date(dateStr);
     return date.toLocaleString('fr-FR', {

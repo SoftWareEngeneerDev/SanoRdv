@@ -42,4 +42,8 @@ export class RendezVousService {
   modifierRendezVous(id: number, data: Partial<RendezVous>): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
   }
+
+  creerRendezVous(rdv: Partial<RendezVous>): Observable<RendezVous> {
+  return this.http.post<RendezVous>(this.apiUrl, rdv);
+}
 }
