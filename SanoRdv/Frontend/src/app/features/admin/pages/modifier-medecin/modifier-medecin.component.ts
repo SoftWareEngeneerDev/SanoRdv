@@ -29,7 +29,7 @@ export class ModifierMedecinComponent implements OnInit {
     this.medecinForm = this.fb.group({
       nom: ['', Validators.required],
       prenom: ['', Validators.required],
-      sexe: ['Homme', Validators.required],
+      sexe: ['', Validators.required],
       dateNaissance: ['', Validators.required],
       anneeExperience: ['', Validators.required],
       specialite: ['', Validators.required],
@@ -37,7 +37,7 @@ export class ModifierMedecinComponent implements OnInit {
       telephone: ['', Validators.required],
       localisation: [''],
       description: [''],
-      etat: ['Actif', Validators.required]
+      etat: ['', Validators.required]
     });
   }
 
