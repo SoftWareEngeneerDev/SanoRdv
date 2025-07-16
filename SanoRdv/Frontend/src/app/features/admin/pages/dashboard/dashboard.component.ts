@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { AdminService } from '../../admin.service';
+import { StatistiqueService } from '../../services/statistique.service';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -9,21 +11,27 @@ import { AdminService } from '../../admin.service';
 })
 export class DashboardComponent implements OnInit {
 
-      totalPatients: number = 0;
-      medecinsActifs: number = 0;
-      totalRendezVous: number = 0;
+  totalPatients: number = 0;
+  medecinsActifs: number = 0;
+  totalRendezVous: number = 0;
 
-
-    chartOptions: ChartConfiguration<'line'>['options'] = {
+  chartOptions: ChartConfiguration<'line'>['options'] = {
     responsive: true,
+    elements: {
+      line: { tension: 0.4 }
+    },
     plugins: {
       legend: {
-        position: 'top',
+        display: false
       }
     },
     scales: {
+      x: {},
       y: {
-        beginAtZero: true
+        beginAtZero: true,
+        ticks: {
+          stepSize: 10
+        }
       }
     }
   };
@@ -31,24 +39,24 @@ export class DashboardComponent implements OnInit {
   chartType: 'line' = 'line';
 
   chartData: ChartData<'line'> = {
-  labels: [],
-  datasets: [
-    {
-      data: [],
-      label: 'Rendez-vous'
-    }
-  ]
-};
+    labels: ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'],
+    datasets: [
+      {
+        data: [],
+        label: 'Rendez-vous',
+        borderColor: '#0052cc',
+        backgroundColor: 'rgba(0, 119, 255, 0.2)',
+        fill: true,
+        tension: 0.4
+      }
+    ]
+  };
 
-
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private statistiqueService: StatistiqueService ) {}
 
   ngOnInit(): void {
-    this.adminService.getRendezVousStats7DerniersJours().subscribe(stats => {
-  this.chartData.labels = stats.labels;
-  this.chartData.datasets[0].data = stats.donnees;
-});
-
+    this.chargerStats();
+    this.chargerRendezVousGraphique();
   }
 
   chargerStats(): void {
@@ -60,10 +68,19 @@ export class DashboardComponent implements OnInit {
   }
 
   chargerRendezVousGraphique(): void {
-    this.adminService.getRendezVousStats7DerniersJours().subscribe(data => {
-      this.chartData.labels = data.labels;  // ["LUN", "MAR", ...]
-      this.chartData.datasets[0].data = data.donnees;  // [5, 12, 8, ...]
+  this.statistiqueService.getRapportHebdo().subscribe(data => {
+    const labels = data.map(stat => {
+      const date = new Date(stat.date);
+      const jours = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
+      return jours[date.getDay()];
     });
-  }
+
+    const counts = data.map(stat => stat.count);
+
+    this.chartData.labels = labels;
+    this.chartData.datasets[0].data = counts;
+  });
+}
+
 
 }

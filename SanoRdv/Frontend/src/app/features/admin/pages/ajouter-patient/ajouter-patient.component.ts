@@ -12,6 +12,8 @@ import { Patient } from '../../models/patient.model';
 export class AjouterPatientComponent {
   patientForm: FormGroup;
   isSubmitting = false;
+  errorMessage = '';
+  successMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -19,37 +21,46 @@ export class AjouterPatientComponent {
     private router: Router
   ) {
     this.patientForm = this.fb.group({
-      nom: ['', Validators.required],
-      prenom: ['', Validators.required],
+      nom: ['', [Validators.required, Validators.minLength(2)]],
+      prenom: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', Validators.required],
+      telephone: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
       sexe: ['', Validators.required],
       dateNaissance: ['', Validators.required],
       adresse: [''],
       localite: [''],
-      nationalite: ['']
+      nationalite: [''],
+      motDePasse: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   annuler(): void {
-  // Exemple d'action : retour à la liste des patients
-  this.router.navigate(['/admin/patients']);
-}
+    this.router.navigate(['/admin/patients']);
+  }
 
   onSubmit() {
-    if (this.patientForm.invalid) return;
+    if (this.patientForm.invalid) {
+      this.errorMessage = 'Veuillez remplir tous les champs obligatoires correctement';
+      return;
+    }
 
     this.isSubmitting = true;
-    const nouveauPatient: Patient = this.patientForm.value;
+    this.errorMessage = '';
+    this.successMessage = '';
 
+    const nouveauPatient: Patient = this.patientForm.value;
     this.patientService.ajouterPatient(nouveauPatient).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.router.navigate(['/admin/patients']);
+        this.successMessage = 'Patient ajouté avec succès! Redirection...';
+        setTimeout(() => {
+          this.router.navigate(['/admin/patients']);
+        }, 1500);
       },
       error: (err) => {
         this.isSubmitting = false;
-        console.error('Erreur ajout patient :', err);
+        this.errorMessage = err.error?.message || 'Erreur lors de l\'ajout du patient';
+        console.error('Erreur ajout patient:', err);
       }
     });
   }

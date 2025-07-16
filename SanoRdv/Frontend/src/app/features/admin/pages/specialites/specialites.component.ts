@@ -61,13 +61,26 @@ export class SpecialitesComponent implements OnInit {
     });
   }
 
-  supprimerSpecialite(id: string): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette spécialité ?')) {
-      this.specialiteService.supprimerSpecialite(id).subscribe(() => {
-        this.chargerSpecialites();
-      });
-    }
+ specialiteASupprimer: any = null;
+
+modalSuppression(specialite: any): void {
+  this.specialiteASupprimer = specialite;
+}
+
+annulerSuppression(): void {
+  this.specialiteASupprimer = null;
+}
+
+confirmerSuppression(): void {
+  if (this.specialiteASupprimer && this.specialiteASupprimer.id) {
+    this.specialiteService.supprimerSpecialite(this.specialiteASupprimer.id).subscribe(() => {
+      // Rafraîchir la liste après suppression
+      this.chargerSpecialites(); // ou loadSpecialites()
+      this.specialiteASupprimer = null;
+    });
   }
+}
+
 
   filteredSpecialites: Specialite[] = [];
 
