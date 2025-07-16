@@ -53,20 +53,20 @@ filtrer(): void {
   modifier(medecin: Medecin): void {
     if (!medecin._id) return;
     this.router.navigate(['/admin/modifier-medecin'], {
-      queryParams: { id: medecin._id }
+      queryParams: { idDuMedecin: medecin._id }
     });
   }
 
-  voirFiche(id: string): void {
+  voirFiche(medecin: Medecin): void {
   this.router.navigate(['/admin/detail-medecin'], {
-    queryParams: { id }
+    queryParams: { id: medecin._id }
   });
 }
 
 
-  supprimer(id: string): void {
+  supprimer(medecin : Medecin): void {
     if (confirm('Voulez-vous vraiment supprimer ce médecin ?')) {
-      this.medecinService.supprimerMedecin(id).subscribe(() => {
+      this.medecinService.supprimerMedecin(medecin._id).subscribe(() => {
         this.chargerMedecins();
       });
     }

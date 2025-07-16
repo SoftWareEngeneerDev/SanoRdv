@@ -25,7 +25,7 @@ export class MedecinService {
   }
 
   // Supprimer un médecin
-  supprimerMedecin(id: string): Observable<any> {
+  supprimerMedecin(id: any): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 

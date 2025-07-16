@@ -31,11 +31,11 @@ export class ModifierMedecinComponent implements OnInit {
       prenom: ['', Validators.required],
       sexe: ['Homme', Validators.required],
       dateNaissance: ['', Validators.required],
-      anneesExperience: ['', Validators.required],
+      anneeExperience: ['', Validators.required],
       specialite: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', Validators.required],
-      localisation: ['', Validators.required],
+      localisation: [''],
       description: [''],
       etat: ['Actif', Validators.required]
     });
@@ -54,10 +54,13 @@ export class ModifierMedecinComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-  this.id = params['id'];
+  this.id = params['idDuMedecin'];
   if (this.id) {
     this.medecinService.getMedecinById(this.id).subscribe((medecin: Medecin) => {
+  
       this.medecinForm.patchValue(medecin);
+      this.medecinForm.get('dateNaissance')?.setValue(medecin.dateNaissance ? new Date(medecin.dateNaissance).toISOString().substring(0, 10) : '');
+       console.log('formulaire du médecin:', this.medecinForm.value);
     });
   }
 });
@@ -65,6 +68,7 @@ export class ModifierMedecinComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log('Formulaire soumis:', this.medecinForm);
     if (this.medecinForm.valid) {
       this.medecinService.modifierMedecin(this.id, this.medecinForm.value).subscribe(() => {
         alert('Médecin modifié avec succès.');
