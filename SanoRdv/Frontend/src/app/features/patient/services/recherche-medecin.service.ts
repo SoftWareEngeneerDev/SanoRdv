@@ -24,7 +24,7 @@ export class RechercheMedecinService {
   nextLetters$ = this.nextLettersSubject.asObservable();
   medecinDetails$ = this.medecinDetailsSubject.asObservable();
 
-  private readonly baseUrl = 'https://localhost:3000/api/recherche';
+  private readonly baseUrl = 'http://localhost:3000/api/recherche';
 
   constructor(private http: HttpClient) {}
 
@@ -38,22 +38,24 @@ export class RechercheMedecinService {
       return;
     }
 
-    const params = {
-      q: query,
-      type: 'all',
-      limit: 10,
-      includeStats: true,
-      fuzzyEnabled: true,
-      phoneticEnabled: true
-    };
+    const params = new HttpParams()
+      .set('q', query)
+      .set('type', 'all')
+      .set('limit', '10')
+      .set('includeStats', 'true')
+      .set('fuzzyEnabled', 'true')
+      .set('phoneticEnabled', 'true');
 
     this.http.get(`${this.baseUrl}/recherche-avancee`, { params }).subscribe({
       next: (data: any) => {
+        console.log('Données reçues du backend:', data);
+
         const results = data.suggestions || [];
         const nextLetters = data.nextLetters || [];
         const medecinDetails = results.map((result: any) => ({
           id: result.data?._id || result.data?.id,
           nom: result.data?.nom || 'N/A',
+          prenom: result.data?.prenom || 'N/A',     
           specialite: result.data?.specialite || 'N/A',
           localite: result.data?.localite || 'N/A'
         }));
@@ -63,7 +65,7 @@ export class RechercheMedecinService {
         this.medecinDetailsSubject.next(medecinDetails);
       },
       error: (err) => {
-        console.error(err);
+        console.error('Erreur lors de la recherche:', err);
         this.clearResults();
       }
     });
@@ -75,21 +77,23 @@ export class RechercheMedecinService {
       return;
     }
 
-    const params = {
-      q: query,
-      type: 'all',
-      limit: 10,
-      includeStats: true,
-      fuzzyEnabled: true,
-      phoneticEnabled: true
-    };
+    const params = new HttpParams()
+      .set('q', query)
+      .set('type', 'all')
+      .set('limit', '10')
+      .set('includeStats', 'true')
+      .set('fuzzyEnabled', 'true')
+      .set('phoneticEnabled', 'true');
 
     this.http.get(`${this.baseUrl}/recherche-avancee`, { params }).subscribe({
       next: (data: any) => {
+        console.log('Données reçues pour autocomplétion:', data);
+
         const suggestions = data.suggestions || [];
         const medecinDetails = suggestions.map((s: any) => ({
           id: s.data?._id || s.data?.id,
           nom: s.data?.nom || 'N/A',
+          prenom: s.data?.prenom || 'N/A',
           specialite: s.data?.specialite || 'N/A',
           localite: s.data?.localite || 'N/A',
           photo: s.data?.photo || 'N/A'
@@ -99,7 +103,7 @@ export class RechercheMedecinService {
         this.medecinDetailsSubject.next(medecinDetails);
       },
       error: (err) => {
-        console.error(err);
+        console.error('Erreur lors de l’autocomplétion:', err);
         this.clearResults();
       }
     });

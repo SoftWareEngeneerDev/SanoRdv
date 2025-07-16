@@ -9,3 +9,4 @@ export class DateStringToDatePipe implements PipeTransform {
     return new Date(value);
   }
 }
+

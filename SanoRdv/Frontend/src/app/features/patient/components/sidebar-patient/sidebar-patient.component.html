@@ -57,6 +57,7 @@
     <a *ngFor="let item of menuItems"
        [routerLink]="item.link"
        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: true }"
        class="nav-link d-flex align-items-center text-white"
        [attr.title]="isCollapsed ? item.title : null">
       <i [class]="'bi ' + item.icon + ' fs-5'"></i>

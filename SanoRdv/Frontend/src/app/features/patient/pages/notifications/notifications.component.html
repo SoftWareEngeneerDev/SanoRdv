@@ -1,6 +1,5 @@
-<div class="container">
+<div class="pt-5 mt-5 form-container">
   <!-- Contenu principal -->
-  <div class="main-content" >
     <!-- Contenu principal sous le header -->
     <main class="main">
       <!-- Titre principal -->
@@ -17,8 +16,6 @@
         <div *ngFor="let groupe of notificationsGroupes" class="notif-card mb-4"
              [ngClass]="{
                'rappel': groupe.type === 'rappel',
-               'succes': groupe.type === 'confirmation' || groupe.type === 'mise_a_jour',
-               'echec': groupe.type === 'annulation'
              }"
         >
           <!-- Titre du groupe -->
@@ -35,21 +32,6 @@
             <!-- Date -->
             <small class="text-muted">{{ formatDate(notif.dateNotification) }}</small>
 
-            <!-- Bouton Voir plus -->
-            <button class="btn btn-link p-0 mt-1" (click)="toggleVoirPlus(notif)">
-             {{ notif.id && voirPlusMap[notif.id] ? "Voir moins" : "Voir plus" }}
-
-            </button>
-
-            <!-- Détails -->
-            <div *ngIf="notif.id && voirPlusMap[notif.id]" class="notif-details mt-1 mb-2">
-
-              <p>Canal : {{ notif.canal }}</p>
-              <p>Statut : {{ notif.read ? "Lue" : "Non lue" }}</p>
-              <p *ngIf="notif.medecin">Médecin : {{ notif.medecin }}</p>
-              <p *ngIf="notif.details">Détails : {{ notif.details }}</p>
-            </div>
-
             <!-- Séparateur (sauf pour la dernière) -->
             <hr *ngIf="i < groupe.notifications.length - 1" />
           </div>
@@ -57,5 +39,5 @@
       </div>
     </main>
   </div>
-</div>
+
 

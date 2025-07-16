@@ -10,38 +10,23 @@ import { Router } from '@angular/router';
 })
 export class NotificationsComponent implements OnInit {
   notifications: Notification[] = [
-    {
-      id: '1',
-      message: 'Votre rendez-vous avec Dr. Dupont le 27 juin 2025 a été confirmé.',
-      dateNotification: new Date().toISOString(),
-      type: 'confirmation',
-      medecin: 'Dr. Dupont',
-      read: false
-    },
-    {
-      id: '2',
-      message: 'Rappel : Rendez-vous avec Dr. Martin demain à 10h.',
-      dateNotification: new Date(Date.now() - 86400000).toISOString(),
-      type: 'rappel',
-      medecin: 'Dr. Martin',
-      read: false
-    },
-    {
-      id: '2',
-      message: 'Rappel : Rendez-vous avec Dr. Martin demain à 10h.',
-      dateNotification: new Date(Date.now() - 86400000).toISOString(),
-      type: 'rappel',
-      medecin: 'Dr. Martin',
-      read: false
-    },
-    {
-      id: '3',
-      message: 'Votre rendez-vous avec Dr. Leroy le 29 juin 2025 a été annulé.',
-      dateNotification: new Date(Date.now() - 2 * 86400000).toISOString(),
-      type: 'annulation',
-      medecin: 'Dr. Leroy',
-      read: true
-    }
+    // {
+    //   id: '2',
+    //   message: 'Rappel : Rendez-vous avec Dr. Martin demain à 10h.',
+    //   dateNotification: new Date(Date.now() - 86400000).toISOString(),
+    //   type: 'rappel',
+    //   medecin: 'Dr. Martin',
+    //   read: false
+    // },
+    // {
+    //   id: '2',
+    //   message: 'Rappel : Rendez-vous avec Dr. Martin demain à 10h.',
+    //   dateNotification: new Date(Date.now() - 86400000).toISOString(),
+    //   type: 'rappel',
+    //   medecin: 'Dr. Martin',
+    //   read: false
+    // },
+
   ];
 
   unreadCount = this.notifications.filter(n => !n.read).length;
@@ -60,7 +45,7 @@ export class NotificationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.grouperNotificationsParType(); // 🔄 regrouper au chargement (test local)
-    // this.loadNotifications(); // Décommente si backend actif
+    this.loadNotifications();
   }
 
   retourDashboard() {
@@ -102,8 +87,6 @@ export class NotificationsComponent implements OnInit {
   getIconClass(type: string): string {
     switch (type) {
       case 'rappel': return 'bi bi-calendar-event text-info';
-      case 'confirmation': return 'bi bi-check-circle-fill text-success';
-      case 'annulation': return 'bi bi-x-circle-fill text-danger';
       default: return 'bi bi-info-circle text-secondary';
     }
   }
@@ -111,8 +94,6 @@ export class NotificationsComponent implements OnInit {
   getTitre(type: string): string {
     switch (type) {
       case 'rappel': return 'Rappel';
-      case 'confirmation': return 'Confirmation';
-      case 'annulation': return 'Annulation';
       default: return 'Notification';
     }
   }
@@ -122,10 +103,6 @@ export class NotificationsComponent implements OnInit {
     switch (notif.type) {
       case 'rappel':
         return notif.message || `Rappel : Rendez-vous avec le ${notif.medecin} le ${date}.`;
-      case 'confirmation':
-        return notif.message || `Votre rendez-vous avec le ${notif.medecin} le ${date} a été confirmé.`;
-      case 'annulation':
-        return notif.message || `Votre rendez-vous avec le ${notif.medecin} le ${date} a été annulé.`;
       default:
         return notif.message || 'Vous avez une nouvelle notification.';
     }
@@ -152,7 +129,7 @@ export class NotificationsComponent implements OnInit {
       // Appel backend actif
       this.notificationsService.markAsRead(notif.id).subscribe(() => {
         notif.read = true;
-        this.loadNotifications(); // recharge pour MAJ visuelle
+        this.loadNotifications();
       });
     }
     this.voirPlusMap[notif.id] = !estOuvert;

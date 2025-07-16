@@ -21,13 +21,10 @@ export class PatientService {
 
   // Ici on change le type du paramètre en FormData pour correspondre à ce que tu envoies
 updateProfile(data: FormData): Observable<any> {
-  const token = localStorage.getItem('token'); // ou depuis un AuthService si tu en as un
-
+  const token = localStorage.getItem('token');
   const headers = {
     Authorization: `Bearer ${token}`
-    // PAS de Content-Type ici ! Angular le gère pour FormData
   };
-
   return this.http.put(`${this.apiUrl}/me`, data, { headers });
 }
 

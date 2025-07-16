@@ -39,7 +39,6 @@
   transition: margin-right 0.3s ease;
 }
 
-
 /* ------------ICÔNES -------------------- */
 .patient-header .patient-icons {
   display: flex;
@@ -77,26 +76,47 @@
 
 @media (min-width: 481px) and (max-width: 768px) {
   .patient-header .patient-icons i {
-    font-size: 10px;
+    font-size: 0.9rem;
   }
-   .patient-header .patient-icons {
+
+  .patient-header .patient-icons {
     justify-content: flex-end;
     gap: 6px;
   }
 }
 
+/* ------- MOBILE : ≤ 480px ------- */
 @media (max-width: 480px) {
-    .patient-header .patient-icons {
-    gap: 6px;
-    flex-wrap: nowrap;
+  .patient-header {
+    height: 50px !important;
+    padding: 0 0.8rem !important;
+    justify-content: space-between !important;
+    font-size: 13px !important;
+    background: #00a3e0 !important;
+  }
+
+  .patient-header.header-collapsed,
+  .patient-header.header-expanded {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .patient-header .patient-icons {
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-end !important;
   }
 
   .patient-header .patient-icons i {
-    font-size: 12px;
-    margin: 0 4px;    /* idem */
+    font-size: 14px !important;
+    margin: 0 4px !important;
+    padding: 4px !important;
+    white-space: nowrap !important;
   }
 
-   body {
-    background: red !important;
+  .patient-header .logo,
+  .patient-header .header-text {
+    display: none !important;
   }
 }

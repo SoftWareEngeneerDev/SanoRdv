@@ -35,20 +35,6 @@ export class MedecinService {
     return this.http.get<any[]>(`${this.apiUrl}/creneaux/medecin/${medecinId}`);
   }
 
-  profile = {
-    photo: '',
-    nom: 'Kabore',
-    prenom: 'Faical',
-    specialite: 'Médecin généraliste',
-    sexe: 'Homme',
-    dateNaissance: '1983-01-01',
-    anneeExperience: 15,
-    localisation: 'Clinique Philadelphie\n404 Rue du President Maurice YAMEOGO',
-    telephone: '60 80 62 53',
-    email: 'Faicalkabore2@gmail.com',
-    parcours: `Diplômée de la faculté de médecine de Paris en 2003. Spécialisation en dermatologie obtenue en 2008. Ancienne interne des Hôpitaux de Paris. Membre de la Société Française de Dermatologie. Spécialiste des maladies de peau et des traitements laser.`
-  };
-
   getMedecinById(id: string): Observable<any> {
   return this.http.get(`${this.apiUrl}/${id}`);
 }
@@ -56,11 +42,10 @@ export class MedecinService {
   return this.http.put(`${this.apiUrl}/${id}`, data);
 }
 
-  getProfile() {
-    return this.profile;
-  }
+  getAgendaId(): string {
+  // Suppose que tu as stocké le médecin connecté dans localStorage ou via API
+  const medecin = JSON.parse(localStorage.getItem('medecin') || '{}');
+  return medecin.agendaId;
+}
 
-  updateProfile(data: any) {
-    this.profile = { ...this.profile, ...data };
-  }
 }

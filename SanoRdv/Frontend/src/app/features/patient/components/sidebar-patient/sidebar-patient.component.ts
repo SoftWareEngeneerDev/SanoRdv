@@ -56,6 +56,6 @@ export class SidebarPatientComponent implements OnInit {
     { title: 'Mes rendez-vous', link: '/patient/appointment', icon: 'bi-calendar-event' },
     { title: 'Notifications', link: '/patient/notifications', icon: 'bi-bell' },
     { title: 'Dossiers medicaux', link: '/patient/dossiers-medicaux', icon: 'bi-file-earmark-medical' },
-    { title: 'Profil', link: '/patient/modifier', icon: 'bi-gear' },
+    { title: 'Profil', link: '/patient/modifier', icon: 'bi bi-person-circle'},
   ];
 }
