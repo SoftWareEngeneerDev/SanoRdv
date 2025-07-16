@@ -1,18 +1,67 @@
-<div class="container-specialite p-4 shadow rounded bg-white">
-  <h2 class="fw-bold">SPECIALITES</h2>
+<div class="container mt-4">
+  <!-- Titre principal -->
+  <h1 class="mb-4 text-center">Gestion des Spécialités Médicales</h1>
 
-  <!-- Formulaire d’ajout -->
-  <div class="d-flex flex-column flex-md-row align-items-stretch gap-2 mt-3 mb-4">
-    <input [(ngModel)]="nouvelleSpecialite" type="text" class="form-control"
-           placeholder="Nouvelle spécialité.....">
-    <button class="btn btn-primary fw-bold" (click)="ajouterSpecialite()">Ajouter</button>
+  <!-- Barre de recherche -->
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body p-3">
+      <div class="input-group">
+        <input type="text" class="form-control border-0" 
+               placeholder="Entrez le nom de la spécialité..."
+               [(ngModel)]="rechercheSpecialite">
+        <span class="input-group-text bg-transparent border-0">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+    </div>
   </div>
 
   <!-- Liste des spécialités -->
-  <h5 class="fw-bold">LISTE DES SPECIALITES</h5>
-  <div *ngFor="let specialite of specialites" class="d-flex justify-content-between align-items-center border p-2 rounded mb-2">
-    <span>{{ specialite.nom }}</span>
-    <button class="btn btn-link text-danger fw-bold" (click)="supprimerSpecialite(specialite.id)">Supprimer</button>
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 p-3">
+      <h5 class="mb-0 fw-bold">Liste des spécialités médicales</h5>
+    </div>
+    
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-borderless mb-0">
+          <thead>
+            <tr class="border-bottom">
+              <th class="fw-semibold">Nom</th>
+              <th class="fw-semibold">Description</th>
+              <th class="fw-semibold text-center">Médecins</th>
+              <th class="fw-semibold text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let specialite of filteredSpecialites" class="border-bottom">
+              <td class="align-middle">{{ specialite.nom }}</td>
+              <td class="align-middle">{{ specialite.description }}</td>
+              <td class="align-middle text-center">{{ specialite.nombreMedecins }}</td>
+              <td class="align-middle text-end">
+                <div class="d-flex justify-content-end gap-2">
+                  <button class="btn btn-sm btn-outline-primary px-3"
+                          [routerLink]="['/admin/modifier-specialites', specialite.id]">
+                    Modifier
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger px-3"
+                          (click)="supprimerSpecialite(specialite.id)">
+                    Supprimer
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bouton Ajouter -->
+  <div class="text-end mt-4">
+    <button class="btn btn-primary px-4 py-2"
+            routerLink="/admin/ajouter-specialites">
+      Ajouter une spécialité
+    </button>
   </div>
 </div>
-

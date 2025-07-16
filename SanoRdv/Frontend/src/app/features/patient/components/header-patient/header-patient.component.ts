@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PatientService } from '../../../../shared/services/patient.service';
+import { Patient } from '../../../../shared/models/patient.model';
 
 @Component({
   selector: 'app-header-patient',
@@ -16,8 +17,8 @@ export class HeaderPatientComponent implements OnInit {
 
   ngOnInit(): void {
     this.patientService.getProfilPatient().subscribe({
-      next: (data: { prenom: string }) => {
-        this.prenom = data.prenom;
+      next: (patient: Patient) => {
+        this.prenom = patient.prenom || '';
       },
       error: () => {
         this.prenom = '';

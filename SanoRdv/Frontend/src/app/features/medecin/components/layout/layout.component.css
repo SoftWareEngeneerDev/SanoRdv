@@ -1,0 +1,19 @@
+/* Main content : adapte la marge gauche selon la taille du sidebar */
+.main-content {
+  transition: margin-left 0.3s ease;
+  padding: 1.5rem;
+  /* background-color: #f8f9fa; */
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Sidebar réduit (80px) */
+.margin-collapsed {
+  margin-left: 80px;
+}
+
+/* Sidebar normal (250px) */
+.margin-expanded {
+  margin-left: 250px;
+}

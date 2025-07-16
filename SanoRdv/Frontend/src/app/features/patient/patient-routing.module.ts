@@ -15,13 +15,15 @@ import { ConfirmationComponent } from './pages/confirmation/confirmation.compone
 import { DeconnexionComponent } from './pages/deconnexion/deconnexion.component';
 import { AuthGuard } from 'src/app/core/guards/auth.guard';  // Importation du AuthGuard
 
+
+
 const routes: Routes = [
-  { path: 'informations', component: ProfilMedecinComponent, canActivate: [AuthGuard] },
+  { path: 'informations/:id', component: ProfilMedecinComponent, canActivate: [AuthGuard] },
   { path: 'motif', component: MotifComponent, canActivate: [AuthGuard] },
   { path: 'creneau', component: CreneauComponent, canActivate: [AuthGuard] },
   { path: 'recapitulatif', component: RecapitulatifComponent, canActivate: [AuthGuard] },
   { path: 'confirmation', component: ConfirmationComponent, canActivate: [AuthGuard] },
-  { path: 'deconnexion', component: DeconnexionComponent, canActivate: [AuthGuard] },
+  { path: 'deconnexion', component: DeconnexionComponent,  canActivate: [AuthGuard, AuthGuard ]},
   {
     path: '',
     component: PatientLayoutComponent,

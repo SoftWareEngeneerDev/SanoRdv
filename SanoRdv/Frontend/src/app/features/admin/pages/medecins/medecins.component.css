@@ -1,53 +1,110 @@
-h2 {
-  font-weight: bold;
-  margin-bottom: 20px;
+.medecin-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
 }
 
-.btn-ajout {
-  background-color: #00aee0;
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  min-width: 250px;
+}
+
+.search-bar button {
+  padding: 10px 15px;
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  margin-bottom: 15px;
+  border-radius: 5px;
 }
 
-.btn-ajout:hover {
-  background-color: #0096c7;
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.add-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
 }
 
 .table-container {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15);
+  overflow-x: auto;
 }
 
-.table td,
-.table th {
-  vertical-align: middle;
-  text-align: center;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
 }
 
-.text-success {
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.etat.actif {
   color: green;
   font-weight: bold;
 }
 
-.text-danger {
+.etat.inactif {
   color: red;
   font-weight: bold;
 }
 
-.text-primary {
+.actions a {
+  margin-right: 10px;
+  text-decoration: none;
   color: #007bff;
 }
 
-.text-action {
-  cursor: pointer;
-  transition: color 0.3s;
+.actions .supprimer {
+  color: red;
 }
 
-.text-action:hover {
-  text-decoration: underline;
+/* 🔁 Responsive */
+@media screen and (max-width: 768px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 10px;
+  }
+
+  .add-btn {
+    width: 100%;
+  }
+
+  .search-bar input,
+  .search-bar button {
+    width: 100%;
+  }
 }

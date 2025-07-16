@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     }
 
     // Redirection vers login si pas authentifié
-    return this.router.parseUrl('/auth/login');
+    return this.router.parseUrl('/');
   }
 
   canActivate(): boolean | UrlTree {

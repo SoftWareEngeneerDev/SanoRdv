@@ -36,6 +36,8 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  debug: true,
+  logger: true,
   tls: {
     rejectUnauthorized: false, // Permet de ne pas vérifier les certificats (utile en développement)
   },

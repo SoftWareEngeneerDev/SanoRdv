@@ -152,10 +152,18 @@ export const register = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ erreurs: errors.array() });
+    }
 
-    const patientId = req.params.id; // ou depuis token selon ta gestion auth
+    const patientId = req.params.id;
 
+    // Vérification de la présence de req.body
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Le corps de la requête est vide ou invalide." });
+    }
+
+    // Déstructuration après vérification
     const {
       nom,
       prenom,
@@ -168,13 +176,17 @@ export const updateProfile = async (req, res) => {
       dateNaissance,
       adresse,
       photo,
+      groupeSanguin,
+      allergies
     } = req.body;
 
     // Trouver le patient
     const patient = await Patient.findById(patientId);
-    if (!patient) return res.status(404).json({ message: "Patient non trouvé" });
+    if (!patient) {
+      return res.status(404).json({ message: "Patient non trouvé" });
+    }
 
-    // Validation email si modifié
+    // Email
     if (email) {
       const sanitizedEmail = sanitizeInput(email);
       if (!isValidEmail(sanitizedEmail)) {
@@ -187,7 +199,6 @@ export const updateProfile = async (req, res) => {
           allowedDomains: CONFIG.ALLOWED_DOMAINS,
         });
       }
-      // Vérifier unicité email (exclure patient actuel)
       const emailUsed = await Patient.findOne({ email: sanitizedEmail, _id: { $ne: patientId } });
       if (emailUsed) {
         return res.status(400).json({ message: 'Email déjà utilisé' });
@@ -195,16 +206,16 @@ export const updateProfile = async (req, res) => {
       patient.email = sanitizedEmail;
     }
 
-    // Vérifier unicité téléphone si modifié
+    // Téléphone
     if (telephone) {
       const phoneUsed = await Patient.findOne({ telephone, _id: { $ne: patientId } });
       if (phoneUsed) {
         return res.status(400).json({ message: 'Numéro de téléphone déjà utilisé' });
       }
-      patient.telephone = telephone;
+      patient.telephone = sanitizeInput(telephone);
     }
 
-    // Hasher mot de passe si modifié
+    // Mot de passe
     if (motDePasse) {
       if (!isValidPassword(motDePasse)) {
         return res.status(400).json({
@@ -218,22 +229,33 @@ export const updateProfile = async (req, res) => {
       patient.motDePasse = await bcrypt.hash(motDePasse, CONFIG.BCRYPT_ROUNDS);
     }
 
-    // Mise à jour des autres champs si fournis
-    if (nom) patient.nom = nom.trim();
-    if (prenom) patient.prenom = prenom.trim();
+    // Mise à jour des autres champs si présents
+    if (nom) patient.nom = sanitizeInput(nom);
+    if (prenom) patient.prenom = sanitizeInput(prenom);
     if (sex) patient.sex = sex;
-    if (localite !== undefined) patient.localite = localite;
-    if (dateNaissance !== undefined) patient.dateNaissance = dateNaissance;
-    if (adresse !== undefined) patient.adresse = adresse;
+    if (localite !== undefined) patient.localite = sanitizeInput(localite);
+    if (dateNaissance !== undefined) {
+      const parsedDate = new Date(dateNaissance);
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ message: 'Date de naissance invalide' });
+      }
+      patient.dateNaissance = parsedDate;
+    }
+    if (adresse !== undefined) patient.adresse = sanitizeInput(adresse);
     if (photo !== undefined) patient.photo = photo;
+    if (groupeSanguin !== undefined) patient.groupeSanguin = sanitizeInput(groupeSanguin);
+    if (allergies !== undefined) patient.allergies = sanitizeInput(allergies);
 
+    // Sauvegarde
     await patient.save();
 
-    // Retourner sans mot de passe
-    const { motDePasse: _, ...patientData } = patient.toObject();
+    // Suppression du mot de passe dans la réponse
+    const patientObj = patient.toObject();
+    delete patientObj.motDePasse;
+
     res.status(200).json({
       message: "Profil mis à jour avec succès",
-      patient: patientData,
+      patient: patientObj,
     });
 
   } catch (error) {

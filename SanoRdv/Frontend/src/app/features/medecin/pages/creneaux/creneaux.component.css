@@ -1,0 +1,70 @@
+.calendar-container {
+  width: 800px;
+  margin: auto;
+  padding: 20px;
+  position: absolute;
+  top: 80px;
+  left: 250px;
+}
+
+.time-slots {
+  margin-top: 30px;
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.slots button {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 70px;
+}
+
+.slots button.selected {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.save-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.month-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  gap: 15px;
+  color: white;
+  font-weight: bold;
+  background-color: #007bff;
+  height: 50px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.month-label button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: white;
+}
+::ng-deep .cal-month-view .cal-open-day-events {
+  background-color: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}

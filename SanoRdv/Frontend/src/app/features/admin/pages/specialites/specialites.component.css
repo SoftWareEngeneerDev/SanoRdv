@@ -1,31 +1,66 @@
-.container-specialite {
-  max-width: 600px;
-  margin: auto;
-  background: #f8f9fa;
-  box-shadow: 4px 4px 8px #ccc;
+/* Style général */
+.container {
+  max-width: 1200px;
+}
+
+/* Carte */
+.card {
   border-radius: 10px;
 }
 
-input.form-control {
-  background-color: #d9d9d9;
-  border-radius: 10px;
+/* Entête de tableau */
+.table th {
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+/* Lignes du tableau */
+.table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+/* Boutons */
+.btn-outline-primary {
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
   border: none;
-  padding: 10px;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
-button.btn-primary {
-  background-color: #00aee0;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
+/* Barre de recherche */
+.input-group {
+  border-radius: 8px;
+  background-color: #f8f9fa;
 }
 
-button.btn-link {
-  text-decoration: none;
+.input-group-text {
+  color: #6c757d;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-  .container-specialite {
-    padding: 1rem;
+  .table-responsive {
+    border: 0;
+  }
+  
+  .table th, .table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
   }
 }

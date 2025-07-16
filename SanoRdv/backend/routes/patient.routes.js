@@ -6,12 +6,12 @@ import {
   register,
   getPatientBasicInfo,
   getPatientInfo,
-  updateProfile, // <-- À importer depuis ton contrôleur
+  updateProfile,
 } from '../controllers/patient.controller.js';
 
 const router = express.Router();
 
-// Middleware validation pour updateProfile (exemple)
+// Middleware validation pour updateProfile
 const profileUpdateValidation = [
   body('email').optional().isEmail().withMessage('Email invalide'),
   body('motDePasse').optional().isLength({ min: 8 }).withMessage('Mot de passe trop court'),
@@ -67,7 +67,7 @@ router.post(
   register
 );
 
-// Route récupération liste patients (sans mot de passe)
+// Récupération liste patients (sans mot de passe)
 router.get('/patients', async (req, res) => {
   try {
     const patients = await Patient.find().select('-motDePasse -__v');
@@ -82,9 +82,9 @@ router.get('/patients', async (req, res) => {
 router.get('/patient/:patientId/info', getPatientBasicInfo);
 router.get('/patient/:patientId/basic', getPatientInfo);
 
-// Route modification profil patient
+// Route modification profil patient (route FIXE /me)
 router.put(
-  '/patients/:id',
+  '/me',
   profileUpdateValidation,
   (req, res, next) => {
     const errors = validationResult(req);

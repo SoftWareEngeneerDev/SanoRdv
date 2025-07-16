@@ -21,34 +21,45 @@ export class MedecinsComponent implements OnInit {
     this.chargerMedecins();
   }
 
+  loadMedecins(): void {
+  this.medecinService.getMedecins().subscribe((data) => {
+    this.medecins = data;
+  });
+}
+
   chargerMedecins(): void {
     this.medecinService.getMedecins().subscribe(data => {
       this.medecins = data;
     });
   }
 
+  activer(medecin: Medecin): void {
+  this.medecinService.activerMedecin(medecin.id).subscribe(() => {
+    this.loadMedecins();
+  });
+}
+
   ajouterMedecin(): void {
     this.router.navigate(['/admin/ajouter-medecin']);
   }
 
   modifier(medecin: Medecin): void {
-    this.router.navigate(['/admin/ajouter-medecin'], { queryParams: { id: medecin.id } });
+    this.router.navigate(['/admin/modifier-medecin'], { queryParams: { id: medecin.id } });
   }
 
-  supprimer(medecin: Medecin): void {
-    const confirmDelete = confirm(`Voulez-vous vraiment supprimer ${medecin.nom} ${medecin.prenom} ?`);
-    if (confirmDelete) {
-      this.medecinService.supprimerMedecin(medecin.id).subscribe(() => {
-        this.chargerMedecins();
-      });
-    }
+ supprimer(id: string): void {
+  if (confirm('Voulez-vous vraiment supprimer ce médecin ?')) {
+    this.medecinService.supprimerMedecin(id).subscribe(() => {
+      this.loadMedecins();
+    });
   }
+}
 
   toggleEtat(medecin: Medecin): void {
-    const action = medecin.actif ? 'désactiver' : 'activer';
+    const action = medecin.etat === 'Actif' ? 'désactiver' : 'activer';
     const confirmToggle = confirm(`Voulez-vous vraiment ${action} ce médecin ?`);
     if (confirmToggle) {
-      this.medecinService.toggleEtat(medecin.id).subscribe(() => {
+      this.medecinService.activerMedecin(medecin.id).subscribe(() => {
         this.chargerMedecins();
       });
     }
