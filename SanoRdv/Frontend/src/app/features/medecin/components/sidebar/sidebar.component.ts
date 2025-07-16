@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MedecinService } from '../../Medecin.service';
+import { MedecinService } from '../../medecin.service';
 
 
 interface PatientLocal {
