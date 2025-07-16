@@ -29,7 +29,7 @@
 .title {
   font-weight: 700;
   font-size: 1.5rem;
-  color: #007bff; /* bleu */
+  color: #007bff;
   margin-bottom: 1rem;
 }
 
@@ -105,4 +105,103 @@ h3{
 .btn-outline:hover {
   background-color: #007bff;
   color: white;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* TABLETTES jusqu’à 1024px */
+@media (max-width: 1024px) {
+  .confirmation-container {
+    top: 80px;
+    padding: 1.5rem;
+    height: auto;
+  }
+
+  .info-box ul {
+    font-size: 16px;
+  }
+
+  .btn-group {
+    top: 40px;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+}
+
+/* POUR LES ÉCRANS ENTRE 769px ET 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .btn-group {
+    top: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    top: 10px;
+  }
+
+  .btn {
+    flex: 1 1 45%;
+    max-width: 45%;
+    min-width: 140px;
+    font-size: 0.95rem;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .btn-group {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    top: 5px;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+  }
+}
+
+/* PETITS ÉCRANS jusqu’à 480px */
+@media (max-width: 480px) {
+  .confirmation-container {
+    margin: 0.5rem;
+    padding: 1rem;
+    top: 40px;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .message {
+    font-size: 0.9rem;
+  }
+
+  .info-box ul {
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  .btn-group {
+    width: 100%;
+    padding: 0 1rem;
+    box-sizing: border-box;   
+  }
 }

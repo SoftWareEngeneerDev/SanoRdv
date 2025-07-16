@@ -1,16 +1,47 @@
+.page-container {
+  position: relative;
+  min-height: 100vh;
+}
+.main-content {
+  margin-left: 70px;
+  margin-top: -50px;
+  padding-top: 95px;
+  min-height: 100vh;
+  background-color: #fff;
+  transition: margin-left 0.3s ease;
+}
+.container {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.form-container {
+  margin-left: 70px;
+  margin-top: -50px;
+  padding-top: 95px;
+  /* min-height: 100vh; */
+  height: auto;
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  margin: 0 auto;
+}
+
 .profile-card {
   background-color: #fff;
   padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   max-width: 900px;
-  margin-left: 100px;
+ margin: 100px 150px 0  auto; /* haut 100px, droite 50px, bas 0, gauche auto */
   font-family: Arial, sans-serif;
-  position: relative;
-  top: 100px;
-  left: 100px;
+  box-sizing: border-box;
 }
 
+/* Entête */
 .profile-header {
   display: flex;
   align-items: center;
@@ -18,6 +49,7 @@
   flex-wrap: wrap;
   gap: 1rem;
 }
+
 
 .profile-photo {
   width: 80px;
@@ -50,13 +82,13 @@ h2 {
 }
 
 hr {
-  position: relative;
-  top: -10px;
+  margin-top: -10px;
 }
 
+/* Infos profil */
 .info-row {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 60px;
   margin-bottom: 20px;
 }
@@ -68,33 +100,30 @@ hr {
   font-size: 14px;
   font-weight: 500;
   color: #333;
+  box-sizing: border-box;
 }
 
 .info-row div::before {
   content: attr(data-label);
   font-size: 18px;
-  color:black;
+  color: black;
   margin-bottom: 5px;
 }
 
-
-/* Classe ajoutée lorsque sidebar est pliée */
+/* Quand sidebar est repliée */
 .sidebar-collapsed .profile-card {
-  position: relative;
- left: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  left: auto;
+  right: auto;
 }
 
+/* Responsive tablette */
 @media (max-width: 768px) {
   .profile-card {
-    padding: 1rem;
-      width: 100%;
-      margin-left: 0 !important;
-      position: relative;
-     right:20px;
-    top: 50px;
-    box-sizing: border-box;
+    padding: 1.5rem;
+    margin: 50px 1rem 0 1rem;
   }
-
 
   .profile-header {
     flex-direction: column;
@@ -108,9 +137,8 @@ hr {
   }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin-top: 0.5rem;
-    word-break: break-word;
   }
 
   .btn-edit {
@@ -122,21 +150,45 @@ hr {
 
   .info-row {
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
     width: 100%;
-    box-sizing: border-box;
   }
 
   .info-row div {
     min-width: 0;
     width: 100%;
-    word-break: break-word;
     font-size: 14px;
-    overflow-wrap: break-word;
-    box-sizing: border-box;
+    word-break: break-word;
   }
 
   .info-row div::before {
     font-size: 16px;
   }
 }
+
+/* Responsive petits écrans (téléphones <= 480px) */
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 1rem;
+    margin-top: 40px;
+  }
+
+  .btn-edit {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .profile-photo {
+    width: 60px;
+    height: 60px;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .info-row div::before {
+    font-size: 15px;
+  }
+}
+

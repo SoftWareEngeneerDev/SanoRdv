@@ -20,7 +20,7 @@ import { SharedLayoutComponent } from './components/shared-layout/shared-layout.
   ],
   imports: [
     CommonModule,
-    RouterModule           // nécessaire pour utiliser <router-outlet> dans SharedLayoutComponent
+    RouterModule,         // nécessaire pour utiliser <router-outlet> dans SharedLayoutComponent
   ],
   exports: [
     HeaderComponent,

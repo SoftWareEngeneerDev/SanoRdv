@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';  // ajouter ActivatedRoute
+import { Router, ActivatedRoute } from '@angular/router';
 import { PatientService } from '../../../../shared/services/patient.service';
 
 @Component({
@@ -8,12 +8,12 @@ import { PatientService } from '../../../../shared/services/patient.service';
   styleUrls: ['./modifier.component.css']
 })
 export class RegisterComponent implements OnInit {
-  patient: any;
+  patient: any = null;
 
   constructor(
     private patientService: PatientService,
     private router: Router,
-    private route: ActivatedRoute  // injecter ici
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -23,17 +23,8 @@ export class RegisterComponent implements OnInit {
         this.patient = JSON.parse(storedUser);
       } catch (error) {
         console.error('Erreur lors du parsing du user dans localStorage:', error);
+        this.patient = null;
       }
-    } else {
-      this.patient = {
-        nom: 'TRAORE',
-        prenom: 'Sharifa',
-        email: 'sharifa@example.com',
-        telephone: '+226 70 00 00 00',
-        sexe: 'Féminin',  // correction aussi ici : 'sexe' au lieu de 'sex'
-        dateNaissance: '1995-04-12',
-        photo: ''
-      };
     }
   }
 

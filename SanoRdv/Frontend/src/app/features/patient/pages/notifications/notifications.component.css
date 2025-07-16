@@ -1,7 +1,9 @@
-/*  LAYOUT PRINCIPAL  */
+/* LAYOUT PRINCIPAL */
 .container {
   display: flex;
+  flex-direction: row;
   height: 100vh;
+  box-sizing: border-box;
 }
 
 .sidebar {
@@ -11,76 +13,75 @@
   width: 250px;
   height: 100vh;
   z-index: 1100;
+  background-color: #f9f9f9;
 }
 
+.form-container {
+  margin-left: 70px;
+  margin-top: -50px;
+  padding-top: 95px;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  margin: 0 auto;
+}
+
+
+/* Contenu principal à droite de la sidebar */
 .main-content {
-  margin-left: 50px;
-  margin-top: 100px;
-  width: 500px;
+  margin-left: 250px;
+  padding: 20px;
+  flex-grow: 1;
+  min-height: 100vh;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
-  padding: 20px;
-  flex: 1;
 }
 
-/*  CONTENU PRINCIPAL */
+/* Zone principale blanche */
 .main {
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
   border-radius: 12px;
   padding: 30px;
   background-color: #fff;
-  border-top: none;
-  width: 800px;
-  margin: -50px auto 0 -100px;
-  position: relative;
-  height: auto;
+  max-width: 900px;
+  margin: 20px auto 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  flex-grow: 1;
 }
 
 .title-main {
-  font-size: 40px;
+  font-size: 2rem;
   font-weight: 500;
   text-align: left;
   color: black;
   margin-bottom: 30px;
 }
 
-.no-notif {
-  text-align: center;
-  font-style: italic;
-  color: #6b7280;
-  font-size: 1.1rem;
-  margin: 20px 0;
-}
-
-/*  NOTIFICATIONS GROUPÉES PAR TYPE  */
+/* Notifications */
 .notif-card {
   padding: 20px;
   margin-bottom: 30px;
+  background: rgba(25, 230, 145, 0.15);
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.notif-card h3 {
-  margin-top: 0;
-  font-size: 20px;
-}
-
+.notif-card h3,
 .notif-card p {
+  font-size: 1.2rem;
   margin: 8px 0;
-  font-size: 20px;
-  line-height: 1.5;
 }
 
 .notif-card small {
-  display: block;
   color: #666;
   font-size: 0.8rem;
-  margin-bottom: 10px;
 }
 
 .notif-card button {
@@ -91,36 +92,13 @@
   font-weight: 500;
   text-decoration: underline;
   cursor: pointer;
-  padding: 0;
-  margin-top: 8px;
 }
 
-.notif-card button:hover {
-  color: #1e40af;
-}
-
-/*  TYPES DE NOTIFICATIONS */
-.rappel {
-  /* background-color: rgba(64, 143, 241, 0.15); */
-   background-color: rgba(25, 230, 145, 0.15);
-}
-
-.succes {
-  background-color: rgba(25, 230, 145, 0.15);
-}
-
-.echec {
-  background-color: rgba(25, 230, 145, 0.15);
-}
-
-/* Séparateur entre les notifications dans un même bloc */
 hr {
   border: none;
   border-top: 2px solid rgba(0, 0, 0, 1);
-  margin: 12px 0;
-  width: 106%;
-  position: relative;
-  right: 20px;
+  margin: 20px 0;
+  width: 100%;
 }
 
 /* ALERTES */
@@ -135,7 +113,6 @@ hr {
   margin: 0;
 }
 
-/* Icône */
 .icon {
   position: absolute;
   top: 16px;
@@ -144,176 +121,106 @@ hr {
   color: #0d4a8f;
 }
 
-/* --- RESPONSIVITÉ GLOBALE --- */
+/* --- RESPONSIVE --- */
 
-/* Très grands écrans (plus de 1440px) */
-@media (min-width: 1441px) {
-  .sidebar {
-    width: 300px;
-  }
-  .main-content {
-    margin-left: 300px;
-    padding: 30px;
-    width: auto;
-    height: auto;
-    position: relative;
-    right: 0;
-  }
-  .main {
-    width: 900px;
-    padding: 40px;
-    top: 0;
-  }
-  .title-main {
-    font-size: 44px;
-    text-align: left;
-  }
-}
-
-/* Grands écrans (1025px à 1440px) */
-@media (min-width: 1025px) and (max-width: 1440px) {
-  .sidebar {
-    width: 250px;
-  }
-  .main-content {
-    margin-left: 250px;
-    padding: 25px;
-    width: auto;
-    height: auto;
-    position: relative;
-    right: 0;
-  }
-  .main {
-    width: 850px;
-    padding: 35px;
-    top: 0;
-  }
-  .title-main {
-    font-size: 40px;
-    text-align: left;
-  }
-}
-
-/* Jusqu'à 1024px */
+/* ≤ 1024px */
 @media (max-width: 1024px) {
   .sidebar {
     width: 200px;
   }
+
   .main-content {
     margin-left: 200px;
-    padding: 20px;
-    width: auto;
-    height: auto;
-    position: relative;
-    right: 0;
+    padding: 16px;
   }
+
   .main {
-    width: 90%;
-    max-width: none;
     padding: 20px;
-    top: 0;
+    max-width: 95%;
   }
+
   .title-main {
-    font-size: 32px;
-    text-align: left;
-  }
-  hr {
-    width: 100%;
-    right: 0;
+    font-size: 1.8rem;
   }
 }
 
-/* Jusqu'à 768px */
+/* ≤ 768px */
 @media (max-width: 768px) {
   .sidebar {
     width: 80px;
   }
-  .main {
-    width: 100%;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    border-radius: 0;
-    padding: 15px;
-    top: 0;
+
+  .main-content {
+    margin-left: 80px;
+    padding: 14px;
   }
+
+  .main {
+    padding: 16px;
+  }
+
   .title-main {
-    font-size: 24px;
+    font-size: 1.5rem;
     text-align: center;
   }
-  hr {
-    width: 100%;
-    right: 0;
-  }
-  .main-content.collapsed {
 
-    position: relative;
-    right: 300px;
+  .notif-card {
+    padding: 15px;
   }
 
+  .notif-card h3,
+  .notif-card p {
+    font-size: 1rem;
+  }
+
+  .notif-card small {
+    font-size: 0.75rem;
+  }
+
+  .notif-card button {
+    font-size: 0.8rem;
+  }
 }
 
-/* Jusqu'à 480px */
+/* ≤ 480px */
 @media (max-width: 480px) {
   .container {
     flex-direction: column;
-    height: auto;
   }
+
   .sidebar {
     position: relative;
     width: 100%;
     height: auto;
-    box-shadow: none;
   }
+
   .main-content {
     margin-left: 0;
-    margin-top: 10px;
     padding: 10px;
-    height: auto;
-     position: relative;
-      left: -50px;
   }
+
   .main {
     width: 100%;
-    border: none;
+    padding: 12px;
     border-radius: 0;
-    padding: 10px;
-    top: 0;
+    border: none;
   }
+
   .title-main {
-    font-size: 17px;
-  }
-  hr {
-    width: 100%;
-    right: 0;
+    font-size: 1.3rem;
   }
 
   .notif-card {
-    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
   }
 
-  .notif-card h3 {
-    font-size: 11px;
-    margin: 0 auto 8px auto;
-  }
-
+  .notif-card h3,
   .notif-card p {
-    font-size: 10px;
-    margin: 0 auto 8px auto;
-  }
-
-  .notif-card small {
-    font-size: 12px;
-    display: block;
-    margin-bottom: 8px;
+    font-size: 0.9rem;
   }
 
   .notif-card button {
-    font-size: 13px;
-    display: inline-block;
-    margin: 0 auto;
-    cursor: pointer;
+    font-size: 0.8rem;
   }
 }
-
-

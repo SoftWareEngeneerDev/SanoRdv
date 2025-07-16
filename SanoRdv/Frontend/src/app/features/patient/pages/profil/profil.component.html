@@ -1,13 +1,20 @@
-<div class="page-container">
+<div
+  class="page-container"
+  [ngClass]="{ 'sidebar-collapsed': isSidebarCollapsed }"
+>
   <div class="main-content">
     <div class="container">
       <div class="form-container">
         <div class="profile-card">
-
           <!-- Photo de profil -->
           <div class="photo-container">
             <div class="photo-wrapper">
-              <img *ngIf="previewUrl" [src]="previewUrl" alt="Photo de profil" class="profile-photo" />
+              <img
+                *ngIf="previewUrl"
+                [src]="previewUrl"
+                alt="Photo de profil"
+                class="profile-photo"
+              />
               <div *ngIf="!previewUrl" class="photo-placeholder">
                 <i class="bi bi-person-circle"></i>
               </div>
@@ -19,7 +26,28 @@
             <button class="btn-change-photo" (click)="triggerFileInput()">
               Changer la photo
             </button>
-            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
+
+            <!-- Messages globaux -->
+            <div
+              *ngIf="successMessage"
+              class="alert alert-success text-center mt-3"
+            >
+              {{ successMessage }}
+            </div>
+            <div
+              *ngIf="errorMessages"
+              class="alert alert-danger text-center mt-3"
+            >
+              {{ errorMessages }}
+            </div>
+
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              hidden
+            />
           </div>
 
           <!-- Formulaire principal -->
@@ -35,7 +63,9 @@
                   <input formControlName="nom" type="text" />
                   <i class="bi bi-person input-icon"></i>
                 </div>
-                <div class="field-error" *ngIf="getFieldError('nom')">{{ getFieldError('nom') }}</div>
+                <div class="field-error" *ngIf="getFieldError('nom')">
+                  {{ getFieldError("nom") }}
+                </div>
               </div>
 
               <!-- Prénom -->
@@ -45,7 +75,9 @@
                   <input formControlName="prenom" type="text" />
                   <i class="bi bi-person input-icon"></i>
                 </div>
-                <div class="field-error" *ngIf="getFieldError('prenom')">{{ getFieldError('prenom') }}</div>
+                <div class="field-error" *ngIf="getFieldError('prenom')">
+                  {{ getFieldError("prenom") }}
+                </div>
               </div>
 
               <!-- Sexe -->
@@ -59,92 +91,67 @@
                   </select>
                   <i class="bi bi-chevron-down select-icon"></i>
                 </div>
-                <div class="field-error" *ngIf="getFieldError('sexe')">{{ getFieldError('sexe') }}</div>
+                <div class="field-error" *ngIf="getFieldError('sexe')">
+                  {{ getFieldError("sexe") }}
+                </div>
               </div>
 
               <!-- Date de naissance -->
               <div class="form-group quarter-width">
-                <label>Date de naissance <span class="required-star">*</span></label>
+                <label
+                  >Date de naissance <span class="required-star">*</span></label
+                >
                 <div class="input-wrapper">
                   <input formControlName="dateNaissance" type="date" />
                   <i class="bi bi-calendar input-icon"></i>
                 </div>
-                <div class="field-error" *ngIf="getFieldError('dateDeNaissance')">{{ getFieldError('dateDeNaissance') }}</div>
+                <div
+                  class="field-error"
+                  *ngIf="getFieldError('dateDeNaissance')"
+                >
+                  {{ getFieldError("dateDeNaissance") }}
+                </div>
               </div>
             </div>
 
             <!-- Coordonnées -->
             <h3 class="section-title">Coordonnées</h3>
             <hr />
-            <div class="form-row three-cols">
-              <div class="form-group third-width">
+            <div
+              class="form-row three-cols"
+              style="display: flex; gap: 20px; flex-wrap: nowrap"
+            >
+              <div class="form-group third-width" style="flex: 1">
                 <label>Téléphone <span class="required-star">*</span></label>
                 <div class="input-wrapper">
                   <input formControlName="telephone" type="tel" />
                   <i class="bi bi-telephone input-icon"></i>
                 </div>
-                <div class="field-error" *ngIf="getFieldError('telephone')">{{ getFieldError('telephone') }}</div>
-              </div>
-
-              <div class="form-group third-width">
-                <label>Adresse <span class="required-star">*</span></label>
-                <div class="input-wrapper">
-                  <input formControlName="adresse" type="text" />
-                  <i class="bi bi-house input-icon"></i>
+                <div class="field-error" *ngIf="getFieldError('telephone')">
+                  {{ getFieldError("telephone") }}
                 </div>
-                <div class="field-error" *ngIf="getFieldError('adresse')">{{ getFieldError('adresse') }}</div>
               </div>
 
-              <div class="form-group third-width">
+              <div class="form-group third-width" style="flex: 1">
                 <label>Localité <span class="required-star">*</span></label>
                 <div class="input-wrapper">
                   <input formControlName="localite" type="text" />
                   <i class="bi bi-geo-alt input-icon"></i>
                 </div>
-                <div class="field-error" *ngIf="getFieldError('localite')">{{ getFieldError('localite') }}</div>
+                <div class="field-error" *ngIf="getFieldError('localite')">
+                  {{ getFieldError("localite") }}
+                </div>
               </div>
-            </div>
 
-            <!-- Email -->
-            <div class="form-group full-width email-offset">
-              <label>Email <span class="required-star">*</span></label>
-              <div class="input-wrapper">
-                <input formControlName="email" type="email" />
-                <i class="bi bi-envelope input-icon"></i>
-              </div>
-              <div class="field-error" *ngIf="getFieldError('email')">{{ getFieldError('email') }}</div>
-            </div>
-
-            <!-- Sécurité -->
-            <h3 class="section-title">Sécurité</h3>
-            <hr />
-            <div class="form-group full-width">
-              <label>Mot de passe actuel</label>
-              <div class="input-wrapper">
-                <input formControlName="motDePasse" type="password" />
-                <i class="bi bi-lock input-icon"></i>
-              </div>
-            </div>
-
-            <div class="form-group full-width">
-              <label>Nouveau mot de passe</label>
-              <div class="input-wrapper">
-                <input formControlName="nouveauMotDePasse" type="password" [class.error]="passwordMismatchError" />
-                <i class="bi bi-lock input-icon"></i>
-              </div>
-              <div class="field-error" *ngIf="passwordMismatchError">
-                Les mots de passe ne correspondent pas
-              </div>
-            </div>
-
-            <div class="form-group full-width">
-              <label>Confirmation du nouveau mot de passe</label>
-              <div class="input-wrapper">
-                <input formControlName="confirmationMotDePasse" type="password" [class.error]="passwordMismatchError" />
-                <i class="bi bi-lock input-icon"></i>
-              </div>
-              <div class="field-error" *ngIf="passwordMismatchError">
-                Les mots de passe ne correspondent pas
+              <div class="form-group third-width" style="flex: 1">
+                <label>Email <span class="required-star">*</span></label>
+                <div class="input-wrapper">
+                  <input formControlName="email" type="email" />
+                  <i class="bi bi-envelope input-icon"></i>
+                </div>
+                <div class="field-error" *ngIf="getFieldError('email')">
+                  {{ getFieldError("email") }}
+                </div>
               </div>
             </div>
 
@@ -157,7 +164,23 @@
                 <div class="select-wrapper">
                   <select formControlName="groupeSanguin">
                     <option value=""></option>
-                    <option *ngFor="let groupe of ['A+', 'A−', 'B+', 'B−', 'AB+', 'AB−', 'O+', 'O−']" [value]="groupe">{{ groupe }}</option>
+                    <option
+                      *ngFor="
+                        let groupe of [
+                          'A+',
+                          'A−',
+                          'B+',
+                          'B−',
+                          'AB+',
+                          'AB−',
+                          'O+',
+                          'O−'
+                        ]
+                      "
+                      [value]="groupe"
+                    >
+                      {{ groupe }}
+                    </option>
                   </select>
                   <i class="bi bi-chevron-down select-icon"></i>
                 </div>
@@ -173,18 +196,33 @@
             </div>
 
             <!-- Messages -->
-            <div class="form-messages">
-              <p class="success-message" *ngIf="successMessage">{{ successMessage }}</p>
-              <p class="error-message" *ngIf="errorMessages">{{ errorMessages }}</p>
+             <div class="form-messages">
+              <p class="success-message" *ngIf="successMessage">
+                {{ successMessage }}
+              </p>
+              <p class="error-message" *ngIf="errorMessages">
+                {{ errorMessages }}
+              </p>
             </div>
 
             <!-- Boutons -->
             <div class="form-buttons">
-              <button type="button" class="btn btn-cancel" (click)="onCancel()">Annuler</button>
-              <button type="submit" class="btn btn-submit" [disabled]="isSubmitting">Enregistrer</button>
+              <button type="button" class="btn btn-cancel" (click)="onCancel()">
+                Annuler
+              </button>
+              
+              <button
+                type="submit"
+                class="btn btn-submit"
+                [disabled]="isSubmitting"
+              >
+                <span *ngIf="!isSubmitting">Enregistrer</span>
+                <span *ngIf="isSubmitting">
+                  <i class="bi bi-arrow-repeat spin me-2"></i> Enregistrement...
+                </span>
+              </button>
             </div>
           </form>
-
         </div>
       </div>
     </div>
