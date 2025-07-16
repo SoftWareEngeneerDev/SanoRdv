@@ -10,7 +10,7 @@ router.use(express.json());
 // Route pour générer et Enregistrer les créneaux horaires
 router.post('/genererEtEnregistrer', async (req, res) => {
     const { agendaId, date, heuresIndisponibles } = req.body;
-
+  console.log('✅ Données reçues :', { agendaId, date, heuresIndisponibles });
     try {
         const result = await controller.genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles || []);
         return res.status(200).json({
