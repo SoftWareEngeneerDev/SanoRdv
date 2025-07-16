@@ -17,7 +17,7 @@ export class PatientsComponent implements OnInit {
   recherche: string = '';
   private rechercheSubject = new BehaviorSubject<string>('');
   @ViewChild('modalConfirmationSuppression', { static: false }) modalElement!: ElementRef;
-private patientASupprimerId: string | null = null;
+  private patientASupprimerId: string | null = null;
 
   patientsFiltres$!: Observable<Patient[]>;
   errorMessage = '';

@@ -40,33 +40,21 @@
           <td>Dr. {{ medecin.nom }} {{ medecin.prenom }}</td>
           <td>{{ medecin.specialite }}</td>
           <td>
-  <span class="badge" [ngClass]="{
-    'badge-actif': medecin.etat === 'Actif',
-    'badge-inactif': medecin.etat === 'Inactif'
-  }">
-    {{ medecin.etat }}
-  </span>
-</td>
-
+              <span class="badge" [ngClass]="{'badge-actif': medecin.etat === 'Actif','badge-inactif': medecin.etat === 'Inactif'}">
+                           {{ medecin.etat }}</span>
+          </td>
           <td>{{ medecin.email }}</td>
           <td class="actions">
              <ng-container *ngIf="medecin.etat === 'Inactif'; else actifActions">
-                <a *ngIf="medecin.etat?.toLowerCase() === 'actif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:orange">
-  Désactiver
-</a>
-<a *ngIf="medecin.etat?.toLowerCase() === 'inactif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:green">
-  Activer
-</a>
-
+                <a *ngIf="medecin.etat?.toLowerCase() === 'actif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:orange"> Désactiver</a>
+                <a *ngIf="medecin.etat?.toLowerCase() === 'inactif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:green"> Activer</a>
              </ng-container>
-
             <ng-template #actifActions>
                     <a (click)="modifier(medecin)" style="cursor:pointer; color: #007bff;">Modifier</a>
                     <a (click)="supprimer(medecin)" style="cursor:pointer; color: red; font-weight: bold;">Supprimer</a>
                     <a (click)="voirFiche(medecin)" style="cursor:pointer; color: #007bff;">Voir</a>
            </ng-template>
           </td>
-
         </tr>
       </tbody>
     </table>

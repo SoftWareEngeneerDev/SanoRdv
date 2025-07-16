@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { AdminService } from '../../admin.service';
-import { StatistiqueService } from '../../services/statistique.service';
+
 
 
 @Component({
@@ -52,11 +52,11 @@ export class DashboardComponent implements OnInit {
     ]
   };
 
-  constructor(private adminService: AdminService, private statistiqueService: StatistiqueService ) {}
+  constructor(private adminService: AdminService ) {}
 
   ngOnInit(): void {
     this.chargerStats();
-    this.chargerRendezVousGraphique();
+    
   }
 
   chargerStats(): void {
@@ -67,20 +67,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  chargerRendezVousGraphique(): void {
-  this.statistiqueService.getRapportHebdo().subscribe(data => {
-    const labels = data.map(stat => {
-      const date = new Date(stat.date);
-      const jours = ['DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'];
-      return jours[date.getDay()];
-    });
-
-    const counts = data.map(stat => stat.count);
-
-    this.chartData.labels = labels;
-    this.chartData.datasets[0].data = counts;
-  });
+ 
 }
 
 
-}
+
