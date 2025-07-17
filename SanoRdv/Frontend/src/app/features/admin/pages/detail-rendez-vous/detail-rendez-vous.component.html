@@ -1,3 +1,4 @@
+
 <div class="container py-4">
   <div *ngIf="chargement" class="text-center py-5">
     <div class="spinner-border text-primary" role="status">
@@ -40,15 +41,20 @@
             </tr>
             <tr>
               <th scope="row" class="text-muted">Date & Heure</th>
-              <td>{{ formaterDateHeureFrancais(rendezVous.dateHeure) }}</td>
+              <td>
+                {{ formaterDateFrancais(rendezVous.creneau.date, rendezVous.time) }}
+              </td>
             </tr>
             <tr>
               <th scope="row" class="text-muted">Lieu</th>
               <td>
                 <div *ngIf="rendezVous.lieu">
-  <strong>{{ rendezVous.lieu.nom }}</strong><br>
-  {{ rendezVous.lieu.adresse }}
-</div>
+                  <strong>{{ rendezVous.lieu.nom }}</strong><br>
+                  {{ rendezVous.lieu.adresse }}
+                  <p *ngIf="rendezVous.lieu.telephone" class="mt-2">
+                    <i class="bi bi-telephone me-2"></i> {{ rendezVous.lieu.telephone }}
+                  </p>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -73,7 +79,7 @@
           <div class="card border-0 bg-light">
             <div class="card-body">
               <h5 class="card-title">Contact médecin</h5>
-              <div *ngIf="rendezVous.lieu">
+             <div *ngIf="rendezVous.lieu">
   <p *ngIf="rendezVous.lieu.telephone">
     <i class="bi bi-telephone me-2"></i> {{ rendezVous.lieu.telephone }}
   </p>

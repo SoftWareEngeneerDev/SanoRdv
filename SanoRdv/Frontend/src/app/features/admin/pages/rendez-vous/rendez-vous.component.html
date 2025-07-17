@@ -42,8 +42,7 @@
                 <small class="text-muted">{{ rendezVous.medecin.specialite }}</small>
               </td>
               <td>
-                {{ formaterDateFrancais(rendezVous.dateHeure.debut) }} - 
-{{ rendezVous.dateHeure.fin | date:'HH:mm' }}
+                {{ formaterDateFrancais(rendezVous.creneau.date, rendezVous.time) }}
               </td>
               <td>
                 <span class="badge rounded-pill {{ getStatusClass(rendezVous.statut) }}">
@@ -51,16 +50,18 @@
                 </span>
               </td>
               <td class="text-end">
-                <button *ngIf="rendezVous.statut !== 'Terminé'" 
+                <button *ngIf="rendezVous.statut === 'annulé'" 
                         class="btn btn-sm btn-outline-primary me-1"
                         [routerLink]="['/admin/rendezvous/modifier', rendezVous.id]">
                   <i class="bi bi-pencil"></i> Modifier
                 </button>
+
                 <button class="btn btn-sm btn-outline-primary me-1"
                         [routerLink]="['/admin/rendezvous', rendezVous.id]">
                   <i class="bi bi-eye"></i> Voir
                 </button>
-                <button *ngIf="rendezVous.statut !== 'Terminé' && rendezVous.statut !== 'Annulé'" 
+
+                <button *ngIf="rendezVous.statut === 'confirmé'" 
                         class="btn btn-sm btn-outline-danger"
                         (click)="annulerRendezVous(rendezVous.id)">
                   <i class="bi bi-x-circle"></i> Annuler
