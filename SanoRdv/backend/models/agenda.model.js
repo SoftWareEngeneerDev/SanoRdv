@@ -14,7 +14,7 @@ const agendaSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Creneau'
   }],
-  idMedecin: {
+  medecin: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Medecin',
     required: true
@@ -22,7 +22,5 @@ const agendaSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-
 const Agenda = mongoose.model('Agenda', agendaSchema);
-
 export default Agenda;
