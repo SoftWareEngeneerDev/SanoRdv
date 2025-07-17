@@ -23,7 +23,6 @@ const profileUpdateValidation = [
     next();
   },
 ];
-
 router.put('/:id', profileUpdateValidation, modifierMedecin);
 router.get('/:id', getMedecinById);
 
