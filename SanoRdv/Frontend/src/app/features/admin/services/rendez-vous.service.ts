@@ -31,6 +31,11 @@ export class RendezVousService {
       catchError(() => of([]))
     );
   }
+
+  annulerRendezVous(id: string, motif: string): Observable<any> {
+  return this.http.patch(`${this.apiUrl}/rendezvous/${id}/annuler`, { motif });
+}
+
 }
 */
 

@@ -9,25 +9,35 @@ import { Patient } from '../../models/patient.model';
   styleUrls: ['./detail-patient.component.css']
 })
 export class DetailPatientComponent implements OnInit {
-  patient: Patient | null = null;
-  defaultAvatar: string = 'assets/images/avatar-placeholder.png';
+  patient!: Patient;
+  defaultAvatar = 'assets/images/default-avatar.png';
+  isLoading = true;
+  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
     private patientService: PatientService
   ) {}
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.patientService.getPatientById(id).subscribe({
-        next: (data) => {
-          this.patient = data;
-        },
-        error: (err) => {
-          console.error('Erreur lors du chargement du patient :', err);
-        }
-      });
-    }
+ ngOnInit(): void {
+  const id = this.route.snapshot.paramMap.get('id');
+  if (id) {
+    this.loadPatient(id);
   }
+}
+
+loadPatient(id: string): void {
+  this.isLoading = true;
+  this.patientService.getPatientById(id).subscribe({
+    next: (data: Patient) => {
+      this.patient = data;
+      this.isLoading = false;
+    },
+    error: () => {
+      this.errorMessage = 'Erreur lors du chargement du patient.';
+      this.isLoading = false;
+    }
+  });
+}
+
 }

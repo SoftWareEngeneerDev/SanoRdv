@@ -1,0 +1,21 @@
+<div *ngIf="medecin" class="container py-4">
+  <h3>Détails du médecin</h3>
+
+  <div class="card p-4">
+    <h4>{{ medecin.nom }} {{ medecin.prenom }}</h4>
+    <p><strong>Spécialité :</strong> {{ medecin.specialite }}</p>
+    <p><strong>Email :</strong> {{ medecin.email }}</p>
+    <p><strong>Téléphone :</strong> {{ medecin.telephone }}</p>
+    <p>
+      <strong>État :</strong>
+      <span [ngClass]="medecin.etat === 'Actif' ? 'text-success' : 'text-danger'">
+        {{ medecin.etat }}
+      </span>
+    </p>
+    <p><strong>Années d'expérience :</strong> {{ medecin.anneeExperience }} ans</p>
+  </div>
+  <button class="btn-retour" (click)="retourListe()">
+  ← Retour à la gestion des médecins
+</button>
+
+</div>

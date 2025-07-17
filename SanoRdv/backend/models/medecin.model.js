@@ -21,6 +21,7 @@ const medecinSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   role: { type: String, default: 'medecin' },
   parcours: { type: String, required: false, trim: true }, // ✅ Champ ajouté ici
+  //j'ai ajouté le SEXE et le PARCOURS PROFESSIONNEL : signé KABORE FAICAL
 }, { timestamps: true });
 
 export default mongoose.model('Medecin', medecinSchema);

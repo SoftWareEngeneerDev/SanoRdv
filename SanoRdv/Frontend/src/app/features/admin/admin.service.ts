@@ -50,12 +50,9 @@ export class AdminService {
   });
 }
 
-getRendezVousStats7DerniersJours(): Observable<any> {
-  return of({
-    dates: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-    rdv7Jours: [5, 8, 12, 10, 15, 7, 6]
-  });
-}
+getStatsHebdo(): Observable<{ labels: string[], donnees: number[] }> {
+    return this.http.get<{ labels: string[], donnees: number[] }>(`${this.apiUrl}/hebdo`);
+  }
 /** fin du service pour le dashboard */
 
 }

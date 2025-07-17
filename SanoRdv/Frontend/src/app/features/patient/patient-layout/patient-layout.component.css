@@ -2,9 +2,10 @@
 .patient-main-content {
   transition: margin-left 0.3s ease;
   padding: 1.5rem;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
   min-height: 100vh;
   overflow-x: hidden;
+  margin-left: 100px;
 }
 
 /* Sidebar réduit (80px) */
@@ -16,3 +17,11 @@
 .margin-expanded {
   margin-left: 250px;
 }
+
+.container {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+

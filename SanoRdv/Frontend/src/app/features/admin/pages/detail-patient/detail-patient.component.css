@@ -4,58 +4,61 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.card-header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 
-.list-group-item {
-  padding-left: 0;
-  padding-right: 0;
-  background-color: transparent;
+h5 {
+  font-size: 1.125rem;
+  color: #007bff; /* Bleu Bootstrap */
+  margin-top: 1.5rem;
+  font-weight: bold;
 }
 
-.badge {
-  padding: 0.35em 0.65em;
-  font-weight: 500;
-  min-width: 100px;
-  text-align: center;
+p {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
 }
 
-.table {
-  --bs-table-bg: transparent;
+ul {
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
 }
 
-.table th {
-  border-bottom: 2px solid #dee2e6;
-  font-weight: 600;
+ul li {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .card {
-    box-shadow: none;
-    border: 1px solid #dee2e6;
-  }
-  
-  .container {
-    padding: 0;
-  }
+.text-muted {
+  color: #6c757d !important;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-top: -0.5rem;
+}
+
+.spinner-border {
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 @media (max-width: 576px) {
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start !important;
-    gap: 1rem;
+  h3 {
+    font-size: 1.25rem;
   }
-  
-  .d-flex {
-    flex-direction: column;
-    gap: 0.5rem;
+
+  .card {
+    padding: 1rem;
   }
-  
-  .badge {
-    align-self: flex-start !important;
-    margin-bottom: 0.5rem;
+
+  .btn-close {
+    font-size: 1.25rem;
   }
 }

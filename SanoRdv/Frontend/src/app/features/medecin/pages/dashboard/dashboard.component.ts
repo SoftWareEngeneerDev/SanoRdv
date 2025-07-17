@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MedecinService } from '../../Medecin.service';
+import { MedecinService } from '../../medecin.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit {
         this.appointmentCount = rdv.length;
         this.confirmedCount = rdv.filter((a: any) => a.statut === 'confirmé').length;
         this.cancelledCount = rdv.filter((a: any) => a.statut === 'annulé').length;
-      }, err => {
+      }, (err: any) => {
         console.error('❌ Erreur chargement rendez-vous:', err);
       });
     } else {
