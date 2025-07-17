@@ -9,6 +9,9 @@ import { environment} from 'src/environment/environments'
   providedIn: 'root'
 })
 export class NotificationsService {
+  increment() {
+    throw new Error('Method not implemented.');
+  }
   private apiUrl = environment.apiUrl + '/notifications';
 
   private notifications: Notification[] = [];
@@ -50,16 +53,15 @@ export class NotificationsService {
     );
   }
 
-  // Exemple de création d'une notification
+  // Création d'une notification
  creerNotification(notification: Notification): Observable<Notification> {
   return this.http.post<Notification>(this.apiUrl, notification).pipe(
     tap((createdNotif) => {
       this.notifications.push(createdNotif);
-      this.updateUnreadCount(); // Met à jour le compteur de non lues
+      this.updateUnreadCount();
     })
   );
 }
-
 
   // Nettoie les notifications plus anciennes que 30 jours
   private cleanOldNotifications(notifs: Notification[]): Notification[] {

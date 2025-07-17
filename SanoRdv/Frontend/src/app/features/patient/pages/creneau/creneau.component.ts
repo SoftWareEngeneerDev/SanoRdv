@@ -106,12 +106,12 @@ export class CreneauComponent implements OnInit {
 
   }
 
-  /* ======================= SÉLECTION CRÉNEAU ====================== */
+  /* ----------------SÉLECTION CRÉNEAU ----------------------- */
   selectCreneau(horaire: string): void {
     this.selectedCreneau = horaire;
   }
 
-  /* ========================= FAKE DONNÉES ========================= */
+  /* ---------------- FAKE DONNÉES ------------------- */
   // private getFakeCreneaux(dateString: string): string[] {
   //   const sample: Record<string, string[]> = {
   //     '2025-07-09': ['09:00', '10:30', '14:00', '16:30'],
@@ -121,7 +121,7 @@ export class CreneauComponent implements OnInit {
   //   return sample[dateString] ?? ['09:00', '10:00', '11:00', '14:00', '15:00'];
   // }
 
-  /* ======================= NAVIGATION ÉTAPES ====================== */
+  /* ----------------- NAVIGATION ÉTAPES ------------------ */
   retourMotif(): void {
     if (this.selectedDate) {
       /* Premier clic : annule la sélection */
@@ -129,7 +129,7 @@ export class CreneauComponent implements OnInit {
       this.selectedCreneau = null;
       this.horairesDispo = [];
     } else {
-      /* Deuxième clic : retourne à la page Motif */
+      /* Deuxième clic : retourne à la page motif */
       this.router.navigate(['/patient/motif']);
     }
   }

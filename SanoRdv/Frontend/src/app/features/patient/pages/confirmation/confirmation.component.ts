@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RecapService } from '../../services/recap.service';
 import { Router } from '@angular/router';
-import { parseISO } from 'date-fns';
+import { parseISO, subDays } from 'date-fns';
 import { NotificationsService } from '../../../../shared/services/notifications.service';
 import { RendezVousService } from '../../../../shared/services/rendez-vous.service';
 import { Notification } from 'src/app/shared/models/notifications.model';
@@ -56,38 +56,64 @@ export class ConfirmationComponent implements OnInit {
 
     // Création du rendez-vous
     this.rendezVousService.creerRendezVous({
-       patientId: this.patient.id,
+      patientId: this.patient.id,
       medecinId: this.medecin.id,
       date: this.date.toISOString(),
       status: 'confirmé'
     }).subscribe({
-  next: (rdv) => {
-    console.log('RDV créé ', rdv);
+      next: (rdv) => {
+        console.log('RDV créé ', rdv);
 
-// Incrémente les statistiques de rendez vous
-this.rendezVousService.increment();
+        // Incrémenter des statistiques
+        this.rendezVousService.increment();
+        this.notificationsService.increment();
 
-    const rdvId = (rdv as any).id ?? (rdv as any)._id ?? '';
-    const notification: Notification = {
-      rendezVousId: rdvId,
-      type: 'rappel',
-      message: `Rappel : Rendez‑vous avec Dr. ${this.medecin.nom} demain à ${this.heure}.`,
-      dateNotification: new Date().toISOString(),
-      medecin: `Dr. ${this.medecin.nom}`,
-      read: false
-    };
+        const rdvId = (rdv as any).id ?? (rdv as any)._id ?? '';
 
-        this.notificationsService.creerNotification(notification).subscribe({
+        // Programmation de la notification de rappel (la veille)
+        const dateRappel = subDays(this.date!, 1);
+        const rappelNotification: Notification = {
+          rendezVousId: rdvId,
+          type: 'rappel',
+          message: `Rappel : Rendez‑vous avec Dr. ${this.medecin.nom} demain à ${this.heure}.`,
+          dateNotification: dateRappel.toISOString(),
+          medecin: `Dr. ${this.medecin.nom}`,
+          read: false
+        };
+
+        // Notification d'annulation 
+        const annulationNotification: Notification = {
+          rendezVousId: rdvId,
+          type: 'annulation',
+          message: `Annulation : Votre rendez‑vous avec Dr. ${this.medecin.nom} a été annulé.`,
+          dateNotification: new Date().toISOString(),
+          medecin: `Dr. ${this.medecin.nom}`,
+          read: false
+        };
+
+        // Création de la notification de rappel
+        this.notificationsService.creerNotification(rappelNotification).subscribe({
           next: () => {
             console.log('Notification de rappel créée avec succès');
           },
           error: (err) => {
-            console.error('Erreur lors de la création de la notification', err);
+            console.error('Erreur lors de la création de la notification de rappel', err);
           }
         });
+
+        // Création de la notification d'annulation
+        this.notificationsService.creerNotification(annulationNotification).subscribe({
+          next: () => {
+            console.log('Notification d’annulation créée avec succès');
+          },
+          error: (err) => {
+            console.error('Erreur lors de la création de la notification d’annulation', err);
+          }
+        });
+
       },
       error: (err) => {
-        console.error(' Erreur lors de la création du rendez-vous', err);
+        console.error('Erreur lors de la création du rendez-vous', err);
       }
     });
   }

@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '../../../../shared/services/patient.service';
 import { NotificationsService } from '../../../../shared/services/notifications.service';
@@ -14,7 +14,19 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ProfilComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  registerForm!: FormGroup;
+
+  profile: any = {
+    nom: '',
+    prenom: '',
+    telephone: '',
+    sex: '',
+    email: '',
+    localite: '',
+    dateNaissance: '',
+    groupeSanguin: '',
+    allergies: '',
+    photo: null,
+  };
 
   private API_BASE_URL = 'http://localhost:3000';
   previewUrl: string | ArrayBuffer | null = null;
@@ -22,13 +34,12 @@ export class ProfilComponent implements OnInit {
   isSubmitting = false;
   errorMessages = '';
   successMessage = '';
-  isSidebarCollapsed: boolean = false;
+  isSidebarCollapsed = false;
 
   medecinId: string | null = null;
   medecinData: any = null;
 
   constructor(
-    private fb: FormBuilder,
     private patientService: PatientService,
     private notificationsService: NotificationsService,
     private router: Router,
@@ -38,7 +49,6 @@ export class ProfilComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.initializeForm();
     this.loadUserData();
 
     this.medecinId = this.route.snapshot.paramMap.get('medecinId');
@@ -47,27 +57,12 @@ export class ProfilComponent implements OnInit {
     }
   }
 
-  private initializeForm(): void {
-    this.registerForm = this.fb.group({
-      nom: ['', [Validators.required, Validators.minLength(2)]],
-      prenom: ['', [Validators.required, Validators.minLength(2)]],
-      telephone: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      sex: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      localite: ['', Validators.required],
-      adresse: ['', Validators.required],
-      dateNaissance: ['', Validators.required],
-      groupeSanguin: [''],
-      allergies: [''],
-    });
-  }
-
-  private loadUserData(): void {
+  loadUserData(): void {
     const localUser = localStorage.getItem('user');
     if (localUser) {
       try {
         const patient: Patient = JSON.parse(localUser);
-        this.patchFormWithPatient(patient);
+        this.fillProfile(patient);
         return;
       } catch (err) {
         console.error('Erreur parsing localStorage:', err);
@@ -76,72 +71,36 @@ export class ProfilComponent implements OnInit {
 
     this.patientService.getMonProfil().subscribe({
       next: (patient: Patient) => {
-        this.patchFormWithPatient(patient);
+        this.fillProfile(patient);
       },
       error: () => {
-        this.errorMessages = '';
+        this.errorMessages = 'Erreur lors du chargement du profil';
       },
     });
   }
 
-  private patchFormWithPatient(patient: Patient): void {
-    const rawDate = patient.dateNaissance
-      ? new Date(patient.dateNaissance)
-      : null;
+  fillProfile(patient: Patient): void {
+    const rawDate = patient.dateNaissance ? new Date(patient.dateNaissance) : null;
     const formattedDate = rawDate
-      ? `${String(rawDate.getFullYear())}-${String(
-          rawDate.getMonth() + 1
-        ).padStart(2, '0')}-${String(rawDate.getDate()).padStart(2, '0')}`
+      ? `${rawDate.getFullYear()}-${String(rawDate.getMonth() + 1).padStart(2, '0')}-${String(
+          rawDate.getDate()
+        ).padStart(2, '0')}`
       : '';
 
-    this.registerForm.patchValue({
+    this.profile = {
       nom: patient.nom || '',
       prenom: patient.prenom || '',
       email: patient.email || '',
       telephone: patient.telephone || '',
-      sexe: patient.sex || '',
+      sex: patient.sex || '',
       localite: patient.localite || '',
-      adresse: patient.adresse || '',
       dateNaissance: formattedDate,
       groupeSanguin: patient.groupeSanguin || '',
       allergies: patient.allergies || '',
-    });
-
-    this.previewUrl = patient.photo || 'assets/images/default-avatar.png';
-  }
-
-  getFieldError(fieldName: string): string {
-    const field = this.registerForm.get(fieldName);
-    if (field && field.errors && field.touched) {
-      if (field.errors['required'])
-        return `Le champ ${this.getFieldDisplayName(fieldName)} est requis`;
-      if (field.errors['minlength'])
-        return `Le champ ${this.getFieldDisplayName(
-          fieldName
-        )} doit contenir au moins ${
-          field.errors['minlength'].requiredLength
-        } caractères`;
-      if (field.errors['email']) return "Format d'email invalide";
-      if (field.errors['pattern'] && fieldName === 'telephone')
-        return 'Numéro invalide (8 chiffres requis)';
-    }
-    return '';
-  }
-
-  private getFieldDisplayName(fieldName: string): string {
-    const displayNames: { [key: string]: string } = {
-      nom: 'Nom',
-      prenom: 'Prénom',
-      telephone: 'Téléphone',
-      sex: 'Sexe',
-      email: 'Email',
-      localite: 'Localité',
-      adresse: 'Adresse',
-      dateNaissance: 'Date de naissance',
-      groupeSanguin: 'Groupe sanguin',
-      allergies: 'Allergies',
+      photo: patient.photo || null,
     };
-    return displayNames[fieldName] || fieldName;
+
+    this.previewUrl = this.profile.photo || 'assets/images/default-avatar.png';
   }
 
   triggerFileInput(): void {
@@ -163,6 +122,7 @@ export class ProfilComponent implements OnInit {
     }
 
     this.selectedFile = file;
+    this.profile.photo = file;
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -176,17 +136,17 @@ export class ProfilComponent implements OnInit {
     return allowedTypes.includes(file.type);
   }
 
-  onCancel(): void {
+  onCancel(form?: NgForm): void {
     if (confirm('Êtes-vous sûr de vouloir annuler les modifications ?')) {
-      this.registerForm.reset();
+      if (form) form.resetForm(this.profile);
       this.loadUserData();
       this.router.navigate(['/patient/modifier']);
     }
   }
 
-  onSubmit(): void {
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
+  onSubmit(form: NgForm): void {
+    if (!form.valid) {
+      form.control.markAllAsTouched();
       return;
     }
 
@@ -195,11 +155,12 @@ export class ProfilComponent implements OnInit {
     this.successMessage = '';
 
     const formData = new FormData();
-    const value = this.registerForm.value;
 
-    for (const key in value) {
-      if (value.hasOwnProperty(key) && value[key] !== null) {
-        formData.append(key, value[key].toString());
+    for (const key in this.profile) {
+      if (this.profile.hasOwnProperty(key) && this.profile[key] !== null) {
+        if (key !== 'photo') {
+          formData.append(key, this.profile[key].toString());
+        }
       }
     }
 
@@ -214,19 +175,18 @@ export class ProfilComponent implements OnInit {
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         const updatedUser = {
           ...currentUser,
-          ...value,
+          ...this.profile,
           photo: this.previewUrl,
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
 
-        this.notificationsService
-          .creerNotification({
-            message:
-              'Vos informations personnelles ont été modifiées avec succès.',
-            dateNotification: new Date().toISOString(),
-            read: false,
-          })
-          .subscribe();
+        // this.notificationsService
+        //   .creerNotification({
+        //     message: 'Vos informations personnelles ont été modifiées avec succès.',
+        //     dateNotification: new Date().toISOString(),
+        //     read: false,
+        //   })
+        //   .subscribe();
 
         this.router.navigate(['/patient/dashboard']);
       },
@@ -250,8 +210,7 @@ export class ProfilComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.errorMessages =
-          'Erreur lors du chargement des données du médecin.';
+        this.errorMessages = 'Erreur lors du chargement des données du médecin.';
         console.error(err);
       },
     });
