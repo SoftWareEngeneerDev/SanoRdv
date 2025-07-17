@@ -1,5 +1,4 @@
 # === Node.js ===
-<<<<<<< HEAD
 node_modules/
 .env
 .env.local
@@ -70,7 +69,6 @@ Thumbs.db
 .git/
 .gitignore
 node_modules/
->>>>>>> origin/master
 
 # === Misc ===
 *.bak
@@ -80,3 +78,6 @@ node_modules/
 
 # === Optional: ignore test output ===
 test-output/
+
+# Fichier ignorer de KAGAMBEGA
+Dossier_test/
