@@ -91,6 +91,7 @@ export class DetailRendezVousComponent implements OnInit {
       next: (rendezVous) => {
         this.rendezVous = {
           ...rendezVous,
+
           dateHeure: new Date(`${rendezVous.creneau.date}T${rendezVous.time}`),
           patient: {
             ...rendezVous.patient,

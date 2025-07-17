@@ -38,11 +38,11 @@
                 <small class="text-muted">Né le {{ rendezVous.patient.dateNaissance | date:'dd/MM/yyyy' }}</small>
               </td>
               <td>
-                <strong>{{ rendezVous.medecin.nom }}</strong><br>
+                <strong>{{ rendezVous.medecin.nom }} {{ rendezVous.medecin.prenom }} </strong><br>
                 <small class="text-muted">{{ rendezVous.medecin.specialite }}</small>
               </td>
               <td>
-                {{ formaterDateFrancais(rendezVous.creneau.date, rendezVous.time) }}
+                {{ formaterDateFrancais(rendezVous.dateHeure) }}
               </td>
               <td>
                 <span class="badge rounded-pill {{ getStatusClass(rendezVous.statut) }}">
@@ -57,13 +57,13 @@
                 </button>
 
                 <button class="btn btn-sm btn-outline-primary me-1"
-                        [routerLink]="['/admin/rendezvous', rendezVous.id]">
+                        [routerLink]="['/admin/detail-rendez-vous', rendezVous.id]">
                   <i class="bi bi-eye"></i> Voir
                 </button>
 
                 <button *ngIf="rendezVous.statut === 'confirmé'" 
                         class="btn btn-sm btn-outline-danger"
-                        (click)="annulerRendezVous(rendezVous.id)">
+                        (click)="ouvrirAnnulationModal(rendezVous.id)">
                   <i class="bi bi-x-circle"></i> Annuler
                 </button>
               </td>

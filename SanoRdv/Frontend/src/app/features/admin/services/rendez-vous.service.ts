@@ -80,14 +80,11 @@ export class RendezVousService {
   }
 
   // ❌ Annulation de rendez-vous
-  annulerRendezVous(rendezVousId: string, userId: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/annuler`, {
-      rendezVousId,
-      userId
-    }).pipe(
-      catchError((err) => throwError(() => new Error(err.error?.message || 'Erreur annulation')))
-    );
-  }
+ annulerRendezVous(id: string, data: { motif: string }) {
+  return this.http.patch(`${this.apiUrl}/annuler/${id}`, data);
+}
+
+
 
   // ✏️ Modification de rendez-vous
   modifierRendezVous(rendezVousId: string, userId: string, newTime: string, newMotif: string): Observable<any> {

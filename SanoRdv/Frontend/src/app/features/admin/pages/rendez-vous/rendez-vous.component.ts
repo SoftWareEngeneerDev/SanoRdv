@@ -1,120 +1,8 @@
-/**import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RendezVous } from '../../models/rendez-vous.model';
 import { RendezVousService } from '../../services/rendez-vous.service';
 import * as bootstrap from 'bootstrap';
 
-
-
-
-@Component({
-  selector: 'app-rendez-vous',
-  templateUrl: './rendez-vous.component.html',
-  styleUrls: ['./rendez-vous.component.css']
-})
-export class RendezVousComponent implements OnInit {
-  rendezVousListe: RendezVous[] = [];
-  filteredRendezVous: RendezVous[] = [];
-  searchTerm = '';
-  chargement = true;
-  motifs: string[] = ['Patient indisponible', 'Médecin absent', 'Problème technique'];
-motifSelectionne: string = '';
-autreMotif: string = '';
-rendezVousAAnnulerId: string | null = null;
-
-
-
-  constructor(private rendezVousService: RendezVousService) {}
-
-  ngOnInit(): void {
-    this.chargerRendezVous();
-  }
-
-  chargerRendezVous(): void {
-    this.rendezVousService.getRendezVous().subscribe({
-      next: (rendezVous) => {
-        this.rendezVousListe = rendezVous;
-        this.filteredRendezVous = [...rendezVous];
-        this.chargement = false;
-      },
-      error: () => this.chargement = false
-    });
-  }
-
-  searchRendezVous(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredRendezVous = [...this.rendezVousListe];
-      return;
-    }
-    
-    this.filteredRendezVous = this.rendezVousListe.filter(rdv => 
-      rdv.patient.nomComplet.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      rdv.medecin.nom.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-  }
-
-  rendezVousASupprimer: any = null;
-
-annulerRendezVous(id: number): void {
-  this.rendezVousAAnnulerId = id.toString();
-  this.motifSelectionne = '';
-  this.autreMotif = '';
-  const modalElement = document.getElementById('annulationModal');
-  if (modalElement) {
-    const bootstrapModal = new bootstrap.Modal(modalElement);
-    bootstrapModal.show();
-  }
-}
-
-confirmerAnnulation(): void {
-  const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
-
-  if (!motif || !this.rendezVousAAnnulerId) {
-    alert('Veuillez sélectionner un motif ou vérifier le rendez-vous.');
-    return;
-  }
-
-  this.rendezVousService.annulerRendezVous(this.rendezVousAAnnulerId, motif).subscribe(() => {
-    this.rendezVousAAnnulerId = null;
-    const modal = bootstrap.Modal.getInstance(document.getElementById('annulationModal')!);
-    modal?.hide();
-    this.searchRendezVous();
-  });
-}
-
-
-
-  getStatusClass(statut: string): string {
-    switch (statut) {
-      case 'Confirmé': return 'bg-success';
-      case 'En attente': return 'bg-warning text-dark';
-      case 'Annulé': return 'bg-danger';
-      case 'Terminé': return 'bg-secondary';
-      default: return 'bg-info';
-    }
-  }
-
-  formaterDateFrancais(date: Date): string {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-}
-*/
-
-
-
-
-
-   import { Component, OnInit } from '@angular/core';
-import { RendezVous } from '../../models/rendez-vous.model';
-import { RendezVousService } from '../../services/rendez-vous.service';
-
 @Component({
   selector: 'app-rendez-vous',
   templateUrl: './rendez-vous.component.html',
@@ -126,24 +14,64 @@ export class RendezVousComponent implements OnInit {
   searchTerm = '';
   chargement = true;
 
+  rendezVousAAnnulerId: string = '';
+  motifSelectionne: string = '';
+  autreMotif: string = '';
+  motifs: string[] = ['Patient indisponible', 'Médecin absent', 'Problème technique', 'Autre'];
+
+  private modalInstance: bootstrap.Modal | null = null;
+
   constructor(private rendezVousService: RendezVousService) {}
 
   ngOnInit(): void {
     this.chargerRendezVous();
+
+    const modalElement = document.getElementById('annulationModal');
+    if (modalElement) {
+      this.modalInstance = new bootstrap.Modal(modalElement, { backdrop: 'static' });
+    }
   }
 
   chargerRendezVous(): void {
+    this.chargement = true;
     this.rendezVousService.getTousLesRendezVousPourAdmin().subscribe({
       next: (rendezVous) => {
-        // Traitement pour ajouter `dateHeure` et `nomComplet`
-        this.rendezVousListe = rendezVous.map(rdv => ({
-          ...rdv,
-          dateHeure: new Date(`${rdv.creneau.date}T${rdv.time}`),
-          patient: {
-            ...rdv.patient,
-            nomComplet: `${rdv.patient.prenom} ${rdv.patient.nom}`
-          }
-        }));
+        this.rendezVousListe = rendezVous
+          .filter(rdv => rdv?.creneau?.date && rdv?.time)
+          .map(rdv => {
+  // On cast rdv.creneau.date en string ou Date explicitement
+  const creneauDate = rdv.creneau.date as unknown;
+
+  let dateISO: string = '';
+
+  if (typeof creneauDate === 'string') {
+    dateISO = creneauDate.substring(0, 10);
+  } else if (creneauDate instanceof Date) {
+    dateISO = creneauDate.toISOString().substring(0, 10);
+  } else {
+    // valeur par défaut ou erreur silencieuse
+    dateISO = '';
+  }
+
+  const time = rdv.time;
+
+  const dateHeure = (dateISO && time) ? new Date(`${dateISO}T${time}`) : undefined;
+
+  return {
+    ...rdv,
+    id: rdv._id || rdv.id,
+    dateHeure,
+    patient: {
+      ...rdv.patient,
+      nomComplet: `${rdv.patient?.prenom ?? ''} ${rdv.patient?.nom ?? ''}`
+    },
+    medecin: {
+      ...rdv.medecin,
+      nomComplet: `${rdv.medecin?.prenom ?? ''} ${rdv.medecin?.nom ?? ''}`
+    }
+  };
+});
+
         this.filteredRendezVous = [...this.rendezVousListe];
         this.chargement = false;
       },
@@ -159,62 +87,74 @@ export class RendezVousComponent implements OnInit {
       this.filteredRendezVous = [...this.rendezVousListe];
       return;
     }
-
     const terme = this.searchTerm.toLowerCase();
-
     this.filteredRendezVous = this.rendezVousListe.filter(rdv =>
       rdv.patient.nomComplet?.toLowerCase().includes(terme) ||
       rdv.medecin.nom?.toLowerCase().includes(terme)
     );
   }
 
-  annulerRendezVous(rdvId: string): void {
-    const userId = localStorage.getItem('userId'); // Ou depuis ton authService
-
-    if (!userId) {
-      alert("Utilisateur non identifié.");
-      return;
-    }
-
-    this.rendezVousService.annulerRendezVous(rdvId, userId).subscribe({
-      next: () => {
-        alert("Rendez-vous annulé.");
-        this.chargerRendezVous();
-      },
-      error: (err) => {
-        console.error('Erreur annulation:', err);
-        alert(err.error?.message || "Erreur d'annulation.");
-      }
-    });
+  ouvrirAnnulationModal(rdvId: string): void {
+    console.log('Ouverture modal pour RDV ID:', rdvId);
+    this.rendezVousAAnnulerId = rdvId;
+    this.motifSelectionne = '';
+    this.autreMotif = '';
+    this.modalInstance?.show();
   }
 
-  getStatusClass(statut: string): string {
-    switch (statut.toLowerCase()) {
-      case 'confirmé': return 'bg-success';
-      case 'en attente': return 'bg-warning text-dark';
-      case 'annulé': return 'bg-danger';
-      case 'terminé': return 'bg-secondary';
-      default: return 'bg-info';
-    }
+  getMotifFinal(): string {
+    return this.motifSelectionne.toLowerCase() === 'autre' ? this.autreMotif.trim() : this.motifSelectionne;
   }
 
-  formaterDateFrancais(date: Date | string, time: string): string {
-  const dateTime = new Date(`${date}T${time}`);
-  return dateTime.toLocaleDateString('fr-FR', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  confirmerAnnulation(): void {
+  const motifFinal = this.getMotifFinal();
+
+  if (!this.rendezVousAAnnulerId) {
+    alert("Aucun rendez-vous sélectionné.");
+    return;
+  }
+
+  if (!motifFinal) {
+    alert("Veuillez spécifier un motif d'annulation.");
+    return;
+  }
+
+  this.rendezVousService.annulerRendezVous(this.rendezVousAAnnulerId, {
+    motif: motifFinal
+  }).subscribe({
+    next: () => {
+      alert("Rendez-vous annulé avec succès.");
+      this.chargerRendezVous(); // Recharge la liste après annulation
+      this.rendezVousAAnnulerId = '';
+      this.motifSelectionne = '';
+      this.autreMotif = '';
+      this.modalInstance?.hide(); // Ferme le modal
+    },
+    error: (err) => {
+      console.error('Erreur lors de l’annulation :', err);
+      alert(err.error?.message || "Une erreur est survenue lors de l’annulation.");
+    }
   });
 }
 
 
+  getStatusClass(statut: string): string {
+    switch (statut.toLowerCase()) {
+      case 'confirmé': return 'bg-success';
+      case 'annulé': return 'bg-danger';
+      default: return 'bg-info';
+    }
+  }
+
+  formaterDateFrancais(dateHeure: Date | string | undefined): string {
+    if (!dateHeure) return 'Date inconnue';
+
+    const dateObj = new Date(dateHeure);
+    if (isNaN(dateObj.getTime())) return 'Date invalide';
+
+    const jour = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const heure = dateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+    return `${jour} à ${heure}`;
+  }
 }
-
-   
-
-
-
-

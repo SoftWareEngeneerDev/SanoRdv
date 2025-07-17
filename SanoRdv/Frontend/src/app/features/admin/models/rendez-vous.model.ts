@@ -25,6 +25,7 @@ time: string;
 */
 
 export interface RendezVous {
+  _id?: string;
   id: string;
   patient: {
     nom: string;
