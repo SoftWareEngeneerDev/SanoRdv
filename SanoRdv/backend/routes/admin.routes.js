@@ -4,6 +4,8 @@ const router = express.Router();
 
 import Medecin from '../models/medecin.model.js';
 import Patient from '../models/patient.model.js';
+import { ajouterPatient } from '../controllers/admin.controller.js';
+
 
 import {
   ajouterMedecin,
@@ -82,6 +84,10 @@ router.get('/patients', async (req, res) => {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
+
+// Ajouter un patient
+router.post('/patients', ajouterPatient); // ✅ Ajout patient
+
 
 // Modifier un patient
 router.put('/patients/:id', modifierPatient);

@@ -35,7 +35,9 @@ const handleError = (error, res, message = 'Erreur serveur') => {
 
 export const register = async (req, res) => {
   try {
+    console.log("Données reçues du frontend :", req.body);
     const errors = validationResult(req);
+    console.log("Erreurs de validation :", errors.array()); 
     if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
 
     const {
@@ -44,7 +46,7 @@ export const register = async (req, res) => {
       email,
       telephone,
       motDePasse,
-      confirmationMotDePasse,
+      // confirmationMotDePasse,
       sex,
       localite = '',
       dateNaissance = '',
@@ -76,9 +78,9 @@ export const register = async (req, res) => {
       });
     }
 
-    if (motDePasse !== confirmationMotDePasse) {
-      return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
-    }
+    // if (motDePasse !== confirmationMotDePasse) {
+    //   return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
+    // }
 
     const existingUser = await Patient.findOne({
       $or: [{ email: sanitizedEmail }, { telephone }],
