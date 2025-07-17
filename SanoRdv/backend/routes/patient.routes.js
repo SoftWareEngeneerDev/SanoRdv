@@ -1,17 +1,18 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 
-import Patient from '../models/patient.model.js'; // Modèle Patient
+import Patient from '../models/patient.model.js';
 import {
   register,
   getPatientBasicInfo,
   getPatientInfo,
   updateProfile,
 } from '../controllers/patient.controller.js';
+import { upload } from '../middlewares/uploads.js';
 
 const router = express.Router();
 
-// Middleware validation pour updateProfile
+// Validation middleware
 const profileUpdateValidation = [
   body('email').optional().isEmail().withMessage('Email invalide'),
   body('motDePasse').optional().isLength({ min: 8 }).withMessage('Mot de passe trop court'),
@@ -32,7 +33,7 @@ const profileUpdateValidation = [
     .withMessage('Date de naissance invalide'),
 ];
 
-// Route d'inscription
+// Inscription (route complète, sans préfixe patient)
 router.post(
   '/register',
   [
@@ -40,24 +41,15 @@ router.post(
     body('prenom').notEmpty().withMessage('Le prénom est requis'),
     body('email').isEmail().withMessage('Email invalide'),
     body('telephone').notEmpty().withMessage('Téléphone requis'),
-    body('motDePasse')
-      .isLength({ min: 6 })
-      .withMessage('Le mot de passe doit faire au moins 6 caractères'),
+    body('motDePasse').isLength({ min: 6 }).withMessage('Le mot de passe doit faire au moins 6 caractères'),
     body('confirmationMotDePasse').custom((value, { req }) => {
       if (value !== req.body.motDePasse) {
         throw new Error('Les mots de passe ne correspondent pas');
       }
       return true;
     }),
-    body('sex')
-      .optional()
-      .isIn(['masculin', 'féminin', 'autre'])
-      .withMessage('Sexe invalide'),
-    body('dateNaissance')
-      .optional()
-      .isISO8601()
-      .toDate()
-      .withMessage('Date de naissance invalide'),
+    body('sex').optional().isIn(['masculin', 'féminin', 'autre']).withMessage('Sexe invalide'),
+    body('dateNaissance').optional().isISO8601().toDate().withMessage('Date de naissance invalide'),
   ],
   (req, res, next) => {
     const errors = validationResult(req);
@@ -67,8 +59,8 @@ router.post(
   register
 );
 
-// Récupération liste patients (sans mot de passe)
-router.get('/patients', async (req, res) => {
+// Liste patients (plus simple)
+router.get('/', async (req, res) => {
   try {
     const patients = await Patient.find().select('-motDePasse -__v');
     res.json({ patients });
@@ -78,20 +70,13 @@ router.get('/patients', async (req, res) => {
   }
 });
 
-// Routes récupération infos patient
-router.get('/patient/:patientId/info', getPatientBasicInfo);
-router.get('/patient/:patientId/basic', getPatientInfo);
+// Récupérer infos basiques du patient
+router.get('/:patientId/info', getPatientBasicInfo);
 
-// Route modification profil patient (route FIXE /me)
-router.put(
-  '/me',
-  profileUpdateValidation,
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ erreurs: errors.array() });
-    next();
-  },
-  updateProfile
-);
+// Récupérer infos complètes du patient
+router.get('/:patientId/basic', getPatientInfo);
+
+// Modifier profil patient (avec upload photo optionnel)
+router.put('/me/:id', upload.single('photo'), updateProfile);
 
 export default router;
