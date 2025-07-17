@@ -16,16 +16,18 @@ export class MedecinService {
     return this.http.get(`${this.rdvUrl}/medecin/${medecinId}`);
   }
 
-  annulerRendezVous(rendezvousId: string): Observable<any> {
-    return this.http.put(`${this.rdvUrl}/annuler`, { id: rendezvousId });
-  }
+ annulerRendezVous(id: string): Observable<any> {
+  return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
+}
+ confirmerRendezVous(id: string): Observable<any> {
+  return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
+}
 
-  modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
-    return this.http.put(`${this.rdvUrl}/modifier`, {
-      id: rendezvousId,
-      ...data
-    });
-  }
+
+modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
+  return this.http.put(`${this.rdvUrl}/${rendezvousId}/modifier`, data);
+}
+
 
   ajouterCreneau(payload: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/creneaux`, payload);

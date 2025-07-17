@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MedecinService } from '../../medecin.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,7 +9,7 @@ import { MedecinService } from '../../medecin.service';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private medecinService: MedecinService) {}
+  constructor(private medecinService: MedecinService, private router: Router) {}
 
   totalAjouts = 32;
   unreadCount: number = 6;
@@ -43,5 +44,8 @@ export class DashboardComponent implements OnInit {
     } else {
       console.error('❌ Médecin non connecté');
     }
+  }
+   goToRendezVous(): void {
+    this.router.navigate(['/medecin/rendez-vous']);
   }
 }

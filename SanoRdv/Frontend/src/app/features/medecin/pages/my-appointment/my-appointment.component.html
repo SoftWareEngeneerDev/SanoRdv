@@ -6,11 +6,12 @@
     <div class="search-box">
       <input
         type="text"
-        [(ngModel)]="query"
-        placeholder="Rechercher par spécialité ou nom de patient"
+        [(ngModel)]="recherche"
+        (keydown.enter)="filtrer()"
+        placeholder="Rechercher par nom, prenom, ID ou le statut...."
         class="search-input"
       />
-      <button title="Rechercher" class="search-button">
+      <button title="Rechercher" class="search-button" (click)="filtrer()">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -55,7 +56,7 @@
 <div class="modal" [style.display]="selectedAppointment ? 'block' : 'none'">
   <div class="modal-content">
     <span class="close" (click)="closeModal()">&times;</span>
-    <h2><span class="icon">📄</span> Détails du Rendez-vous</h2>
+    <h1><span class="icon">📄</span> Détails du rendez-vous</h1>
 
     <div class="appointment-details" *ngIf="selectedAppointment">
       <div class="detail-row">
@@ -64,7 +65,7 @@
       </div>
       <div class="detail-row">
         <div class="detail-label">Contact :</div>
-        <div class="detail-value">{{ selectedAppointment.patient.email }}</div>
+        <div class="detail-value">{{ selectedAppointment.patient.telephone || 'Téléphone non fourni' }} || {{ selectedAppointment.patient.email}} </div>
       </div>
       <div class="detail-row">
         <div class="detail-label">Date/Heure :</div>
@@ -80,26 +81,20 @@
       </div>
     </div>
 
-    <!-- <div class="action-buttons">
-      <ng-container *ngIf="selectedAppointment?.statut === 'confirmé'">
-        <button class="btn-danger" (click)="closeModal()"><span class="icon">❌</span> Fermer</button>
-      </ng-container>
-      <ng-container *ngIf="selectedAppointment?.statut === 'annulé'">
-        <button class="btn-success" (click)="closeModal()"><span class="icon">✅</span> Fermer</button>
-      </ng-container>
-    </div> -->
+   <div class="action-buttons" *ngIf="selectedAppointment">
+      <button *ngIf="selectedAppointment.statut !== 'annulé'" class="btn-danger"
+        (click)="annulerRendezVous(selectedAppointment)">❌ Annuler
+      </button>
 
-    <div class="action-buttons" *ngIf="selectedAppointment">
-  <button *ngIf="selectedAppointment.statut !== 'annulé'" class="btn-danger"
-    (click)="annulerRendezVous(selectedAppointment)">
-    ❌ Annuler
-  </button>
-  <button class="btn-primary" (click)="modifierRendezVous(selectedAppointment)">
-  ✏️ Modifier le rendez-vous
-</button>
+      <button *ngIf="selectedAppointment.statut === 'annulé'" class="btn-success"
+        (click)="confirmerRendezVous(selectedAppointment)">
+        ✅ Confirmer
+      </button>
 
-  <button (click)="closeModal()" class="btn-secondary">Fermer</button>
-</div>
+      <button class="btn-primary" (click)="modifierRendezVous(selectedAppointment)">
+        ✏️ Modifier le rendez-vous
+      </button>
+    </div>
 
   </div>
 </div>
