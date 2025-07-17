@@ -5,7 +5,9 @@ import {
   modifierRendezVous,
   getRendezVousParMedecin,
   getRendezVousParPatient,
-  getTousLesRendezVousPourAdmin
+  getTousLesRendezVousPourAdmin,
+  getRendezVousParId,
+  getStatistiquesParMedecin
 } from '../controllers/rendezvous.controller.js';
 
 import { authentifier } from '../middlewares/auth.middleware.js'; // 🔐 Ajout du middleware
@@ -23,11 +25,16 @@ router.put('/modifier', authentifier, modifierRendezVous);
 
 // ✔️ Liste des RDV d’un médecin
 router.get('/medecin/:medecinId', authentifier, getRendezVousParMedecin);
+router.get('/statistiques/:medecinId', authentifier, getStatistiquesParMedecin);
+
 
 // ✔️ Liste des RDV d’un patient
 router.get('/patient/:patientId', authentifier, getRendezVousParPatient);
 
 // ✔️ Tous les RDV (admin uniquement)
 router.get('/admin/tous', authentifier, getTousLesRendezVousPourAdmin);
+router.get('/:id', authentifier, getRendezVousParId);
+
+
 
 export default router;

@@ -138,6 +138,25 @@ export const getRendezVousParMedecin = async (req, res) => {
   }
 };
 
+export const getStatistiquesParMedecin = async (req, res) => {
+  try {
+    const { medecinId } = req.params;
+
+    const total = await RendezVous.countDocuments({ medecin: medecinId });
+    const confirmes = await RendezVous.countDocuments({ medecin: medecinId, statut: 'confirmé' });
+    const annules = await RendezVous.countDocuments({ medecin: medecinId, statut: 'annulé' });
+
+    return res.status(200).json({
+      total,
+      confirmes,
+      annules
+    });
+  } catch (error) {
+    console.error("❌ Erreur lors de la récupération des statistiques :", error);
+    return res.status(500).json({ message: "Erreur serveur", error });
+  }
+};
+
 
 
 export const getRendezVousParPatient = async (req, res) => {
@@ -167,6 +186,23 @@ export const getRendezVousParPatient = async (req, res) => {
   } catch (error) {
     console.error("Erreur récupération des RDV patient :", error);
     res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+
+export const getRendezVousParId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rdv = await RendezVous.findById(id)
+      .populate('patient')
+      .populate('medecin')
+      .populate('creneau');
+
+    if (!rdv) return res.status(404).json({ message: 'Rendez-vous introuvable' });
+    res.status(200).json(rdv);
+  } catch (error) {
+    console.error('Erreur chargement RDV par ID :', error);
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 };
 
