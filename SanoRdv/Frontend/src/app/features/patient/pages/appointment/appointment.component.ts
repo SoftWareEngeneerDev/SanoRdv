@@ -46,12 +46,12 @@ export class RendezvousComponent implements OnInit {
         const now = new Date();
         this.rendezvousAVenir = data.filter(rdv => new Date(rdv.date) >= now);
         this.rendezvousPasses = data.filter(rdv => new Date(rdv.date) < now);
-        this.loading = false;
+        // this.loading = false;
       },
-      error: () => {
-        this.error = 'Erreur lors du chargement des rendez-vous.';
-        this.loading = false;
-      }
+      // error: () => {
+      //   this.error = 'Erreur lors du chargement des rendez-vous.';
+      //   this.loading = false;
+      // }
     });
   }
 
@@ -84,23 +84,19 @@ export class RendezvousComponent implements OnInit {
 
     this.rendezVousService.annulerRendezVous(this.rdvASupprimerId, motif).subscribe({
       next: () => {
-        // Envoi notifications patient + médecin
         forkJoin([
           this.notificationsService.envoyerNotificationAnnulationPatient(this.rdvASupprimerId!),
           this.notificationsService.envoyerNotificationAnnulationMedecin(this.rdvASupprimerId!)
         ]).subscribe({
           next: () => {
-            // Retirer le RDV annulé 
             this.rendezvousAVenir = this.rendezvousAVenir.filter(rdv => rdv.id !== this.rdvASupprimerId);
 
-            // Fermer le modal
             const modalElement = document.getElementById('annulationModal');
             if (modalElement) {
               const modal = bootstrap.Modal.getInstance(modalElement);
               modal.hide();
             }
 
-            // Redirection vers la page appointment
             this.router.navigate(['/patient/appointment']);
           },
           error: () => {

@@ -9,7 +9,7 @@ import { environment } from 'src/environment/environments';
   providedIn: 'root'
 })
 export class NotificationsService {
-  private apiUrl = environment.apiUrl + '/notifications';
+  private apiUrl = 'http://localhost:3000/api/rendezvous';
 
   private notifications: Notification[] = [];
 
@@ -89,12 +89,12 @@ export class NotificationsService {
   }
 
    //  Envoi notification au médecin
- envoyerNotificationAnnulationMedecin(rdvId: number) {
-  return this.http.post<any>(`${this.apiUrl}/notification/medecin/annulation/${rdvId}`, {});
-}
-
-  // Méthode pour notifier le patient
   envoyerNotificationAnnulationPatient(rdvId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${rdvId}/notification/patient`, {});
+    return this.http.post(`${this.apiUrl}/notification/patient/annulation/${rdvId}`, {});
+  }
+
+  envoyerNotificationAnnulationMedecin(rdvId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/notification/medecin/annulation/${rdvId}`, {});
   }
 }
+

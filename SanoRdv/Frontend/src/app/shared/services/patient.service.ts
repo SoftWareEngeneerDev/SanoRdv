@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Patient } from '../models/patient.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PatientService {
   private apiUrl = 'http://localhost:3000/api/patients';
@@ -20,14 +20,14 @@ export class PatientService {
   }
 
   // Ici on change le type du paramètre en FormData pour correspondre à ce que tu envoies
-updateProfile(data: FormData): Observable<any> {
-  const token = localStorage.getItem('token');
-  const headers = {
-    Authorization: `Bearer ${token}`
-  };
-  return this.http.put(`${this.apiUrl}/me`, data, { headers });
-}
-
+  updateProfile(data: FormData): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    return this.http.put(`${this.apiUrl}/me`, data, { headers });
+    console.log(data);
+  }
 
   // saveProfile(data: any): Observable<any> {
   //   return this.http.post(`${this.apiUrl}/save`, data);
