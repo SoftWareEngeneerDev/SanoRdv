@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { RendezVous } from '../../../../shared/models/rdv-model';
 import { RendezVousService } from '../../../../shared/services/rendez-vous.service';
+import { NotificationsService } from '../../../../shared/services/notifications.service';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
+
+// @ts-ignore : Si Bootstrap n'est pas reconnu, à corriger via typings
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-rendezvous',
@@ -14,55 +19,24 @@ export class RendezvousComponent implements OnInit {
   loading = false;
   error = '';
 
-  // Onglet actif
   ongletActif: 'avenir' | 'passes' = 'avenir';
 
-  constructor(private rendezVousService: RendezVousService,
+  // Modal d'annulation
+  rdvASupprimerId: number | null = null;
+  motifs: string[] = ['Indisponibilité', 'Erreur de prise', 'Problème personnel'];
+  motifSelectionne: string = '';
+  autreMotif: string = '';
+
+  constructor(
+    private rendezVousService: RendezVousService,
+    private notificationsService: NotificationsService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.loadRendezvous();
   }
 
-  // chargerRendezvousMock(): void {
-  //   this.loading = false;
-  //   this.error = '';
-
-  //   this.rendezvousAVenir = [
-  //     {
-  //       id: 1,
-  //       date: '2025-06-28T10:30:00',
-  //       status: 'confirmé',
-  //       medecin: {
-  //         nom: 'Dr. Fatou Traoré',
-  //         specialite: 'Dermatologie'
-  //       }
-  //     },
-  //     {
-  //       id: 2,
-  //       date: '2025-06-29T15:00:00',
-  //       status: 'confirmé',
-  //       medecin: {
-  //         nom: 'Dr. Issa Kaboré',
-  //         specialite: 'Cardiologie'
-  //       }
-  //     }
-  //   ];
-
-  //   this.rendezvousPasses = [
-  //     {
-  //       id: 3,
-  //       date: '2025-06-15T09:00:00',
-  //       status: 'passé',
-  //       medecin: {
-  //         nom: 'Dr. Salif Ouédraogo',
-  //         specialite: 'Pédiatrie'
-  //       }
-  //     }
-  //   ];
-  // }
-
-  //backend réel
   loadRendezvous(): void {
     this.loading = true;
     this.error = '';
@@ -74,34 +48,76 @@ export class RendezvousComponent implements OnInit {
         this.rendezvousPasses = data.filter(rdv => new Date(rdv.date) < now);
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Erreur lors du chargement des rendez-vous.';
         this.loading = false;
       }
     });
   }
 
-  // Changement de l’onglet (avec preventDefault)
   selectOnglet(event: Event, onglet: 'avenir' | 'passes'): void {
     event.preventDefault();
     this.ongletActif = onglet;
   }
 
-  // Annulation de rendez-vous
   annulerRdv(id: number): void {
-    this.rendezVousService.annulerRendezVous(id).subscribe(() => {
-      // Recharger les données après annulation
-       this.loadRendezvous();
+    this.rdvASupprimerId = id;
+    this.motifSelectionne = '';
+    this.autreMotif = '';
+
+    const modalElement = document.getElementById('annulationModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  confirmerAnnulation(): void {
+    if (!this.rdvASupprimerId) return;
+
+    const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
+
+    if (!motif || motif.trim() === '') {
+      alert('Veuillez sélectionner ou préciser un motif.');
+      return;
+    }
+
+    this.rendezVousService.annulerRendezVous(this.rdvASupprimerId, motif).subscribe({
+      next: () => {
+        // Envoi notifications patient + médecin
+        forkJoin([
+          this.notificationsService.envoyerNotificationAnnulationPatient(this.rdvASupprimerId!),
+          this.notificationsService.envoyerNotificationAnnulationMedecin(this.rdvASupprimerId!)
+        ]).subscribe({
+          next: () => {
+            // Retirer le RDV annulé 
+            this.rendezvousAVenir = this.rendezvousAVenir.filter(rdv => rdv.id !== this.rdvASupprimerId);
+
+            // Fermer le modal
+            const modalElement = document.getElementById('annulationModal');
+            if (modalElement) {
+              const modal = bootstrap.Modal.getInstance(modalElement);
+              modal.hide();
+            }
+
+            // Redirection vers la page appointment
+            this.router.navigate(['/patient/appointment']);
+          },
+          error: () => {
+            alert("Erreur lors de l'envoi des notifications d'annulation.");
+          }
+        });
+      },
+      error: () => {
+        alert("Une erreur est survenue lors de l'annulation.");
+      }
     });
   }
 
-  // Modification d’un RDV
- modifierRdv(id: number) {
+  modifierRdv(id: number): void {
     this.router.navigate(['/patient/creneau']);
   }
 
-
-  // Formater la date
   formatDate(dateStr: string): string {
     const date = new Date(dateStr);
     return date.toLocaleString('fr-FR', {

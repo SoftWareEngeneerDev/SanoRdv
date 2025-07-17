@@ -66,7 +66,7 @@ export class ConfirmationComponent implements OnInit {
 
         // Incrémenter des statistiques
         this.rendezVousService.increment();
-        this.notificationsService.increment();
+        this.notificationsService.incrementUnreadCount();
 
         const rdvId = (rdv as any).id ?? (rdv as any)._id ?? '';
 
@@ -81,7 +81,7 @@ export class ConfirmationComponent implements OnInit {
           read: false
         };
 
-        // Notification d'annulation 
+        // Notification d'annulation
         const annulationNotification: Notification = {
           rendezVousId: rdvId,
           type: 'annulation',

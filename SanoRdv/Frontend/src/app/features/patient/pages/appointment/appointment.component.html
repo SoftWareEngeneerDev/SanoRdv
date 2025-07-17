@@ -95,3 +95,39 @@
 
 </div> <!-- fin rendezvous-container -->
 
+
+<!-- Modal d'annulation -->
+<div class="modal fade" id="annulationModal" tabindex="-1" aria-labelledby="annulationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border border-danger">
+      <div class="modal-header bg-white border-bottom-0">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-triangle-fill text-danger fs-3 me-2"></i>
+          <h5 class="modal-title fw-bold" id="annulationModalLabel">Confirmation d'annulation</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Ce rendez-vous vous est confirmé. Êtes-vous sûr de vouloir l'annuler ? Cette action notifiera le patient et le médecin.</p>
+
+        <div class="mb-3">
+          <label for="motif" class="form-label fw-bold text-primary">Motif d’annulation</label>
+          <select class="form-select" [(ngModel)]="motifSelectionne">
+            <option value="">-- Choisissez un motif --</option>
+            <option *ngFor="let motif of motifs" [value]="motif">{{ motif }}</option>
+            <option value="autre">Autre motif</option>
+          </select>
+        </div>
+
+        <div *ngIf="motifSelectionne === 'autre'" class="mb-3">
+          <input type="text" class="form-control" [(ngModel)]="autreMotif" placeholder="Précisez le motif">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn btn-danger" (click)="confirmerAnnulation()">Confirmer l'annulation</button>
+      </div>
+    </div>
+  </div>
+</div>
+

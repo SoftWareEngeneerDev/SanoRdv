@@ -35,8 +35,8 @@ export class RendezVousService {
     return this.http.get<RendezVous[]>(this.apiUrl);
   }
 
-  annulerRendezVous(id: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/annuler`, {});
+  annulerRendezVous(id: number, motif: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/annuler`, { motif });
   }
 
   modifierRendezVous(id: number, data: Partial<RendezVous>): Observable<any> {
@@ -44,6 +44,8 @@ export class RendezVousService {
   }
 
   creerRendezVous(rdv: Partial<RendezVous>): Observable<RendezVous> {
-  return this.http.post<RendezVous>(this.apiUrl, rdv);
-}
+    return this.http.post<RendezVous>(this.apiUrl, rdv);
+  }
+
+ 
 }
