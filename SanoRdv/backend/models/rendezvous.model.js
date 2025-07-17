@@ -32,6 +32,25 @@ const rendezVousSchema = new mongoose.Schema({
     enum: ['confirmé', 'annulé'],
     default: 'confirmé',
   },
+  motifAnnulation: { 
+    type: String
+  },
+  annulePar: {
+  id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: false,
+  },
+  type: {
+    type: String,
+    enum: ['Admin', 'Patient', 'Medecin'], 
+    required: false,
+  }
+}
+,
+  dateAnnulation: {
+    type: Date,
+    default: null
+  }
 }, { timestamps: true });
 
 const RendezVous = mongoose.model('RendezVous', rendezVousSchema);

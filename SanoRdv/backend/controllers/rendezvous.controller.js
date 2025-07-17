@@ -40,42 +40,47 @@ export const prendreRendezVous = async (req, res) => {
   }
 };
 
+
 export const annulerRendezVous = async (req, res) => {
-  try {
-    const { rendezVousId, userId } = req.body;
-    const rendezVous = await RendezVous.findById(rendezVousId);
-    if (!rendezVous) return res.status(404).json({ message: "Rendez-vous introuvable" });
-    if (
-      userId !== rendezVous.patient.toString() &&
-      userId !== rendezVous.medecin.toString() &&
-      req.user?.role !== 'admin'
-    ) {
-      return res.status(403).json({ message: "Non autorisé à annuler ce rendez-vous" });
-    }
-    const creneau = await Creneau.findById(rendezVous.creneau);
-    if (!creneau) return res.status(404).json({ message: "Créneau introuvable" });
-    const rdvDateTime = new Date(creneau.date);
-    const [hours, minutes] = rendezVous.time.split(':');
-    rdvDateTime.setHours(parseInt(hours), parseInt(minutes));
-    const now = new Date();
-    const diffMs = rdvDateTime - now;
-    const diffHeures = diffMs / (1000 * 60 * 60);
-    if (diffHeures < 1) {
-      return res.status(400).json({ message: "Impossible d’annuler moins d’1h avant le rendez-vous." });
-    }
-    rendezVous.statut = 'annulé';
-    await rendezVous.save();
-    const slot = creneau.timeSlots.find(slot => slot.time === rendezVous.time);
-    if (slot) {
-      slot.status = 'disponible';
-      await creneau.save();
-    }
-    return res.status(200).json({ message: "Rendez-vous annulé avec succès" });
-  } catch (error) {
-    console.error("Erreur annulation :", error);
-    res.status(500).json({ message: "Erreur serveur" });
-  }
+  try {
+    const { id } = req.params;
+    const { motif } = req.body; 
+
+    // Extraire l'utilisateur connecté
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    const rdv = await RendezVous.findById(id);
+    if (!rdv) {
+      return res.status(404).json({ message: "Rendez-vous introuvable." });
+    }
+
+    // Vérification d'autorisation
+    const estPatient = rdv.patient.toString() === userId;
+    const estMedecin = rdv.medecin.toString() === userId;
+
+    if (
+      userRole !== 'admin' &&
+      !estPatient &&
+      !estMedecin
+    ) {
+      return res.status(403).json({ message: "Non autorisé à annuler ce rendez-vous." });
+    }
+
+    // Mise à jour du rendez-vous
+    rdv.statut = 'annulé';
+    rdv.annulePar = userId;
+    rdv.motifAnnulation = motif || '';
+    rdv.dateAnnulation = new Date();
+    await rdv.save();
+
+    res.status(200).json({ message: 'Rendez-vous annulé avec succès.', rdv });
+  } catch (err) {
+    res.status(500).json({ message: "Erreur serveur", error: err.message });
+  }
 };
+
+
 
 export const modifierRendezVous = async (req, res) => {
   try {
@@ -108,6 +113,8 @@ export const modifierRendezVous = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
+
+
 
 export const getRendezVousParMedecin = async (req, res) => {
   try {
@@ -220,11 +227,28 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
       match.date = { $gte: now };
     }
 
-    const rendezVous = await RendezVous.find(match)
-      .populate('patient', 'nom prenom email')
-      .populate('medecin', 'nom prenom email')
+    let rendezVous = await RendezVous.find(match)
+      .populate('patient', 'nom prenom email dateNaissance')
+      .populate('medecin', 'nom prenom email specialite')
       .populate('creneau', 'date')
       .sort({ date: -1, time: -1 });
+
+    // ⚠️ Filtrage sécurisé pour éviter les erreurs
+    rendezVous = rendezVous.filter((rdv) => {
+      if (!rdv.creneau || !rdv.creneau.date || !rdv.time) return false;
+
+      const rdvDate = new Date(rdv.creneau.date);
+      const [heure, minute] = rdv.time.split(':');
+      rdvDate.setHours(parseInt(heure), parseInt(minute), 0, 0);
+
+      if (filtre === 'passe') {
+        return rdvDate < now;
+      } else if (filtre === 'futur') {
+        return rdvDate >= now;
+      }
+
+      return true;
+    });
 
     res.status(200).json(rendezVous);
   } catch (error) {
@@ -232,3 +256,5 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
+
+

@@ -49,6 +49,8 @@ export const register = async (req, res) => {
       localite = '',
       dateNaissance = '',
       adresse = '',
+      groupeSanguin = '',   // ajouté
+      allergies = '',      // ajouté
       role = 'patient',
       photo = '', // optionnel
     } = req.body;
@@ -119,6 +121,8 @@ export const register = async (req, res) => {
       localite,
       dateNaissance,
       adresse,
+      groupeSanguin,   // inséré ici
+      allergies,       // inséré ici
       photo: avatarImage,
       loginAttempts: 0,
       lockUntil: undefined,
@@ -151,119 +155,202 @@ export const register = async (req, res) => {
 // ===========================
 export const updateProfile = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ erreurs: errors.array() });
-    }
-
     const patientId = req.params.id;
 
-    // Vérification de la présence de req.body
-    if (!req.body || Object.keys(req.body).length === 0) {
-      return res.status(400).json({ message: "Le corps de la requête est vide ou invalide." });
+    // Validation de l'ID patient
+    if (!patientId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'ID patient manquant' 
+      });
     }
 
-    // Déstructuration après vérification
-    const {
-      nom,
-      prenom,
-      email,
-      telephone,
-      motDePasse,
-      confirmationMotDePasse,
-      sex,
-      localite,
-      dateNaissance,
-      adresse,
-      photo,
-      groupeSanguin,
-      allergies
-    } = req.body;
-
-    // Trouver le patient
-    const patient = await Patient.findById(patientId);
-    if (!patient) {
-      return res.status(404).json({ message: "Patient non trouvé" });
+    // Vérifier si le patient existe
+    const existingPatient = await Patient.findById(patientId);
+    if (!existingPatient) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Patient non trouvé' 
+      });
     }
 
-    // Email
-    if (email) {
-      const sanitizedEmail = sanitizeInput(email);
-      if (!isValidEmail(sanitizedEmail)) {
-        return res.status(400).json({ message: 'Format email invalide' });
+    // Construire l'objet de mise à jour dynamiquement
+    const updatedData = {};
+    
+    // Mapping des champs envoyés vers les champs de la base
+    const fieldMapping = {
+      'nom': 'nom',
+      'prenom': 'prenom', 
+      'email': 'email',
+      'telephone': 'telephone',
+      'sexe': 'sex', // sexe -> sex
+      'dateNaissance': 'dateNaissance',
+      'groupesanguin': 'groupeSanguin', // groupesanguin -> groupeSanguin
+      'allergie': 'allergies', // allergie -> allergies
+      'localite': 'localite',
+      'adresse': 'adresse'
+    };
+
+    // Ajouter seulement les champs fournis dans la requête
+    Object.keys(req.body).forEach(sentField => {
+      const dbField = fieldMapping[sentField];
+      
+      if (dbField && req.body[sentField] !== undefined) {
+        // Si le champ est une chaîne vide, on peut choisir de le traiter
+        if (req.body[sentField] === '') {
+          updatedData[dbField] = null; // ou '' selon votre préférence
+        } else {
+          updatedData[dbField] = req.body[sentField];
+        }
       }
-      const domain = sanitizedEmail.split('@')[1];
-      if (!CONFIG.ALLOWED_DOMAINS.includes(domain)) {
+    });
+
+    // Gestion spéciale pour les allergies (peut être un array)
+    if (req.body.allergie !== undefined) {
+      if (Array.isArray(req.body.allergie)) {
+        updatedData.allergies = req.body.allergie;
+      } else if (typeof req.body.allergie === 'string') {
+        // Si c'est une chaîne, on peut la convertir en array ou la laisser telle quelle
+        updatedData.allergies = req.body.allergie;
+      }
+    }
+
+    // Gestion de la photo
+    if (req.file) {
+      updatedData.photo = req.file.path;
+    }
+
+    // Validation de l'email si fourni
+    if (updatedData.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(updatedData.email)) {
         return res.status(400).json({
-          message: 'Domaine email non autorisé',
-          allowedDomains: CONFIG.ALLOWED_DOMAINS,
+          success: false,
+          message: 'Format d\'email invalide'
         });
       }
-      const emailUsed = await Patient.findOne({ email: sanitizedEmail, _id: { $ne: patientId } });
-      if (emailUsed) {
-        return res.status(400).json({ message: 'Email déjà utilisé' });
+
+      // Vérifier l'unicité de l'email si différent de l'actuel
+      if (updatedData.email !== existingPatient.email) {
+        const emailExists = await Patient.findOne({ 
+          email: updatedData.email,
+          _id: { $ne: patientId }
+        });
+        
+        if (emailExists) {
+          return res.status(400).json({
+            success: false,
+            message: 'Cet email est déjà utilisé par un autre patient'
+          });
+        }
       }
-      patient.email = sanitizedEmail;
     }
 
-    // Téléphone
-    if (telephone) {
-      const phoneUsed = await Patient.findOne({ telephone, _id: { $ne: patientId } });
-      if (phoneUsed) {
-        return res.status(400).json({ message: 'Numéro de téléphone déjà utilisé' });
-      }
-      patient.telephone = sanitizeInput(telephone);
-    }
-
-    // Mot de passe
-    if (motDePasse) {
-      if (!isValidPassword(motDePasse)) {
+    // Validation du téléphone si fourni
+    if (updatedData.telephone) {
+      const phoneRegex = /^[+]?[\d\s\-()]{8,}$/;
+      if (!phoneRegex.test(updatedData.telephone)) {
         return res.status(400).json({
-          message:
-            'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial',
+          success: false,
+          message: 'Format de téléphone invalide'
         });
       }
-      if (motDePasse !== confirmationMotDePasse) {
-        return res.status(400).json({ message: 'Les mots de passe ne correspondent pas' });
-      }
-      patient.motDePasse = await bcrypt.hash(motDePasse, CONFIG.BCRYPT_ROUNDS);
     }
 
-    // Mise à jour des autres champs si présents
-    if (nom) patient.nom = sanitizeInput(nom);
-    if (prenom) patient.prenom = sanitizeInput(prenom);
-    if (sex) patient.sex = sex;
-    if (localite !== undefined) patient.localite = sanitizeInput(localite);
-    if (dateNaissance !== undefined) {
-      const parsedDate = new Date(dateNaissance);
-      if (isNaN(parsedDate.getTime())) {
-        return res.status(400).json({ message: 'Date de naissance invalide' });
+    // Validation de la date de naissance
+    if (updatedData.dateNaissance) {
+      const birthDate = new Date(updatedData.dateNaissance);
+      const today = new Date();
+      
+      if (birthDate > today) {
+        return res.status(400).json({
+          success: false,
+          message: 'La date de naissance ne peut pas être dans le futur'
+        });
       }
-      patient.dateNaissance = parsedDate;
+      
+      // Vérifier un âge raisonnable (ex: maximum 120 ans)
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age > 120) {
+        return res.status(400).json({
+          success: false,
+          message: 'Date de naissance invalide'
+        });
+      }
     }
-    if (adresse !== undefined) patient.adresse = sanitizeInput(adresse);
-    if (photo !== undefined) patient.photo = photo;
-    if (groupeSanguin !== undefined) patient.groupeSanguin = sanitizeInput(groupeSanguin);
-    if (allergies !== undefined) patient.allergies = sanitizeInput(allergies);
 
-    // Sauvegarde
-    await patient.save();
+    // Validation du groupe sanguin
+    if (updatedData.groupeSanguin) {
+      const validBloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+      if (!validBloodTypes.includes(updatedData.groupeSanguin)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Groupe sanguin invalide. Valeurs autorisées: A+, A-, B+, B-, AB+, AB-, O+, O-'
+        });
+      }
+    }
 
-    // Suppression du mot de passe dans la réponse
-    const patientObj = patient.toObject();
-    delete patientObj.motDePasse;
+    // Validation du sexe
+    if (updatedData.sex) {
+      const validSexes = ['M', 'F', 'Masculin', 'Féminin', 'Homme', 'Femme', 'masculin', 'féminin', 'homme', 'femme'];
+      if (!validSexes.includes(updatedData.sex)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Sexe invalide'
+        });
+      }
+    }
+
+    // Ajouter la date de dernière modification
+    updatedData.updatedAt = new Date();
+
+    // Mise à jour du patient
+    const updatedPatient = await Patient.findByIdAndUpdate(
+      patientId, 
+      { $set: updatedData }, // Utiliser $set pour une mise à jour partielle
+      {
+        new: true,
+        runValidators: true,
+        context: 'query' // Important pour les validations mongoose
+      }
+    ).select('-motDePasse');
+
+    // Log de l'activité (optionnel)
+    console.log(`✅ Profil patient ${patientId} mis à jour:`, Object.keys(updatedData));
 
     res.status(200).json({
-      message: "Profil mis à jour avec succès",
-      patient: patientObj,
+      success: true,
+      message: 'Profil mis à jour avec succès',
+      patient: updatedPatient,
+      updatedFields: Object.keys(updatedData) // Indiquer quels champs ont été modifiés
     });
 
   } catch (error) {
-    return handleError(error, res, "Erreur lors de la mise à jour du profil");
+    console.error('❌ Erreur updateProfile:', error);
+    
+    // Gestion des erreurs spécifiques
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Erreur de validation',
+        errors: Object.values(error.errors).map(err => err.message)
+      });
+    }
+
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID patient invalide'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Erreur interne'
+    });
   }
 };
-
-
 // ===========================
 // Contrôleurs existants...
 // ===========================
