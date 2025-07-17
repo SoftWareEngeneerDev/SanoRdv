@@ -38,11 +38,18 @@ export class ModifierSpecialitesComponent implements OnInit {
   }
 
   mettreAJour(): void {
-    this.specialiteService.modifierSpecialite(this.specialite).subscribe({
-      next: () => this.router.navigate(['/admin/specialites']),
-      error: (err) => console.error('Erreur lors de la mise à jour', err)
-    });
+  if (this.specialite && this.specialite.id) {
+    this.specialiteService
+      .modifierSpecialite(this.specialite.id, this.specialite)
+      .subscribe({
+        next: () => this.router.navigate(['/admin/specialites']),
+        error: (err) => console.error('Erreur lors de la mise à jour', err)
+      });
+  } else {
+    console.error('ID de la spécialité manquant pour la mise à jour');
   }
+}
+
 
   annuler(): void {
     this.router.navigate(['/admin/specialites']);

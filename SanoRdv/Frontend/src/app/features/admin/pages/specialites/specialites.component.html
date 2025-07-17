@@ -8,7 +8,8 @@
       <div class="input-group">
         <input type="text" class="form-control border-0" 
                placeholder="Entrez le nom de la spécialité..."
-               [(ngModel)]="rechercheSpecialite">
+               [(ngModel)]="rechercheSpecialite"
+               (ngModelChange)="searchSpecialites()">
         <span class="input-group-text bg-transparent border-0">
           <i class="bi bi-search"></i>
         </span>
@@ -58,28 +59,27 @@
   </div>
 
   <!-- MODALE DE CONFIRMATION -->
-<div class="modal fade show d-block" tabindex="-1" *ngIf="specialiteASupprimer" style="background-color: rgba(0, 0, 0, 0.5);">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-body text-center">
-        <div class="mb-3 text-danger fs-3">
-          <i class="bi bi-exclamation-triangle-fill"></i>
-        </div>
-        <h5 class="mb-3 fw-bold">Confirmation requise</h5>
-        <p>
-          Cette spécialité est liée à {{ specialiteASupprimer.nombreMedecins }} médecins. <br>
-          Êtes-vous sûr de vouloir la supprimer ? <br>
-          <strong>Cette action est irréversible.</strong>
-        </p>
-        <div class="d-flex justify-content-center gap-3 mt-4">
-          <button class="btn btn-secondary" (click)="annulerSuppression()">Annuler</button>
-          <button class="btn btn-danger" (click)="confirmerSuppression()">Confirmer la suppression</button>
+  <div class="modal fade show d-block" tabindex="-1" *ngIf="specialiteASupprimer" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-body text-center">
+          <div class="mb-3 text-danger fs-3">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <h5 class="mb-3 fw-bold">Confirmation requise</h5>
+          <p>
+            Cette spécialité est liée à {{ specialiteASupprimer.nombreMedecins }} médecins. <br>
+            Êtes-vous sûr de vouloir la supprimer ? <br>
+            <strong>Cette action est irréversible.</strong>
+          </p>
+          <div class="d-flex justify-content-center gap-3 mt-4">
+            <button class="btn btn-secondary" (click)="annulerSuppression()">Annuler</button>
+            <button class="btn btn-danger" (click)="confirmerSuppression()">Confirmer la suppression</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
 
   <!-- Bouton Ajouter -->
   <div class="text-end mt-4">

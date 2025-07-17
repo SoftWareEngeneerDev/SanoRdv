@@ -9,7 +9,7 @@ import { Specialite } from '../../models/specialites.model';
 })
 export class SpecialitesComponent implements OnInit {
 
-    specialites: Specialite[] = [];
+  specialites: Specialite[] = [];
   rechercheSpecialite = '';
   specialiteEnEdition: Specialite | null = null;
   nouvelleSpecialite = {
@@ -17,18 +17,19 @@ export class SpecialitesComponent implements OnInit {
     description: ''
   };
 
-  
+  specialiteASupprimer: any = null;
+  filteredSpecialites: Specialite[] = [];
 
   constructor(private specialiteService: SpecialiteService) {}
 
   ngOnInit(): void {
     this.chargerSpecialites();
   }
-  
 
   chargerSpecialites(): void {
     this.specialiteService.getSpecialites().subscribe(specialites => {
       this.specialites = specialites;
+      this.filteredSpecialites = [...specialites]; // IMPORTANT : initialiser filteredSpecialites
     });
   }
 
@@ -41,11 +42,13 @@ export class SpecialitesComponent implements OnInit {
   }
 
   validerEdition(): void {
-    if (this.specialiteEnEdition) {
-      this.specialiteService.modifierSpecialite(this.specialiteEnEdition).subscribe(() => {
-        this.specialiteEnEdition = null;
-        this.chargerSpecialites();
-      });
+    if (this.specialiteEnEdition && this.specialiteEnEdition.id) {
+      this.specialiteService
+        .modifierSpecialite(this.specialiteEnEdition.id, this.specialiteEnEdition)
+        .subscribe(() => {
+          this.specialiteEnEdition = null;
+          this.chargerSpecialites();
+        });
     }
   }
 
@@ -61,42 +64,40 @@ export class SpecialitesComponent implements OnInit {
     });
   }
 
- specialiteASupprimer: any = null;
+  modalSuppression(specialite: any): void {
+    this.specialiteASupprimer = specialite;
+  }
 
-modalSuppression(specialite: any): void {
-  this.specialiteASupprimer = specialite;
-}
+  annulerSuppression(): void {
+    this.specialiteASupprimer = null;
+  }
 
-annulerSuppression(): void {
-  this.specialiteASupprimer = null;
-}
-
-confirmerSuppression(): void {
-  if (this.specialiteASupprimer && this.specialiteASupprimer.id) {
-    this.specialiteService.supprimerSpecialite(this.specialiteASupprimer.id).subscribe(() => {
-      // Rafraîchir la liste après suppression
-      this.chargerSpecialites(); // ou loadSpecialites()
-      this.specialiteASupprimer = null;
+  confirmerSuppression(): void {
+  if (this.specialiteASupprimer && this.specialiteASupprimer._id) {
+    this.specialiteService.supprimerSpecialite(this.specialiteASupprimer._id).subscribe({
+      next: () => {
+        this.chargerSpecialites(); // Recharge la liste
+        this.specialiteASupprimer = null;
+      },
+      error: (err) => {
+        console.error('Erreur de suppression :', err);
+      }
     });
   }
 }
 
 
-  filteredSpecialites: Specialite[] = [];
 
-
-
-searchSpecialites(): void {
-  if (!this.rechercheSpecialite.trim()) {
-    this.filteredSpecialites = [...this.specialites];
-    return;
+  searchSpecialites(): void {
+    if (!this.rechercheSpecialite.trim()) {
+      this.filteredSpecialites = [...this.specialites];
+      return;
+    }
+    
+    const term = this.rechercheSpecialite.toLowerCase();
+    this.filteredSpecialites = this.specialites.filter(s => 
+      s.nom.toLowerCase().includes(term) || 
+      s.description.toLowerCase().includes(term)
+    );
   }
-  
-  const term = this.rechercheSpecialite.toLowerCase();
-  this.filteredSpecialites = this.specialites.filter(s => 
-    s.nom.toLowerCase().includes(term) || 
-    s.description.toLowerCase().includes(term)
-  );
-}
-
 }

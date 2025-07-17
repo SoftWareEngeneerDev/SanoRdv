@@ -15,6 +15,7 @@ interface ApiResponse {
   providedIn: 'root'
 })
 export class PatientService {
+  private apiBaseUrl = `${environment.apiUrl}/patients/register`;
   private apiUrl = `${environment.apiUrl}/admins/patients`;
   private patientsSubject = new BehaviorSubject<Patient[]>([]);
   public patients$ = this.patientsSubject.asObservable();
@@ -79,7 +80,7 @@ export class PatientService {
   }
 
   ajouterPatient(patient: Patient): Observable<Patient> {
-    return this.http.post<Patient>(this.apiUrl, patient).pipe(
+    return this.http.post<Patient>(this.apiBaseUrl, patient).pipe(
       tap(() => this.refreshPatients())
     );
   }
