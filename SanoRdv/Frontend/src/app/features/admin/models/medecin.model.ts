@@ -15,6 +15,6 @@ export interface Medecin {
   IDmedecin?: string;
   role?: string;
   dateCreation?: string;
-  etat?: 'Actif' | 'Inactif';
+  etat: 'Actif' | 'Inactif';
   isActive?: boolean;
 }

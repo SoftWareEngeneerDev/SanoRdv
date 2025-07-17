@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { MedecinService } from '../../Medecin.service';
+import { MedecinService } from '../../medecin.service';
 
 @Component({
   selector: 'app-profile',
@@ -11,14 +11,14 @@ export class ProfileComponent {
   defaultPhoto = 'https://via.placeholder.com/100';
   profile: any = {};
 
-  constructor(private router: Router, private medecinService: MedecinService) {}
+  constructor(private router: Router, private medecinServie: MedecinService) {}
 
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const medecinId = user._id;
 
     if (medecinId) {
-      this.medecinService.getMedecinById(medecinId).subscribe({
+      this.medecinServie.getMedecinById(medecinId).subscribe({
         next: (data) => {
           this.profile = data;
         },
@@ -49,7 +49,7 @@ export class ProfileComponent {
   const medecinId = user._id;
 
   if (medecinId) {
-    this.medecinService.updateMedecin(medecinId, this.profile).subscribe({
+    this.medecinServie.updateMedecin(medecinId, this.profile).subscribe({
       next: () => {
         alert("Profil mis à jour avec succès.");
         this.router.navigate(['/medecin/profil-view']);

@@ -26,10 +26,19 @@
       </div>
     </div>
 
+    <div class="mb-3">
+  <label for="motDePasse" class="form-label">Mot de passe</label>
+  <input type="password" formControlName="motDePasse" class="form-control" id="motDePasse" required>
+  <div *ngIf="patientForm.get('motDePasse')?.invalid && patientForm.get('motDePasse')?.touched" class="text-danger">
+    Le mot de passe est requis
+  </div>
+</div>
+
+
     <div class="row mb-3">
       <div class="col-md-6">
-        <label for="sexe" class="form-label fw-semibold">Sexe *</label>
-        <select class="form-select" id="sexe" formControlName="sexe">
+        <label for="sex" class="form-label fw-semibold">Sexe *</label>
+        <select class="form-select" id="sex" formControlName="sex">
           <option value="">-- Sélectionnez --</option>
           <option value="Homme">Homme</option>
           <option value="Femme">Femme</option>
