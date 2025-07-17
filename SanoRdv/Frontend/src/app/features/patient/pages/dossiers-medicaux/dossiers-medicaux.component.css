@@ -1,0 +1,144 @@
+/* Container global */
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar à gauche */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  z-index: 1100;
+}
+
+/* Header secondaire */
+app-header-secondaire {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 95px;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Contenu principal */
+.main-content {
+  margin-left: 250px;
+  margin-top: 95px;
+  padding: 30px;
+  width: calc(100% - 250px);
+  box-sizing: border-box;
+  overflow-y: auto;
+
+  /* Cacher la scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.main-content::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Boîte principale */
+.main {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  min-height: 600px;
+}
+
+/* Titre principal */
+.title-main {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Sections */
+section {
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  border: 1px solid #dbeafe;
+}
+
+section h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #285bca;
+  margin-bottom: 10px;
+}
+
+section ul {
+  list-style: disc;
+  padding-left: 25px;
+  color: #111827;
+}
+
+section li {
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+/* Texte par défaut (si vide) */
+section p {
+  font-style: italic;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Message d'erreur */
+.error-message {
+  margin-top: 20px;
+  color: #dc2626;
+  font-weight: bold;
+  background-color: #fee2e2;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+}
+
+/* Quand la sidebar est repliée, agrandir la largeur des blocs */
+.container.sidebar-collapsed .main {
+  width: 95%;
+  margin: 0 auto;
+}
+
+.container.sidebar-collapsed section {
+  width: 100%;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  app-sidebar.sidebar {
+    display: none;
+  }
+
+  .main-content {
+    margin: 95px 0 0 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .main {
+    padding: 20px;
+  }
+
+  section {
+    padding: 15px;
+  }
+}

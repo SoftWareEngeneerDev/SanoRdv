@@ -9,9 +9,8 @@ import { Patient } from '../../models/patient.model';
   styleUrls: ['./detail-patient.component.css']
 })
 export class DetailPatientComponent implements OnInit {
-
-     patient: Patient | undefined;
-  isLoading = true;
+  patient: Patient | null = null;
+  defaultAvatar: string = 'assets/images/avatar-placeholder.png';
 
   constructor(
     private route: ActivatedRoute,
@@ -21,18 +20,14 @@ export class DetailPatientComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.patientService.getPatientById(+id).subscribe({
-        next: (patient) => {
-          this.patient = patient;
-          this.isLoading = false;
+      this.patientService.getPatientById(id).subscribe({
+        next: (data) => {
+          this.patient = data;
         },
-        error: () => this.isLoading = false
+        error: (err) => {
+          console.error('Erreur lors du chargement du patient :', err);
+        }
       });
     }
   }
-
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('fr-FR');
-  }
-
 }

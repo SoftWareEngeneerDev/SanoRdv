@@ -13,7 +13,8 @@ import localeFr from '@angular/common/locales/fr';
 import { LOCALE_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AboutComponent } from './features/about/about.component';
-import { MedecinDetailComponent } from './features/medecin-detail/medecin-detail.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor'; // ajuste le chemin si besoin
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -23,9 +24,8 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent,
-    MedecinDetailComponent, // Composant accueil déclaré ici
     AboutComponent
+
   ],
   imports: [
     BrowserModule,
@@ -40,7 +40,8 @@ registerLocaleData(localeFr);
 
   ],
   providers: [
-     { provide: LOCALE_ID, useValue: 'fr' }
+     { provide: LOCALE_ID, useValue: 'fr' },
+     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

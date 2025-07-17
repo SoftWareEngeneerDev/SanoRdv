@@ -1,57 +1,70 @@
-
+import mongoose from 'mongoose'; // ✅ nécessaire pour ObjectId
 import Creneau from '../models/creneau.model.js';
 import Agenda from '../models/agenda.model.js';
 import { genererCreneauxParDate } from '../utils/genererCreneauxParDate.creneau.js';
 import { modifierStatusParHeure } from '../utils/modifierStatusParHeure.creneau.js';
 
 
-
-//-----------Fonction qui permet de generer et enregistrer----------
+//-----------Fonction qui permet de générer et enregistrer----------
 async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles = []) {
-    if (!agendaId || !date) {
-        throw new Error("Champs 'agendaId' et 'date' requis.");
-    }
+  if (!agendaId || !date) {
+    throw new Error("Champs 'agendaId' et 'date' requis.");
+  }
 
-    // 1. Générer les créneaux de la journée
-    let timeSlots = genererCreneauxParDate(date);
+  if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+    throw new Error("Identifiant 'agendaId' invalide.");
+  }
 
-    // 2. Marquer les créneaux indisponibles selon les choix du médecin
-    if (heuresIndisponibles.length > 0) {
-        timeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles, 'indisponible');
-    }
+  const objectIdAgenda = new mongoose.Types.ObjectId(agendaId); // ✅ conversion correcte
 
-    // 3. Vérifie si un créneau existe déjà (update si oui)
-    const existing = await Creneau.findOne({ agenda: agendaId, date: new Date(date) });
+  // 1. Générer les créneaux de la journée
+  let timeSlots = genererCreneauxParDate(date);
 
-    if (existing) {
-        existing.timeSlots = timeSlots;
-        const updated = await existing.save();
-        return { operation: 'update', data: updated };
-    }
+  // 2. Marquer les créneaux indisponibles
+  if (heuresIndisponibles.length > 0) {
+    timeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles, 'indisponible');
+  }
 
-    // 4. Sinon, créer un nouveau
-    const nouveau = new Creneau({
-        agenda: agendaId,
-        date: new Date(date),
-        timeSlots
-    });
+  // 3. Mise à jour si créneau existant
+  const existing = await Creneau.findOne({
+    agenda: objectIdAgenda,
+    date: new Date(date)
+  });
 
-    const saved = await nouveau.save();
-    return { operation: 'create', data: saved };
+  if (existing) {
+    existing.timeSlots = timeSlots;
+    const updated = await existing.save();
+    return { operation: 'update', data: updated };
+  }
+
+  // 4. Création si non existant
+  const nouveau = new Creneau({
+    agenda: objectIdAgenda,
+    date: new Date(date),
+    timeSlots
+  });
+
+  const saved = await nouveau.save();
+  return { operation: 'create', data: saved };
 }
 
 //------------------------------------------------------------------
 
 
-// --------------Fonction pour vérifier et supprimer les créneaux existants pour une date donnée
-
+// ✅ Supprimer créneau
 export async function supprimerCreneau(agendaId, date) {
   if (!agendaId || !date) {
     throw new Error("Les champs 'agendaId' et 'date' sont requis");
   }
 
+  if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+    throw new Error("Identifiant 'agendaId' invalide.");
+  }
+
+  const objectIdAgenda = new mongoose.Types.ObjectId(agendaId);
+
   const result = await Creneau.deleteOne({
-    agenda: agendaId,
+    agenda: objectIdAgenda,
     date: new Date(date)
   });
 
@@ -62,11 +75,15 @@ export async function supprimerCreneau(agendaId, date) {
   return result;
 }
 
-//---------------- Fonction pour obtenir un agenda avec ses créneaux --------
+// ✅ Obtenir agenda avec ses créneaux
 export const obtenirAgenda = async (req, res) => {
   try {
     const { agendaId } = req.params;
-    // Popule le tableau creneaux de l'agenda
+
+    if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+      return res.status(400).json({ success: false, message: "ID d'agenda invalide" });
+    }
+
     const agenda = await Agenda.findById(agendaId).populate('creneaux');
 
     if (!agenda) {
@@ -79,14 +96,20 @@ export const obtenirAgenda = async (req, res) => {
   }
 };
 
-// --------Pour afficher les créneaux d’un agenda à une date donnée --
+// ✅ Obtenir créneaux par date
 export async function getCreneauxParDate(agendaId, date) {
   if (!agendaId || !date) {
     throw new Error("Les champs 'agendaId' et 'date' sont requis");
   }
 
+  if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+    throw new Error("Identifiant 'agendaId' invalide.");
+  }
+
+  const objectIdAgenda = new mongoose.Types.ObjectId(agendaId);
+
   const creneau = await Creneau.findOne({
-    agenda: agendaId,
+    agenda: objectIdAgenda,
     date: new Date(date),
   });
 
@@ -97,15 +120,20 @@ export async function getCreneauxParDate(agendaId, date) {
   return creneau;
 }
 
-//--------------Fonction contrôleur – filtrer par statut-----------------------
-// 
+// ✅ Filtrer les créneaux par statut
 export async function filtrerCreneauxParStatut(agendaId, date, statut) {
   if (!agendaId || !date || !statut) {
     throw new Error("Les champs 'agendaId', 'date' et 'statut' sont requis");
   }
 
+  if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+    throw new Error("Identifiant 'agendaId' invalide.");
+  }
+
+  const objectIdAgenda = new mongoose.Types.ObjectId(agendaId);
+
   const creneau = await Creneau.findOne({
-    agenda: agendaId,
+    agenda: objectIdAgenda,
     date: new Date(date),
   });
 
@@ -113,7 +141,6 @@ export async function filtrerCreneauxParStatut(agendaId, date, statut) {
     throw new Error("Aucun créneau trouvé pour cette date et cet agenda.");
   }
 
-  // Filtrer les timeSlots selon le statut
   const timeSlotsFiltres = creneau.timeSlots.filter(slot => slot.status === statut);
 
   return {
@@ -123,10 +150,10 @@ export async function filtrerCreneauxParStatut(agendaId, date, statut) {
   };
 }
 
-//---------------------------------------------------------------------------
+// ✅ Export final
 export default {
-    genererEtEnregistrerCreneau,
-    supprimerCreneau,
-    getCreneauxParDate,
-    filtrerCreneauxParStatut
+  genererEtEnregistrerCreneau,
+  supprimerCreneau,
+  getCreneauxParDate,
+  filtrerCreneauxParStatut
 };

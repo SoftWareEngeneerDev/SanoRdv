@@ -7,7 +7,7 @@ import { AboutComponent } from './features/about/about.component';
 import { MedecinDetailComponent } from './features/medecin-detail/medecin-detail.component';
 
 const routes: Routes = [
-  { path: 'medecinDetail', component: MedecinDetailComponent },
+  { path: 'medecinDetail/:id', component: MedecinDetailComponent },
   {
     
     path: '',component: SharedLayoutComponent,canActivate: [LoginGuard],

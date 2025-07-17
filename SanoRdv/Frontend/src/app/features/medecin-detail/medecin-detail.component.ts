@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MedecinService } from '../medecin/Medecin.service';
+import { DetailMedecinService } from 'src/app/shared/services/detail-medecin.service';
 
 @Component({
   selector: 'app-medecin-detail',
@@ -8,24 +8,56 @@ import { MedecinService } from '../medecin/Medecin.service';
   styleUrls: ['./medecin-detail.component.css']
 })
 export class MedecinDetailComponent implements OnInit {
-  profile: any;
+  profile: any = null;
+  loading = true;
+  error: string | null = null;
 
-  constructor(private medecinService: MedecinService, private router: Router) {
-    // Initialiser ici si tu veux, mais en général c'est mieux dans ngOnInit
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private detailMedecinService: DetailMedecinService
+  ) {}
 
   ngOnInit(): void {
-    // Initialisation du profil dans ngOnInit (recommandé)
-    this.profile = this.medecinService.getProfile();
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadMedecin(id);
+    } else {
+      this.error = "ID du médecin non trouvé dans l'URL.";
+      this.loading = false;
+    }
   }
 
-  goToLogin() {
-    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+  loadMedecin(id: string): void {
+    this.detailMedecinService.getMedecinDetails(id).subscribe({
+      next: (data) => {
+        this.profile = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur :', err);
+        this.error = 'Erreur lors du chargement du médecin.';
+        this.loading = false;
+      }
+    });
   }
 
   calculateAge(dateNaissance: string): number {
-    const birthDate = new Date(dateNaissance);
-    const ageDiff = Date.now() - birthDate.getTime();
-    return Math.floor(ageDiff / (1000 * 60 * 60 * 24 * 365.25));
+    return this.detailMedecinService.calculateAge(dateNaissance);
+  }
+
+  // S’il veut prendre rendez-vous mais il n’est pas connecté
+  prendreRendezVous(): void {
+    if (!this.profile || !this.profile._id) {
+      this.error = "Impossible de prendre rendez-vous, médecin inconnu.";
+      return;
+    }
+
+    this.router.navigate(['/login'], {
+      queryParams: {
+        redirect: `/prendre-rendezvous/${this.profile._id}`
+      },
+      state: { medecinInfo: this.profile }
+    });
   }
 }

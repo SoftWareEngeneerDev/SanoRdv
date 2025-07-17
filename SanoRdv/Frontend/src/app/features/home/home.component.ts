@@ -17,7 +17,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
   suggestions: any[] = [];
   isLoading = false;
   errorMessage = '';
-  private API_BASE_URL = 'https://localhost:3000'; 
+  private API_BASE_URL = 'http://localhost:3000';
   alphabet: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   private searchTerms = new Subject<string>();
@@ -141,14 +141,12 @@ export class HomeComponent implements AfterViewInit, OnInit {
     }
   }
 
-  redirectToAuth(medecinsId?: string): void {
-    if (medecinsId) {
-      // Redirige vers la page de connexion avec la query param 'redirect' pointant vers la page patient avec ID medecin
-      this.router.navigate(['/medecinDetail'], { queryParams: { redirect: `patient/informations/${medecinsId}` } });
-    } else {
-      this.router.navigate(['/medecinDetail']);
-    }
+  redirectToDetail(medecinId: string): void {
+  if (medecinId) {
+    this.router.navigate(['/medecinDetail', medecinId]);
   }
+}
+
 
   private autocomplete(query: string) {
     const params = new HttpParams()

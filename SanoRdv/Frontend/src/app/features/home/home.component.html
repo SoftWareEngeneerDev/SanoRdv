@@ -63,28 +63,16 @@
     <!-- Bouton "Voir plus" devant la photo -->
     <div style="flex: 0 0 auto; padding-right: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
 <button
-  (click)="redirectToAuth(medecin._id)" 
+  (click)="redirectToDetail(medecin._id)" 
   (mouseenter)="hover = true"
   (mouseleave)="hover = false"
   [style.background-color]="hover ? '#0056b3' : '#007bff'"
-  style="
-    margin-bottom: 6px;
-    padding: 5px 12px;
-    font-size: 0.75rem;
-    border: none;
-    left: 350px;
-    top: 50px;
-    position: relative;
-    border-radius: 4px;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-    transition: background-color 0.3s ease;
-  "
-  aria-label="Voir plus - se connecter"
+  style="margin-bottom: 6px; padding: 5px 12px; font-size: 0.75rem; border: none; left: 350px; top: 50px; position: relative; border-radius: 4px; color: white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.15); transition: background-color 0.3s ease;"
+  [attr.aria-label]="'Voir plus - ' + medecin.nom"
 >
   Voir plus
 </button>
+
 
       <img
         *ngIf="medecin.photo"

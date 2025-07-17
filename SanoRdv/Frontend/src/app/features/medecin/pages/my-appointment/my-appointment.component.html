@@ -36,7 +36,7 @@
       <tr *ngFor="let appointment of filteredAppointments">
         <td>{{ appointment._id }}</td>
         <td>{{ appointment.patient.prenom }} {{ appointment.patient.nom }}</td>
-        <td>{{ formatDate(appointment.creneau.date) }} à {{ appointment.time }}</td>
+        <td>{{ formatDate(appointment.date) }} à {{ appointment.time }}</td>
         <td>{{ appointment.motif }}</td>
         <td [ngClass]="getStatusClass(appointment.statut)">
           {{ getStatusLabel(appointment.statut) }}
@@ -80,14 +80,14 @@
       </div>
     </div>
 
-    <div class="action-buttons">
+    <!-- <div class="action-buttons">
       <ng-container *ngIf="selectedAppointment?.statut === 'confirmé'">
         <button class="btn-danger" (click)="closeModal()"><span class="icon">❌</span> Fermer</button>
       </ng-container>
       <ng-container *ngIf="selectedAppointment?.statut === 'annulé'">
         <button class="btn-success" (click)="closeModal()"><span class="icon">✅</span> Fermer</button>
       </ng-container>
-    </div>
+    </div> -->
 
     <div class="action-buttons" *ngIf="selectedAppointment">
   <button *ngIf="selectedAppointment.statut !== 'annulé'" class="btn-danger"
