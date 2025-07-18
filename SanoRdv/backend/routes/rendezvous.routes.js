@@ -9,6 +9,8 @@ import {
   getRendezVousParId,
   getStatistiquesParMedecin
 } from '../controllers/rendezvous.controller.js';
+import RendezVous from '../models/rendezvous.model.js';
+
 
 import { authentifier } from '../middlewares/auth.middleware.js'; // 🔐 Ajout du middleware
 
@@ -18,11 +20,28 @@ const router = express.Router();
 router.post('/', prendreRendezVous);
 
 // ✔️ Annuler un rendez-vous
+<<<<<<< HEAD
+=======
+router.put('/:id/annuler', async (req, res) => {
+  try {
+    const rdv = await RendezVous.findByIdAndUpdate(req.params.id, { statut: 'annulé' }, { new: true });
+    if (!rdv) return res.status(404).json({ message: "Rendez-vous non trouvé" });
+    res.json(rdv);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+>>>>>>> origin/master
 router.patch('/annuler/:id', authentifier, annulerRendezVous);
 
 
 // ✔️ Modifier un rendez-vous
-router.put('/modifier', authentifier, modifierRendezVous);
+// router.put('/:id/modifier', modifierRendezVous);
+router.put('/:id/modifier', (req, res) => {
+  console.log('Requête reçue pour modifier RDV', req.params.id, req.body);
+  res.json({ success: true, message: 'Route modifier RDV OK', id: req.params.id, data: req.body });
+});
 
 // ✔️ Liste des RDV d’un médecin
 router.get('/medecin/:medecinId', authentifier, getRendezVousParMedecin);

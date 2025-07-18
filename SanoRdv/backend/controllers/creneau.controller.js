@@ -1,82 +1,99 @@
-import mongoose from 'mongoose'; //  nécessaire pour ObjectId
+import mongoose from 'mongoose';
 import Creneau from '../models/creneau.model.js';
-import Agenda from '../models/agenda.model.js';
 import { genererCreneauxParDate } from '../utils/genererCreneauxParDate.creneau.js';
 import { modifierStatusParHeure } from '../utils/modifierStatusParHeure.creneau.js';
 
-
-//-----------Fonction qui permet de générer et enregistrer----------
-// export async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles = []) {
-//   if (!agendaId || !date) {
-//     throw new Error("Champs 'agendaId' et 'date' requis.");
-//   }
-
-//   if (!mongoose.Types.ObjectId.isValid(agendaId)) {
-//     throw new Error("Identifiant 'agendaId' invalide.");
-//   }
-
-//   const objectIdAgenda = new mongoose.Types.ObjectId(agendaId); //  conversion correcte
-
-//   // 1. Générer les créneaux de la journée
-//   let timeSlots = genererCreneauxParDate(date);
-
-//   // 2. Marquer les créneaux indisponibles
-//   if (heuresIndisponibles.length > 0) {
-//     timeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles);
-//   }
-
-//   // 3. Mise à jour si créneau existant
-//   const existing = await Creneau.findOne({
-//     agenda: objectIdAgenda,
-//     date: new Date(date)
-//   });
-
-//   if (existing) {
-//     existing.timeSlots = timeSlots;
-//     const updated = await existing.save();
-//     return { operation: 'update', data: updated };
-//   }
-
-//   // 4. Création si non existant
-//   const nouveau = new Creneau({
-//     agenda: objectIdAgenda,
-//     date: new Date(date),
-//     timeSlots
-//   });
-
-//   const saved = await nouveau.save();
-//   return { operation: 'create', data: saved };
-// }
-
-export async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles) {
+export async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles = []) {
     try {
-        // Générer les créneaux
+        // 1. Validation des entrées
+        if (!agendaId || !date) {
+            throw new Error("Les champs 'agendaId' et 'date' sont obligatoires");
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+            throw new Error("Identifiant 'agendaId' invalide");
+        }
+
+        // 2. Génération des créneaux de base
         const timeSlots = await genererCreneauxParDate(date);
-        
-        // Marquer les heures indisponibles
-        const updatedTimeSlots = timeSlots.map(slot => {
-            if (heuresIndisponibles.includes(slot.time)) {
-                return { ...slot, status: 'indisponible' };
-            }
-            return slot;
+        console.log("Voici les timeSlots des creneaux:", timeSlots);
+
+        // 3. Marquage des créneaux indisponibles
+        //const updatedTimeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles);
+
+        // 4. Vérification de l'existence d'un créneau pour cette date/agenda
+        const existingCreneau = await Creneau.findOne({
+            agenda: agendaId,
+            date: new Date(date)
         });
 
-        // Créer et sauvegarder le créneau
-        const nouveauCreneau = new Creneau({
-            date: new Date(date),
-            timeSlots: updatedTimeSlots,
-            agenda: agendaId
-        });
+        // 5. Mise à jour ou création
+        let operationType = 'update';
+        let creneau;
 
-        await nouveauCreneau.save();
+        if (existingCreneau) {
+            existingCreneau.timeSlots = timeSlots;
+            creneau = await existingCreneau.save();
+        } else {
+            operationType = 'create';
+            creneau = new Creneau({
+                date: new Date(date),
+                timeSlots: timeSlots,
+                agenda: agendaId
+            });
+            await creneau.save();
+        }
 
+        // 6. Retour du résultat
         return {
             success: true,
-            data: nouveauCreneau
+            operation: operationType,
+            data: creneau
         };
+
     } catch (error) {
         console.error("Erreur lors de la génération des créneaux:", error);
-        throw error;
+        throw error; // Propagation de l'erreur pour gestion par l'appelant
+    }
+}
+
+//
+export async function modifierCreneau(req, res) {
+    try {
+    const { idcreneau, timeSlots } = req.body;
+    
+    // Rechercher le creneau avec son identifiant
+    const creneau = await Creneau.findById(idcreneau);
+    
+    // Si creneau non trouvé retourner data vide et message adequoit
+    if (!creneau) {
+        return res.status(404).json({
+            success: false,
+            data: null,
+            message: "Creneau non trouvé avec l'identifiant fourni"
+        });
+    }
+    
+    // Écraser les timeSlots du creneau trouver par les timeSlot fournie en paramètre
+    creneau.timeSlots = timeSlots;
+    
+    // Sauvegarder le creneau pour prise en compte du creneau
+    const updatedCreneau = await creneau.save();
+    
+    // Retourner le nouvel objet modifier
+    return res.status(200).json({
+        success: true,
+        data: updatedCreneau,
+        message: "Creneau modifié avec succès"
+    });
+
+    } catch (error) {
+        console.error("Erreur lors de la modification du creneau:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Erreur serveur lors de la modification du creneau",
+            error: error.message 
+        });
     }
 }
 //------------------------------------------------------------------
