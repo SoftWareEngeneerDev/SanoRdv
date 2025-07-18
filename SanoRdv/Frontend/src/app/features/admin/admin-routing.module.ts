@@ -16,7 +16,8 @@ import { DetailPatientComponent } from './pages/detail-patient/detail-patient.co
 import { DetailRendezVousComponent } from './pages/detail-rendez-vous/detail-rendez-vous.component';
 import { ModifierSpecialitesComponent } from './pages/modifier-specialites/modifier-specialites.component';
 import { AjouterSpecialitesComponent } from './pages/ajouter-specialites/ajouter-specialites.component';
-import { StatistiquesComponent } from './pages/statistiques/statistiques.component';
+import { DetailMedecinComponent } from './pages/detail-medecin/detail-medecin.component';
+
 
 const routes: Routes = [
   { path: '', 
@@ -28,15 +29,15 @@ const routes: Routes = [
            { path: 'medecins', component: MedecinsComponent},
            { path: 'ajouter-medecin', component: AjouterMedecinComponent},
            { path: 'modifier-medecin', component: ModifierMedecinComponent}, 
+           {path: 'detail-medecin', component: DetailMedecinComponent},
            { path: 'patients', component: PatientsComponent},
            { path: 'ajouter-patient', component: AjouterPatientComponent}, 
-           { path: 'detail-patient', component: DetailPatientComponent},
+           { path: 'detail-patient/:id', component: DetailPatientComponent },
            { path: 'profil', component: ProfilComponent},
            { path: 'specialites', component: SpecialitesComponent},
            { path: 'ajouter-specialites', component:   AjouterSpecialitesComponent},
            { path: 'modifier-specialites', component: ModifierSpecialitesComponent},
            { path: 'notifications', component: NotificationsComponent},
-           { path: 'rapports', component: StatistiquesComponent},
        ]
   }
 ];

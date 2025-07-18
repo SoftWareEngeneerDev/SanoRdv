@@ -1,19 +1,32 @@
-<div class="medecin-container">
-  <h3>Gestion des médecins</h3>
+<div class="container mt-4">
 
-  <div class="search-bar">
-    <input type="text" placeholder="Rechercher un médecin..." />
-    <button><i class="fa fa-search"></i></button>
+  <!-- TITRE -->
+  <h2 class="text-primary fw-bold">Gestion des médecins</h2>
+
+  <!-- BARRE DE RECHERCHE -->
+  <div class="input-group my-3">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Rechercher un médecin par nom, spécialité, email..."
+      [(ngModel)]="recherche"
+      (input)="filtrer()"
+    />
+    <button class="btn btn-primary">
+      <i class="fa fa-search"></i>
+    </button>
   </div>
 
-  <div class="top-bar">
-    <h4>Liste des médecins</h4>
-    <button class="add-btn" (click)="ajouterMedecin()">Ajouter un médecin</button>
+  <!-- TITRE ET BOUTON AJOUTER -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="text-primary fw-bold mb-0">Liste des médecins</h4>
+    <button class="btn btn-primary" (click)="ajouterMedecin()">Ajouter un médecin</button>
   </div>
 
-  <div class="table-container">
-    <table *ngIf="medecins.length > 0; else vide">
-      <thead>
+  <!-- TABLEAU -->
+  <div class="table-responsive">
+    <table class="table table-bordered text-center align-middle">
+      <thead class="table-light">
         <tr>
           <th>Nom</th>
           <th>Spécialité</th>
@@ -22,28 +35,34 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let medecin of medecins">
-          <td>{{ medecin.nom }}</td>
+      <tbody *ngIf="medecinsFiltres.length > 0; else aucunMedecin">
+        <tr *ngFor="let medecin of medecinsFiltres">
+          <td>Dr. {{ medecin.nom }} {{ medecin.prenom }}</td>
           <td>{{ medecin.specialite }}</td>
-          <td [ngClass]="{'etat actif': medecin.etat === 'Actif', 'etat inactif': medecin.etat === 'Inactif'}">
-            {{ medecin.etat }}
+          <td>
+              <span class="badge" [ngClass]="{'badge-actif': medecin.etat === 'Actif','badge-inactif': medecin.etat === 'Inactif'}">
+                           {{ medecin.etat }}</span>
           </td>
           <td>{{ medecin.email }}</td>
           <td class="actions">
-            <ng-container *ngIf="medecin.etat === 'Inactif'; else actifActions">
-              <a (click)="activer(medecin)" style="cursor:pointer">Activer</a>
-            </ng-container>
+             <ng-container *ngIf="medecin.etat === 'Inactif'; else actifActions">
+                <a *ngIf="medecin.etat?.toLowerCase() === 'actif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:orange"> Désactiver</a>
+                <a *ngIf="medecin.etat?.toLowerCase() === 'inactif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:green"> Activer</a>
+             </ng-container>
             <ng-template #actifActions>
-              <a (click)="supprimer(medecin._id!)" style="cursor:pointer">Supprimer</a>
-            </ng-template>
+                    <a (click)="modifier(medecin)" style="cursor:pointer; color: #007bff;">Modifier</a>
+                    <a (click)="supprimer(medecin)" style="cursor:pointer; color: red; font-weight: bold;">Supprimer</a>
+                    <a (click)="voirFiche(medecin)" style="cursor:pointer; color: #007bff;">Voir</a>
+           </ng-template>
           </td>
         </tr>
       </tbody>
     </table>
-
-    <ng-template #vide>
-      <p>Aucun médecin trouvé.</p>
-    </ng-template>
   </div>
+
+  <!-- MESSAGE AUCUN -->
+  <ng-template #aucunMedecin>
+    <p class="text-center text-muted">Aucun médecin trouvé.</p>
+  </ng-template>
+
 </div>

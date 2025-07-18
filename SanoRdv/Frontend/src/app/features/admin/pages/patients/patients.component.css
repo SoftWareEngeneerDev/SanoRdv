@@ -1,44 +1,36 @@
-/* src/app/components/patient-management/patient-management.component.css */
+/* Style personnalisé pour correspondre au Figma */
 .card {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.card-header {
-  border-radius: 8px 8px 0 0 !important;
+.card-title {
+  color: #333;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .table th {
-  font-weight: 600;
   background-color: #f8f9fa;
+  font-weight: 600;
 }
 
-.btn-outline-primary {
-  border-color: #0d6efd;
-  color: #0d6efd;
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
 }
 
-.btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: white;
+.btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .table-responsive {
-    overflow-x: auto;
-  }
-  
-  .table th, .table td {
-    white-space: nowrap;
-  }
-  
-  .input-group {
-    margin-bottom: 1rem;
-  }
-  
-  .text-end {
-    text-align: left !important;
-    margin-top: 1rem;
-  }
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+/* Espacement entre les boutons */
+.btn + .btn {
+  margin-left: 0.5rem;
 }

@@ -1,8 +1,12 @@
-// patients.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map, tap, take } from 'rxjs/operators';
 import { PatientService } from '../../services/patient.service';
 import { Patient } from '../../models/patient.model';
+import { ViewChild, ElementRef } from '@angular/core';
+import * as bootstrap from 'bootstrap';
+
 
 @Component({
   selector: 'app-patients',
@@ -10,59 +14,91 @@ import { Patient } from '../../models/patient.model';
   styleUrls: ['./patients.component.css']
 })
 export class PatientsComponent implements OnInit {
-  patients: Patient[] = [];
   recherche: string = '';
-  patientsFiltres: Patient[] = [];
-  isLoading = true;
+  private rechercheSubject = new BehaviorSubject<string>('');
+  @ViewChild('modalConfirmationSuppression', { static: false }) modalElement!: ElementRef;
+  private patientASupprimerId: string | null = null;
 
-  constructor(private patientService: PatientService, private router: Router) {}
+  patientsFiltres$!: Observable<Patient[]>;
+  errorMessage = '';
+  successMessage = '';
+  isLoading$ = this.patientService.isLoading;
+
+  constructor(
+    private patientService: PatientService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadPatients();
-  }
+    this.patientService.refreshPatients();
 
-  loadPatients(): void {
-    this.isLoading = true;
-    this.patientService.getPatients().subscribe({
-      next: (data) => {
-        this.patients = data;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Erreur chargement patients', err);
-        this.isLoading = false;
+    this.patientsFiltres$ = combineLatest([
+      this.patientService.patients$,
+      this.rechercheSubject.asObservable()
+    ]).pipe(
+      map(([patients, recherche]) => {
+        if (!recherche) return patients;
+        const terme = recherche.toLowerCase();
+        return patients.filter(p => 
+          (p.nom?.toLowerCase().includes(terme)) ||
+          (p.prenom?.toLowerCase().includes(terme)) ||
+          (p.email?.toLowerCase().includes(terme))
+        );
+      })
+    );
+
+    // Vérifie si on vient d'ajouter un patient
+    this.patientService.patients$.pipe(take(1)).subscribe({
+      next: () => {
+        const state = this.router.getCurrentNavigation()?.extras.state;
+        if (state?.['patientAdded']) {
+          this.successMessage = 'Patient ajouté avec succès!';
+          setTimeout(() => this.successMessage = '', 3000);
+        }
       }
     });
   }
 
-  voirDetails(id: string): void {
-    this.router.navigate(['/admin/detail-patient', id]);
-  }
-
-  activer(id: string): void {
-    this.patientService.activerPatient(id).subscribe(() => this.loadPatients());
-  }
-
-  desactiver(id: string): void {
-    this.patientService.desactiverPatient(id).subscribe(() => this.loadPatients());
-  }
-
-  supprimer(id: string): void {
-    if (confirm('Confirmer la suppression de ce patient ?')) {
-      this.patientService.supprimerPatient(id).subscribe(() => this.loadPatients());
-    }
-  }
-
-  filtrerPatients(): void {
-  // implémentation basique
-  this.patientsFiltres = this.patients.filter(p =>
-    p.nom.toLowerCase().includes(this.recherche.toLowerCase())
-  );
+  setRecherche(val: string): void {
+    this.recherche = val;
+    this.rechercheSubject.next(val);
   }
 
   ajouterPatient(): void {
     this.router.navigate(['/admin/ajouter-patient']);
   }
 
-  
+  voirDetails(id: string): void {
+    this.router.navigate(['/admin/detail-patient', id]);
+  }
+
+  supprimer(id: string): void {
+  this.patientASupprimerId = id;
+  const modal = new bootstrap.Modal(document.getElementById('modalConfirmationSuppression')!);
+  modal.show();
+}
+
+confirmerSuppression(): void {
+  if (!this.patientASupprimerId) return;
+
+  this.patientService.supprimerPatient(this.patientASupprimerId).subscribe({
+    next: () => {
+      this.successMessage = 'Patient supprimé avec succès.';
+      setTimeout(() => this.successMessage = '', 3000);
+      this.patientASupprimerId = null;
+
+      // Fermer la modale
+      const modalEl = document.getElementById('modalConfirmationSuppression');
+      if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal?.hide();
+      }
+    },
+    error: () => {
+      this.errorMessage = 'Erreur lors de la suppression du patient.';
+      setTimeout(() => this.errorMessage = '', 3000);
+    }
+  });
+}
+
 }

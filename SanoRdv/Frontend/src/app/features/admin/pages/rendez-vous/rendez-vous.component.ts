@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { RendezVous } from '../../models/rendez-vous.model';
 import { RendezVousService } from '../../services/rendez-vous.service';
+import * as bootstrap from 'bootstrap';
+
+
+
 
 @Component({
   selector: 'app-rendez-vous',
@@ -12,6 +16,12 @@ export class RendezVousComponent implements OnInit {
   filteredRendezVous: RendezVous[] = [];
   searchTerm = '';
   chargement = true;
+  motifs: string[] = ['Patient indisponible', 'Médecin absent', 'Problème technique'];
+motifSelectionne: string = '';
+autreMotif: string = '';
+rendezVousAAnnulerId: string | null = null;
+
+
 
   constructor(private rendezVousService: RendezVousService) {}
 
@@ -42,9 +52,36 @@ export class RendezVousComponent implements OnInit {
     );
   }
 
-  annulerRendezVous(id: number): void {
-    // Implémentez la logique d'annulation ici
+  rendezVousASupprimer: any = null;
+
+annulerRendezVous(id: number): void {
+  this.rendezVousAAnnulerId = id.toString();
+  this.motifSelectionne = '';
+  this.autreMotif = '';
+  const modalElement = document.getElementById('annulationModal');
+  if (modalElement) {
+    const bootstrapModal = new bootstrap.Modal(modalElement);
+    bootstrapModal.show();
   }
+}
+
+confirmerAnnulation(): void {
+  const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
+
+  if (!motif || !this.rendezVousAAnnulerId) {
+    alert('Veuillez sélectionner un motif ou vérifier le rendez-vous.');
+    return;
+  }
+
+  this.rendezVousService.annulerRendezVous(this.rendezVousAAnnulerId, motif).subscribe(() => {
+    this.rendezVousAAnnulerId = null;
+    const modal = bootstrap.Modal.getInstance(document.getElementById('annulationModal')!);
+    modal?.hide();
+    this.searchRendezVous();
+  });
+}
+
+
 
   getStatusClass(statut: string): string {
     switch (statut) {
