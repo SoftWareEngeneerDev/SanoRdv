@@ -16,18 +16,16 @@ export class MedecinService {
     return this.http.get(`${this.rdvUrl}/medecin/${medecinId}`);
   }
 
- annulerRendezVous(id: string): Observable<any> {
-  return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
-}
- confirmerRendezVous(id: string): Observable<any> {
-  return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
-}
+  annulerRendezVous(id: string): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
+  }
+  confirmerRendezVous(id: string): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
+  }
 
-
-modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
-  return this.http.put(`${this.rdvUrl}/${rendezvousId}/modifier`, data);
-}
-
+  modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/${rendezvousId}/modifier`, data);
+  }
 
   ajouterCreneau(payload: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/creneaux`, payload);
@@ -38,16 +36,15 @@ modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
   }
 
   getMedecinById(id: string): Observable<any> {
-  return this.http.get(`${this.apiUrl}/${id}`);
-}
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
   updateMedecin(id: string, data: any): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${id}`, data);
-}
+    return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
 
   getAgendaId(): string {
-  // Suppose que tu as stocké le médecin connecté dans localStorage ou via API
-  const medecin = JSON.parse(localStorage.getItem('medecin') || '{}');
-  return medecin.agendaId;
-}
+    const medecin = JSON.parse(localStorage.getItem('medecin') || '{}');
+    return medecin.agendaId;
+  }
 
 }
