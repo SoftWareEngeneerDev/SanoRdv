@@ -1,5 +1,5 @@
 export function validerDate(date) {
-    // 1. Vérification basique
+   // 1. Vérification basique
     if (!date) return false;
     
     // 2. Conversion en Date
@@ -17,15 +17,3 @@ export function validerDate(date) {
     currentDate.setHours(0, 0, 0, 0); // Comparaison sans l'heure
     return dateObj >= currentDate;
 }
-
-
-// export function validerDate(date) {
-//     if (!date) return false;
-    
-//     const dateObj = new Date(date);
-//     if (isNaN(dateObj.getTime())) return false;
-    
-//     // Conversion au format YYYY-MM-DD pour comparaison
-//     const isoDate = dateObj.toISOString().split('T')[0];
-//     return /^\d{4}-\d{2}-\d{2}$/.test(isoDate);
-// }
