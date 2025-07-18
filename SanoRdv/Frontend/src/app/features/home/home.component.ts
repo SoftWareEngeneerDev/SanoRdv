@@ -33,6 +33,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
   private searchTerms = new Subject<string>();
 
   constructor(private http: HttpClient, private router: Router) {}
+  
 
   ngOnInit(): void {
     this.loadFeaturedMedecins();
@@ -193,10 +194,11 @@ export class HomeComponent implements AfterViewInit, OnInit {
   }
 
   redirectToDetail(medecinId: string): void {
-    if (medecinId) {
-      this.router.navigate(['/medecinDetail', medecinId]);
-    }
+  console.log('Redirection vers le médecin avec ID:', medecinId);
+  if (medecinId) {
+    this.router.navigate(['/medecinDetail', medecinId]);
   }
+}
 
   private autocomplete(query: string) {
     const params = new HttpParams()

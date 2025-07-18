@@ -1,5 +1,4 @@
-
- <div class="view-container" *ngIf="profile">
+<div class="view-container" *ngIf="profile">
   <div class="header">
     <img [src]="profile.photo || 'https://via.placeholder.com/100'" alt="Photo" class="profile-photo">
     <div class="info">
@@ -10,15 +9,10 @@
 
   <div class="info-boxes">
     <div class="box">
-      <h4>Information personnelles</h4>
+      <h4>Informations personnelles</h4>
       <p><strong>Sexe:</strong> {{ profile.sexe }}</p>
-      <p><strong>Âge:</strong> {{ calculateAge(profile.dateNaissance) }} ans</p>
+      <p><strong>Âge:</strong> {{ age }} ans</p>
       <p><strong>Expérience:</strong> {{ profile.anneeExperience }} ans</p>
-    </div>
-    <div class="box">
-      <h4>Contact</h4>
-      <p><strong>Téléphone:</strong> {{ profile.telephone }}</p>
-      <p><strong>Email:</strong> {{ profile.email }}</p>
     </div>
   </div>
 
@@ -33,8 +27,7 @@
 
   <div class="actions">
     <button class="btn-primary" (click)="prendreRendezVous()">
-  <i class="fas fa-calendar-check"></i> Prendre rendez-vous
-</button>
-
+      <i class="fas fa-calendar-check"></i> Prendre rendez-vous
+    </button>
   </div>
 </div>

@@ -9,6 +9,7 @@ import { DetailMedecinService } from 'src/app/shared/services/detail-medecin.ser
 })
 export class MedecinDetailComponent implements OnInit {
   profile: any = null;
+  age: number = 0;
   loading = true;
   error: string | null = null;
 
@@ -32,6 +33,7 @@ export class MedecinDetailComponent implements OnInit {
     this.detailMedecinService.getMedecinDetails(id).subscribe({
       next: (data) => {
         this.profile = data;
+        this.age = this.calculateAge(data.dateNaissance);
         this.loading = false;
       },
       error: (err) => {
@@ -43,17 +45,23 @@ export class MedecinDetailComponent implements OnInit {
   }
 
   calculateAge(dateNaissance: string): number {
-    return this.detailMedecinService.calculateAge(dateNaissance);
+    const birthDate = new Date(dateNaissance);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
   }
 
-  // S’il veut prendre rendez-vous mais il n’est pas connecté
   prendreRendezVous(): void {
     if (!this.profile || !this.profile._id) {
       this.error = "Impossible de prendre rendez-vous, médecin inconnu.";
       return;
     }
 
-    this.router.navigate(['/login'], {
+    this.router.navigate(['/auth/login'], {
       queryParams: {
         redirect: `/prendre-rendezvous/${this.profile._id}`
       },

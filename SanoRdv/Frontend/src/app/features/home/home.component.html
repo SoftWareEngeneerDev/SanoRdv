@@ -8,7 +8,7 @@
         </p>
       </div>
 
-      <div class="search-container" style="position: relative;">
+      <div class="search-container" style="position: relative">
         <input
           type="text"
           class="search-input"
@@ -37,7 +37,18 @@
           id="suggestions-list"
           class="autocomplete-suggestions"
           role="listbox"
-          style="position: absolute; z-index: 1000; background: white; width: 100%; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; margin-top: 0; padding-left: 0; list-style: none;"
+          style="
+            position: absolute;
+            z-index: 1000;
+            background: white;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            margin-top: 0;
+            padding-left: 0;
+            list-style: none;
+          "
         >
           <li
             *ngFor="let suggestion of suggestions"
@@ -45,7 +56,7 @@
             tabindex="0"
             (click)="onSearchByLetter(suggestion)"
             (keydown.enter)="onSearchByLetter(suggestion)"
-            style="padding: 8px; cursor: pointer;"
+            style="padding: 8px; cursor: pointer"
             [attr.aria-selected]="false"
           >
             {{ suggestion }}
@@ -54,23 +65,48 @@
       </div>
 
       <!-- Résultats recherche -->
-      <div *ngIf="medecins.length > 0" class="search-results mt-4" role="list" aria-label="Liste des médecins trouvés">
+      <div
+        *ngIf="medecins.length > 0"
+        class="search-results mt-4"
+        role="list"
+        aria-label="Liste des médecins trouvés"
+      >
         <div
           *ngFor="let medecin of medecins"
           class="card shadow-sm mb-3 p-2 d-flex flex-row align-items-center"
-          style="max-width: 500px; margin: 0 auto;"
+          style="max-width: 500px; margin: 0 auto"
           role="listitem"
           tabindex="0"
         >
           <div
-            style="flex: 0 0 auto; padding-right: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;"
+            style="
+              flex: 0 0 auto;
+              padding-right: 10px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            "
           >
             <button
               (click)="redirectToDetail(medecin._id)"
               (mouseenter)="hover = true"
               (mouseleave)="hover = false"
               [style.background-color]="hover ? '#0056b3' : '#007bff'"
-              style="margin-bottom: 6px; padding: 5px 12px; font-size: 0.75rem; border: none; left: 350px; top: 50px; position: relative; border-radius: 4px; color: white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.15); transition: background-color 0.3s ease;"
+              style="
+                margin-bottom: 6px;
+                padding: 5px 12px;
+                font-size: 0.75rem;
+                border: none;
+                left: 350px;
+                top: 50px;
+                position: relative;
+                border-radius: 4px;
+                color: white;
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+                transition: background-color 0.3s ease;
+              "
               [attr.aria-label]="'Voir plus - ' + medecin.nom"
             >
               Voir plus
@@ -79,14 +115,23 @@
               *ngIf="medecin.photo"
               [src]="'http://localhost:3000/' + medecin.photo"
               alt="Photo de {{ medecin.nom }}"
-              style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;"
+              style="
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 50%;
+              "
             />
           </div>
 
-          <div style="flex: 1 1 auto;">
+          <div style="flex: 1 1 auto">
             <h5 class="mb-1">{{ medecin.nom }} {{ medecin.prenom }}</h5>
-            <p class="mb-1 text-primary"><strong>{{ medecin.specialite }}</strong></p>
-            <p class="mb-0 text-muted"><i class="bi bi-geo-alt"></i> {{ medecin.localite }}</p>
+            <p class="mb-1 text-primary">
+              <strong>{{ medecin.specialite }}</strong>
+            </p>
+            <p class="mb-0 text-muted">
+              <i class="bi bi-geo-alt"></i> {{ medecin.localite }}
+            </p>
           </div>
         </div>
       </div>
@@ -121,10 +166,12 @@
             </div>
             <h5 class="card-title fw-bold">FACILITEZ VOTRE SANTÉ</h5>
             <p class="card-text">
-              Prenez rendez-vous rapidement avec des médecins et spécialistes près de chez vous.
+              Prenez rendez-vous rapidement avec des médecins et spécialistes
+              près de chez vous.
             </p>
             <p class="card-text">
-              Une plateforme simple, fiable et sécurisée pour gérer vos consultations en toute sérénité.
+              Une plateforme simple, fiable et sécurisée pour gérer vos
+              consultations en toute sérénité.
             </p>
           </div>
         </div>
@@ -138,7 +185,9 @@
             </div>
             <h5 class="card-title fw-bold">PRISE DE RENDEZ-VOUS SIMPLIFIÉE</h5>
             <p class="card-text">
-              Une solution tout-en-un pour patients et professionnels : trouvez un praticien, gérez vos agendas, et suivez vos consultations, le tout en ligne et en toute sécurité.
+              Une solution tout-en-un pour patients et professionnels : trouvez
+              un praticien, gérez vos agendas, et suivez vos consultations, le
+              tout en ligne et en toute sécurité.
             </p>
           </div>
         </div>
@@ -152,7 +201,8 @@
             </div>
             <h5 class="card-title fw-bold">ON S’OCCUPE DU RESTE</h5>
             <p class="card-text">
-              Prenez soin de vous. On gère vos rendez-vous, rappels, et accès aux praticiens facilement, en ligne.
+              Prenez soin de vous. On gère vos rendez-vous, rappels, et accès
+              aux praticiens facilement, en ligne.
             </p>
           </div>
         </div>
@@ -166,7 +216,9 @@
   <div class="container py-5 text-center">
     <h2 class="fw-bold mb-4 text-uppercase text-primary">NOS MÉDECINS</h2>
 
-    <div class="carousel-controls mb-3 d-flex justify-content-between align-items-center">
+    <div
+      class="carousel-controls mb-3 d-flex justify-content-between align-items-center"
+    >
       <button class="btn btn-outline-primary" id="prevBtn">
         <i class="bi bi-chevron-left fs-4"></i>
       </button>
@@ -181,31 +233,38 @@
     </div>
 
     <!-- Carousel médecins -->
-    <div class="carousel-cards d-flex flex-nowrap overflow-auto" #carouselContainer>
+    <div
+      class="carousel-cards d-flex flex-nowrap overflow-auto"
+      #carouselContainer
+    >
       <div
         *ngFor="let medecin of featuredMedecins"
         class="card card-medecin text-center me-3"
-        style="min-width: 200px;"
+        style="min-width: 200px"
       >
         <img
-  [src]="medecin.photo ? medecin.photo : 'assets/default-avatar.png'"
-  alt="Photo"
-  style="width: 100px; height: 100px; object-fit: cover;"
-/>
+          [src]="medecin.photo ? medecin.photo : 'assets/default-avatar.png'"
+          alt="Photo"
+          style="width: 100px; height: 100px; object-fit: cover"
+        />
 
         <div class="card-body">
-          <h5 class="card-title fw-bold mt-3">Dr {{ medecin.prenom }} {{ medecin.nom }}</h5>
+          <h5 class="card-title fw-bold mt-3">
+            Dr {{ medecin.prenom }} {{ medecin.nom }}
+          </h5>
           <p class="text-primary mb-1">{{ medecin.specialite }}</p>
           <p class="text-muted small">{{ medecin.localite }}</p>
           <button (click)="redirectToDetail(medecin.id)" class="btn btn-sm btn-outline-primary">
-            Plus d'infos
-          </button>
+             Plus d'infos </button>
         </div>
       </div>
 
       <!-- Aucun médecin -->
-      <div *ngIf="featuredMedecins.length === 0 && !loadingMedecins" class="alert alert-info w-100">
-        {{ errorMessage || 'Aucun médecin disponible pour le moment.' }}
+      <div
+        *ngIf="featuredMedecins.length === 0 && !loadingMedecins"
+        class="alert alert-info w-100"
+      >
+        {{ errorMessage || "Aucun médecin disponible pour le moment." }}
       </div>
 
       <!-- Chargement -->
