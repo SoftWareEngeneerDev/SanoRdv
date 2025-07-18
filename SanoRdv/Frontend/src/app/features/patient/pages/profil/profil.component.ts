@@ -39,6 +39,9 @@ export class ProfilComponent implements OnInit {
   medecinId: string | null = null;
   medecinData: any = null;
 
+  // **Ajout de patientId pour utiliser dans updateProfile**
+  patientId: string | null = null;
+
   constructor(
     private patientService: PatientService,
     private notificationsService: NotificationsService,
@@ -49,6 +52,17 @@ export class ProfilComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Récupérer patientId depuis localStorage ou token (à adapter selon ta gestion d'auth)
+    const localUser = localStorage.getItem('user');
+    if (localUser) {
+      try {
+        const patient: Patient = JSON.parse(localUser);
+        this.patientId = patient._id || null; // Assure-toi que l'ID est stocké ici
+      } catch {
+        this.patientId = null;
+      }
+    }
+
     this.loadUserData();
 
     this.medecinId = this.route.snapshot.paramMap.get('medecinId');
@@ -150,6 +164,11 @@ export class ProfilComponent implements OnInit {
       return;
     }
 
+    if (!this.patientId) {
+      this.errorMessages = "Impossible d'identifier l'utilisateur connecté.";
+      return;
+    }
+
     this.isSubmitting = true;
     this.errorMessages = '';
     this.successMessage = '';
@@ -168,7 +187,7 @@ export class ProfilComponent implements OnInit {
       formData.append('photo', this.selectedFile);
     }
 
-    this.patientService.updateProfile(formData).subscribe({
+    this.patientService.updateProfile(this.patientId, formData).subscribe({
       next: () => {
         this.successMessage = 'Profil mis à jour avec succès !';
 
@@ -180,15 +199,8 @@ export class ProfilComponent implements OnInit {
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
 
-        // this.notificationsService
-        //   .creerNotification({
-        //     message: 'Vos informations personnelles ont été modifiées avec succès.',
-        //     dateNotification: new Date().toISOString(),
-        //     read: false,
-        //   })
-        //   .subscribe();
 
-        this.router.navigate(['/patient/dashboard']);
+        this.router.navigate(['/patient/modifier']);
       },
       error: () => {
         this.errorMessages = 'Erreur lors de la mise à jour';

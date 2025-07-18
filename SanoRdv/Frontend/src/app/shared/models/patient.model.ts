@@ -12,4 +12,6 @@ export interface Patient {
  groupeSanguin?: string;
  photo?: string;
  adresse?: string;
+ id?: string;
+  _id?: string;
 }
