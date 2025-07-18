@@ -22,6 +22,26 @@ export class DashboardComponent implements OnInit {
   cancelledCount: number = 0;          // Annulés
 
   ngOnInit(): void {
+
+    /**const today = new Date();
+  this.monthName = today.toLocaleDateString('fr-FR', { month: 'long' });
+  this.dayNumber = today.getDate();
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const medecinId = user._id;
+
+  if (medecinId) {
+    this.medecinService.getStatistiquesRendezVous(medecinId).subscribe(stats => {
+      this.appointmentCount = stats.total;
+      this.confirmedCount = stats.confirmés;
+      this.cancelledCount = stats.annulés;
+    }, err => {
+      console.error('❌ Erreur chargement statistiques:', err);
+    });
+  } else {
+    console.error('❌ Médecin non connecté');
+  }
+*/
     const today = new Date();
     this.monthName = today.toLocaleDateString('fr-FR', { month: 'long' });
     this.dayNumber = today.getDate();

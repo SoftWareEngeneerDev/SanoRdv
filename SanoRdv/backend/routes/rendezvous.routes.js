@@ -5,7 +5,9 @@ import {
   modifierRendezVous,
   getRendezVousParMedecin,
   getRendezVousParPatient,
-  getTousLesRendezVousPourAdmin
+  getTousLesRendezVousPourAdmin,
+  getRendezVousParId,
+  getStatistiquesParMedecin
 } from '../controllers/rendezvous.controller.js';
 import RendezVous from '../models/rendezvous.model.js';
 
@@ -18,7 +20,6 @@ const router = express.Router();
 router.post('/', prendreRendezVous);
 
 // ✔️ Annuler un rendez-vous
-// router.put('/annuler',authentifier, annulerRendezVous);
 router.put('/:id/annuler', async (req, res) => {
   try {
     const rdv = await RendezVous.findByIdAndUpdate(req.params.id, { statut: 'annulé' }, { new: true });
@@ -29,6 +30,8 @@ router.put('/:id/annuler', async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
+router.patch('/annuler/:id', authentifier, annulerRendezVous);
+
 
 // ✔️ Modifier un rendez-vous
 // router.put('/:id/modifier', modifierRendezVous);
@@ -39,11 +42,16 @@ router.put('/:id/modifier', (req, res) => {
 
 // ✔️ Liste des RDV d’un médecin
 router.get('/medecin/:medecinId', authentifier, getRendezVousParMedecin);
+router.get('/statistiques/:medecinId', authentifier, getStatistiquesParMedecin);
+
 
 // ✔️ Liste des RDV d’un patient
 router.get('/patient/:patientId', authentifier, getRendezVousParPatient);
 
 // ✔️ Tous les RDV (admin uniquement)
 router.get('/admin/tous', authentifier, getTousLesRendezVousPourAdmin);
+router.get('/:id', authentifier, getRendezVousParId);
+
+
 
 export default router;

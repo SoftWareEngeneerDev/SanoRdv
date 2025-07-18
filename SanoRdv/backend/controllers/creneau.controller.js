@@ -1,57 +1,105 @@
-import mongoose from 'mongoose'; // ✅ nécessaire pour ObjectId
+import mongoose from 'mongoose';
 import Creneau from '../models/creneau.model.js';
-import Agenda from '../models/agenda.model.js';
 import { genererCreneauxParDate } from '../utils/genererCreneauxParDate.creneau.js';
 import { modifierStatusParHeure } from '../utils/modifierStatusParHeure.creneau.js';
 
+export async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles = []) {
+    try {
+        // 1. Validation des entrées
+        if (!agendaId || !date) {
+            throw new Error("Les champs 'agendaId' et 'date' sont obligatoires");
+        }
 
-//-----------Fonction qui permet de générer et enregistrer----------
-async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles = []) {
-  if (!agendaId || !date) {
-    throw new Error("Champs 'agendaId' et 'date' requis.");
-  }
+        if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+            throw new Error("Identifiant 'agendaId' invalide");
+        }
 
-  if (!mongoose.Types.ObjectId.isValid(agendaId)) {
-    throw new Error("Identifiant 'agendaId' invalide.");
-  }
+        // 2. Génération des créneaux de base
+        const timeSlots = await genererCreneauxParDate(date);
+        console.log("Voici les timeSlots des creneaux:", timeSlots);
 
-  const objectIdAgenda = new mongoose.Types.ObjectId(agendaId); // ✅ conversion correcte
+        // 3. Marquage des créneaux indisponibles
+        //const updatedTimeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles);
 
-  // 1. Générer les créneaux de la journée
-  let timeSlots = genererCreneauxParDate(date);
+        // 4. Vérification de l'existence d'un créneau pour cette date/agenda
+        const existingCreneau = await Creneau.findOne({
+            agenda: agendaId,
+            date: new Date(date)
+        });
 
-  // 2. Marquer les créneaux indisponibles
-  if (heuresIndisponibles.length > 0) {
-    timeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles, 'indisponible');
-  }
+        // 5. Mise à jour ou création
+        let operationType = 'update';
+        let creneau;
 
-  // 3. Mise à jour si créneau existant
-  const existing = await Creneau.findOne({
-    agenda: objectIdAgenda,
-    date: new Date(date)
-  });
+        if (existingCreneau) {
+            existingCreneau.timeSlots = timeSlots;
+            creneau = await existingCreneau.save();
+        } else {
+            operationType = 'create';
+            creneau = new Creneau({
+                date: new Date(date),
+                timeSlots: timeSlots,
+                agenda: agendaId
+            });
+            await creneau.save();
+        }
 
-  if (existing) {
-    existing.timeSlots = timeSlots;
-    const updated = await existing.save();
-    return { operation: 'update', data: updated };
-  }
+        // 6. Retour du résultat
+        return {
+            success: true,
+            operation: operationType,
+            data: creneau
+        };
 
-  // 4. Création si non existant
-  const nouveau = new Creneau({
-    agenda: objectIdAgenda,
-    date: new Date(date),
-    timeSlots
-  });
-
-  const saved = await nouveau.save();
-  return { operation: 'create', data: saved };
+    } catch (error) {
+        console.error("Erreur lors de la génération des créneaux:", error);
+        throw error; // Propagation de l'erreur pour gestion par l'appelant
+    }
 }
 
+//
+export async function modifierCreneau(req, res) {
+    try {
+    const { idcreneau, timeSlots } = req.body;
+    
+    // Rechercher le creneau avec son identifiant
+    const creneau = await Creneau.findById(idcreneau);
+    
+    // Si creneau non trouvé retourner data vide et message adequoit
+    if (!creneau) {
+        return res.status(404).json({
+            success: false,
+            data: null,
+            message: "Creneau non trouvé avec l'identifiant fourni"
+        });
+    }
+    
+    // Écraser les timeSlots du creneau trouver par les timeSlot fournie en paramètre
+    creneau.timeSlots = timeSlots;
+    
+    // Sauvegarder le creneau pour prise en compte du creneau
+    const updatedCreneau = await creneau.save();
+    
+    // Retourner le nouvel objet modifier
+    return res.status(200).json({
+        success: true,
+        data: updatedCreneau,
+        message: "Creneau modifié avec succès"
+    });
+
+    } catch (error) {
+        console.error("Erreur lors de la modification du creneau:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Erreur serveur lors de la modification du creneau",
+            error: error.message 
+        });
+    }
+}
 //------------------------------------------------------------------
 
 
-// ✅ Supprimer créneau
+//  Supprimer créneau
 export async function supprimerCreneau(agendaId, date) {
   if (!agendaId || !date) {
     throw new Error("Les champs 'agendaId' et 'date' sont requis");
@@ -75,7 +123,7 @@ export async function supprimerCreneau(agendaId, date) {
   return result;
 }
 
-// ✅ Obtenir agenda avec ses créneaux
+//  Obtenir agenda avec ses créneaux
 export const obtenirAgenda = async (req, res) => {
   try {
     const { agendaId } = req.params;
@@ -96,7 +144,7 @@ export const obtenirAgenda = async (req, res) => {
   }
 };
 
-// ✅ Obtenir créneaux par date
+// Obtenir créneaux par date
 export async function getCreneauxParDate(agendaId, date) {
   if (!agendaId || !date) {
     throw new Error("Les champs 'agendaId' et 'date' sont requis");
@@ -120,7 +168,7 @@ export async function getCreneauxParDate(agendaId, date) {
   return creneau;
 }
 
-// ✅ Filtrer les créneaux par statut
+//  Filtrer les créneaux par statut
 export async function filtrerCreneauxParStatut(agendaId, date, statut) {
   if (!agendaId || !date || !statut) {
     throw new Error("Les champs 'agendaId', 'date' et 'statut' sont requis");
@@ -150,7 +198,7 @@ export async function filtrerCreneauxParStatut(agendaId, date, statut) {
   };
 }
 
-// ✅ Export final
+//  Export final
 export default {
   genererEtEnregistrerCreneau,
   supprimerCreneau,
