@@ -24,7 +24,7 @@ export function getHeuresIndisponibles() {
     return [...heuresIndisponibles]; // Retourne une copie du tableau
 }
 
-// Fonction pour réinitialiser après envoi
-export function reinitialiserIndisponibles() {
-    heuresIndisponibles = [];
-}
+// // Fonction pour réinitialiser après envoi
+// export function reinitialiserIndisponibles() {
+//     heuresIndisponibles = [];
+// }

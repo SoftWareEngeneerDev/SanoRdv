@@ -131,7 +131,7 @@ export const getRendezVousParMedecin = async (req, res) => {
     }
 
     const rendezVous = await RendezVous.find(match)
-    .populate('patient', 'prenom nom email')
+    .populate('patient', 'prenom nom email telephone')
     .populate('creneau', 'date')
     .sort({ date: -1, time: -1 });
 
@@ -228,7 +228,7 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
     }
 
     let rendezVous = await RendezVous.find(match)
-      .populate('patient', 'nom prenom email dateNaissance')
+      .populate('patient', 'nom prenom email telephone dateNaissance')
       .populate('medecin', 'nom prenom email specialite')
       .populate('creneau', 'date')
       .sort({ date: -1, time: -1 });
