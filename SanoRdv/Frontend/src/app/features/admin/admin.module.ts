@@ -53,6 +53,7 @@ import { DetailMedecinComponent } from './pages/detail-medecin/detail-medecin.co
     FormsModule,
     ReactiveFormsModule,
 
+
   ]
 })
 export class AdminModule { }

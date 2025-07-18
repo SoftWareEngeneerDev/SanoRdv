@@ -1,4 +1,31 @@
 export function validerDate(date) {
-    const isValidDate = !isNaN(new Date(date).getTime());
-    return isValidDate;
+    // 1. Vérification basique
+    if (!date) return false;
+    
+    // 2. Conversion en Date
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return false;
+    
+    // 3. Validation du format si c'est une string
+    if (typeof date === 'string') {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!regex.test(date)) return false;
+    }
+    
+    // 4. Optionnel : vérification date future
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Comparaison sans l'heure
+    return dateObj >= currentDate;
 }
+
+
+// export function validerDate(date) {
+//     if (!date) return false;
+    
+//     const dateObj = new Date(date);
+//     if (isNaN(dateObj.getTime())) return false;
+    
+//     // Conversion au format YYYY-MM-DD pour comparaison
+//     const isoDate = dateObj.toISOString().split('T')[0];
+//     return /^\d{4}-\d{2}-\d{2}$/.test(isoDate);
+// }

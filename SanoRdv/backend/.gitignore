@@ -33,6 +33,7 @@ Thumbs.db
 # === Git ===
 .git/
 .gitignore
+=======
 node_modules/
 .env
 .env.local
@@ -77,3 +78,6 @@ node_modules/
 
 # === Optional: ignore test output ===
 test-output/
+
+# Fichier ignorer de KAGAMBEGA
+Dossier_test/
