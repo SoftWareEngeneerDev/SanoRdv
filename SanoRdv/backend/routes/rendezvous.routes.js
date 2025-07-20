@@ -20,8 +20,6 @@ const router = express.Router();
 router.post('/', prendreRendezVous);
 
 // ✔️ Annuler un rendez-vous
-<<<<<<< HEAD
-=======
 router.put('/:id/annuler', async (req, res) => {
   try {
     const rdv = await RendezVous.findByIdAndUpdate(req.params.id, { statut: 'annulé' }, { new: true });
@@ -32,7 +30,6 @@ router.put('/:id/annuler', async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
->>>>>>> origin/master
 router.patch('/annuler/:id', authentifier, annulerRendezVous);
 
 

@@ -7,11 +7,10 @@
     <div class="calendar-container">
       <!-- Barre de navigation mois -->
       <div class="calendar-header-wrapper">
-  <button (click)="moisPrecedent()" class="nav-arrow nav-left">‹</button>
-  <h3>{{ viewDate | date: 'LLLL yyyy':'':'fr' }}</h3>
-  <button (click)="moisSuivant()" class="nav-arrow nav-right">›</button>
-</div>
-
+        <button (click)="moisPrecedent()" class="nav-arrow nav-left">‹</button>
+        <h3>{{ viewDate | date: 'LLLL yyyy':'':'fr' }}</h3>
+        <button (click)="moisSuivant()" class="nav-arrow nav-right">›</button>
+      </div>
 
       <!-- Calendrier Angular -->
       <mwl-calendar-month-view
@@ -32,6 +31,8 @@
           *ngFor="let h of horairesDispo"
           class="slot-btn"
           [class.selected]="h === selectedCreneau"
+          [class.reserved]="isReserved(h)"
+          [disabled]="isReserved(h)"
           (click)="selectCreneau(h)">
           {{ h }}
         </button>

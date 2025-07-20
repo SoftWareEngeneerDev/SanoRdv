@@ -1,6 +1,5 @@
 <div
   class="page-container"
-  [ngClass]="{ 'sidebar-collapsed': isSidebarCollapsed }"
 >
   <div class="main-content">
     <div class="container">
@@ -27,20 +26,7 @@
               Changer la photo
             </button>
 
-            <!-- Messages globaux -->
-            <div
-              *ngIf="successMessage"
-              class="alert alert-success text-center mt-3"
-            >
-              {{ successMessage }}
-            </div>
-            <div
-              *ngIf="errorMessages"
-              class="alert alert-danger text-center mt-3"
-            >
-              {{ errorMessages }}
-            </div>
-
+          
             <input
               type="file"
               #fileInput
@@ -238,7 +224,7 @@
               </div>
             </div>
 
-            <!-- Messages -->
+            <!-- Messages d'alertes-->
             <div class="form-messages">
               <p class="success-message" *ngIf="successMessage">
                 {{ successMessage }}

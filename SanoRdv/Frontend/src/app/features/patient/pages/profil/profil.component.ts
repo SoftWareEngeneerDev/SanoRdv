@@ -1,11 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { PatientService } from '../../../../shared/services/patient.service';
-import { NotificationsService } from '../../../../shared/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Patient } from '../../../../shared/models/patient.model';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-profil',
@@ -28,47 +26,35 @@ export class ProfilComponent implements OnInit {
     photo: null,
   };
 
-  private API_BASE_URL = 'http://localhost:3000';
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
   isSubmitting = false;
-  errorMessages = '';
-  successMessage = '';
+
+  successMessage: string = '';
+  errorMessages: string = '';
+  showAlert: boolean = false;
   isSidebarCollapsed = false;
 
-  medecinId: string | null = null;
-  medecinData: any = null;
-
-  // **Ajout de patientId pour utiliser dans updateProfile**
   patientId: string | null = null;
 
   constructor(
     private patientService: PatientService,
-    private notificationsService: NotificationsService,
     private router: Router,
-    private sanitizer: DomSanitizer,
-    private route: ActivatedRoute,
-    private http: HttpClient
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
-    // Récupérer patientId depuis localStorage ou token (à adapter selon ta gestion d'auth)
     const localUser = localStorage.getItem('user');
     if (localUser) {
       try {
         const patient: Patient = JSON.parse(localUser);
-        this.patientId = patient._id || null; // Assure-toi que l'ID est stocké ici
+        this.patientId = patient._id || null;
       } catch {
         this.patientId = null;
       }
     }
 
     this.loadUserData();
-
-    this.medecinId = this.route.snapshot.paramMap.get('medecinId');
-    if (this.medecinId) {
-      this.loadMedecinData(this.medecinId);
-    }
   }
 
   loadUserData(): void {
@@ -89,6 +75,7 @@ export class ProfilComponent implements OnInit {
       },
       error: () => {
         this.errorMessages = 'Erreur lors du chargement du profil';
+        this.showTemporaryAlert();
       },
     });
   }
@@ -166,12 +153,14 @@ export class ProfilComponent implements OnInit {
 
     if (!this.patientId) {
       this.errorMessages = "Impossible d'identifier l'utilisateur connecté.";
+      this.showTemporaryAlert();
       return;
     }
 
     this.isSubmitting = true;
     this.errorMessages = '';
     this.successMessage = '';
+    this.showAlert = false;
 
     const formData = new FormData();
 
@@ -190,6 +179,8 @@ export class ProfilComponent implements OnInit {
     this.patientService.updateProfile(this.patientId, formData).subscribe({
       next: () => {
         this.successMessage = 'Profil mis à jour avec succès !';
+        this.errorMessages = '';
+        this.showAlert = true;
 
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         const updatedUser = {
@@ -199,11 +190,15 @@ export class ProfilComponent implements OnInit {
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
 
-
-        this.router.navigate(['/patient/modifier']);
+        setTimeout(() => {
+          this.showAlert = false;
+          this.router.navigate(['/patient/modifier']);
+        }, 3000);
       },
       error: () => {
+        this.successMessage = '';
         this.errorMessages = 'Erreur lors de la mise à jour';
+        this.showTemporaryAlert();
       },
       complete: () => {
         this.isSubmitting = false;
@@ -211,20 +206,10 @@ export class ProfilComponent implements OnInit {
     });
   }
 
-  loadMedecinData(id: string): void {
-    this.http.get<any>(`${this.API_BASE_URL}/api/medecins/${id}`).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.medecinData = response.data;
-          console.log('Données du médecin chargées:', this.medecinData);
-        } else {
-          this.errorMessages = response.message || 'Médecin non trouvé.';
-        }
-      },
-      error: (err) => {
-        this.errorMessages = 'Erreur lors du chargement des données du médecin.';
-        console.error(err);
-      },
-    });
+  showTemporaryAlert(): void {
+    this.showAlert = true;
+    setTimeout(() => {
+      this.showAlert = false;
+    }, 3000);
   }
 }

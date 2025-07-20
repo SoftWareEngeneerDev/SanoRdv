@@ -42,12 +42,9 @@ export class MedecinService {
     return this.http.put(`${this.apiUrl}/${medecinId}/photo`, formData);
   }
 
-  // Obtenir les créneaux disponibles à partir de l'agenda
-  getAgendaIdByMedecinId(medecinId: string): Observable<string> {
-    return this.http.get<string>(`${this.apiUrl}/medecins/${medecinId}/agenda`);
-  }
+getAgendaIdByMedecinId(medecinId: string): Observable<string> {
+  return this.http.get<string>(`${this.apiUrl}/${medecinId}/agenda`);
+}
 
-  getCreneauxDispoByAgenda(agendaId: string, date: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/agendas/${agendaId}/disponibilites?date=${date}`);
-  }
+
 }
