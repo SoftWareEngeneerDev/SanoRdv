@@ -13,6 +13,28 @@
   overflow-x: hidden;
   overflow-y: hidden;
 }
+/* Lien normal avec hauteur réduite */
+.patient-sidebar nav.nav.flex-column a.nav-link {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 9px;
+  padding: 6px 10px; /* <-- hauteur réduite */
+  font-size: 0.95rem; /* facultatif : texte légèrement plus petit */
+}
+
+/* Survol */
+.patient-sidebar nav.nav.flex-column a.nav-link:hover {
+  background-color: #007AFF;
+  color: white;
+  text-decoration: none;
+  border-radius: 9px;
+}
+
+/* Lien actif */
+.patient-sidebar nav.nav.flex-column a.nav-link.active-link {
+  background-color: #007AFF;
+  color: white;
+  border-radius: 9px;
+}
 
 /* Titres */
 h5 {
