@@ -1,8 +1,11 @@
 import express from 'express';
 import CreneauController from '../controllers/creneau.controller.js';
 import  { modifierCreneau } from '../controllers/creneau.controller.js';
+import  { reserverCreneau } from '../controllers/creneau.controller.js';
 const router = express.Router();
 const controller = CreneauController; // Correction: utilisation cohérente du contrôleur
+
+
 
 // Middleware de validation pour les routes POST/PUT
 router.use(express.json());
@@ -28,6 +31,7 @@ router.post('/genererEtEnregistrer', async (req, res) => {
     }
 });
 router.put('/update', modifierCreneau);
+router.post('/reserver', reserverCreneau);
 //---------------------------------------------------------------
 
 router.delete('/supprimer', async (req, res) => {

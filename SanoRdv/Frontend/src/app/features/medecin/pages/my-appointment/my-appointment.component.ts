@@ -69,6 +69,7 @@ export class MyAppointmentComponent implements OnInit {
   }
 
   viewAppointmentDetails(appointment: Appointment): void {
+     console.log('Rendez-vous sélectionné :', appointment);
       this.selectedAppointment = { ...appointment };
   }
 
