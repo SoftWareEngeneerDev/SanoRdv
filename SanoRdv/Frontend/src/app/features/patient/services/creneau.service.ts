@@ -32,6 +32,10 @@ getCreneauxReservesByAgenda(agendaId: string, date: string): Observable<string[]
   );
 }
 
+getCreneauxDisponibles(date: string, medecinId: string): Observable<any> {
+  return this.http.get(`/api/creneaux/disponibles?date=${date}&medecinId=${medecinId}`);
+}
 
-  // Ajoute ici d’autres méthodes CRUD pour les créneaux si besoin
+
+ 
 }

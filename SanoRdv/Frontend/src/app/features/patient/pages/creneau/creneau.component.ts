@@ -20,7 +20,7 @@ export class CreneauComponent implements OnInit {
   selectedDate: Date | null = null;
   selectedCreneau: string | null = null;
   horairesDispo: string[] = [];
-  creneauxReserves: string[] = []; // <- créneaux réservés
+  creneauxReserves: string[] = []; 
 
   medecinId!: string;
   agendaId!: string;
