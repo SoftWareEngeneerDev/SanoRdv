@@ -7,7 +7,6 @@ interface PatientLocal {
   nom: string;
   prenom: string;
   photo?: string;
-  // ajoute d'autres champs si besoin
 }
 @Component({
   selector: 'app-sidebar',
@@ -29,14 +28,13 @@ export class SidebarComponent implements OnInit {
     constructor(private router: Router) {}
 
     ngOnInit(): void {
-      // Récupérer les données patient stockées en JSON dans localStorage sous la clé 'user'
       const userDataString = localStorage.getItem('user');
       if (userDataString) {
         try {
           const userData = JSON.parse(userDataString);
           this.patient.nom = userData.nom || '';
           this.patient.prenom = userData.prenom || '';
-          this.patient.photo = userData.photo || '';  // peut être vide
+          this.patient.photo = userData.photo || ''; 
         } catch (e) {
           console.error('Erreur lecture patient localStorage', e);
         }
