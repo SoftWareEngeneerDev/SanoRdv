@@ -4,15 +4,17 @@ import { HomeComponent } from './features/home/home.component';
 import { SharedLayoutComponent } from './shared/components/shared-layout/shared-layout.component';
 import { LoginGuard } from './core/guards/login.guard';
 import { AboutComponent } from './features/about/about.component';
+import { MedecinDetailComponent } from './features/medecin-detail/medecin-detail.component';
 
 const routes: Routes = [
+  { path: 'medecinDetail/:id', component: MedecinDetailComponent },
   {
-    path: '',
-    component: SharedLayoutComponent,
-    canActivate: [LoginGuard],
+    
+    path: '',component: SharedLayoutComponent,canActivate: [LoginGuard],
     children: [
       { path: '', component: HomeComponent },
-      { path: 'about', component: AboutComponent } // <-- Ajoute cette ligne ici
+      { path: 'about', component: AboutComponent },
+       
     ]
   },
   {
