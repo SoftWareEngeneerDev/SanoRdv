@@ -47,4 +47,12 @@ export class MedecinService {
     return medecin.agendaId;
   }
 
+  creerAgenda(date: string, medecinId: string) {
+  return this.http.post('http://localhost:3000/api/agenda/creer', { date, medecinId });
+}
+
+modifierCreneau(payload: any) {
+  return this.http.put('http://localhost:3000/api/creneaux/update', payload);
+}
+
 }
