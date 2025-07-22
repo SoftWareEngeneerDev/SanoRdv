@@ -1,6 +1,8 @@
 
 import Notification from '../models/notification.model.js';
 import RendezVous from '../models/rendezvous.model.js';
+// import Patient from '../models/patient.model.js';
+// import medecin from '../models/medecin.model.js';
 import nodemailer from 'nodemailer';
 import { DateTime } from 'luxon';
 
@@ -12,6 +14,9 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false  // Désactive la vérification des certificats SSL (utile pour les certificats auto-signés)
   }
 });
 
@@ -88,10 +93,23 @@ const modelMedecinEmail = (rdv, status) => `
 // Fonction principale d'envoi
 const envoieNotification = async (rdvId, recipientType, notificationType) => {
   const rdv = await RendezVous.findById(rdvId).populate('patient medecin');
-  if (!rdv) throw new Error('Rendez-vous non trouvé');
+  
+  if (!rdv) {
+    throw new Error('Rendez-vous non trouvé');
+  }
+
+  // Vérification que les références sont peuplées correctement
+  const recipient = recipientType === 'patient' ? rdv.patient : rdv.medecin;
+  
+  if (!recipient) {
+    throw new Error(`${recipientType} non trouvé dans le rendez-vous`);
+  }
+
+  if (!recipient.nom || !recipient.email) {
+    throw new Error(`Le ${recipientType} n'a pas de nom ou d'email dans la base de données`);
+  }
 
   const template = templates[recipientType][notificationType](rdv);
-  const recipient = recipientType === 'patient' ? rdv.patient : rdv.medecin;
 
   // Création de la notification en base
   const notification = new Notification({
@@ -100,7 +118,8 @@ const envoieNotification = async (rdvId, recipientType, notificationType) => {
     destinataire: recipient._id,
     rendezVous: rdvId,
     statut: 'En attente',
-    type: notificationType
+    type: notificationType,
+    destinataireModel: recipientType
   });
 
   await notification.save();
@@ -125,6 +144,7 @@ const envoieNotification = async (rdvId, recipientType, notificationType) => {
     throw error;
   }
 };
+
 
 // Fonctions exportées
 export const notifPatientConfirmation = (rdvId) => envoieNotification(rdvId, 'patient', 'Confirmation');
