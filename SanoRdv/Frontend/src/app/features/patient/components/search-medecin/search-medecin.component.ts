@@ -32,6 +32,8 @@ export class RechercheMedecinComponent {
     this.rechercheMedecinService.medecinDetails$.subscribe(data => this.medecinDetails = data);
   }
 
+
+
 voirProfil(medecin: any) {
   console.log('👉 CLIC détecté - Médecin :', medecin);
   this.router.navigate(['/patient/informations', medecin.id], {

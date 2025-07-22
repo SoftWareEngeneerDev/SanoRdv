@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MedecinService } from '../../services/medecin.service';
 import { Medecin } from '../../models/medecin.model';
+import { SpecialiteService } from '../../services/specialite.service';
 
 @Component({
   selector: 'app-modifier-medecin',
@@ -15,16 +16,13 @@ export class ModifierMedecinComponent implements OnInit {
   selectedFile: File | null = null;
   medecinForm: FormGroup;
   id: string = '';
-  specialites = [
-    'Médecin généraliste', 'Dermatologie', 'Cardiologie',
-    'Pédiatrie', 'Gynécologie', 'Neurologie'
-  ];
-
+ specialites: any[] = [];
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private medecinService: MedecinService
+    private medecinService: MedecinService,
+    private specialiteService: SpecialiteService
   ) {
     this.medecinForm = this.fb.group({
       nom: ['', Validators.required],
@@ -63,9 +61,22 @@ export class ModifierMedecinComponent implements OnInit {
        console.log('formulaire du médecin:', this.medecinForm.value);
     });
   }
-});
+});    this.chargerSpecialites();
 
   }
+
+    chargerSpecialites(): void {
+  this.specialiteService.getSpecialites().subscribe({
+    next: (data) => {
+      console.log('Spécialités reçues du backend :', data); // 👈 Ajoute ceci
+      this.specialites = data;
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des spécialités :', err);
+    }
+  });
+}
+
 
   onSubmit(): void {
     console.log('Formulaire soumis:', this.medecinForm);

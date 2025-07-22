@@ -42,13 +42,10 @@ export class AdminService {
    * 📊 services pour le dashboard
    */
 
-  getDashboardStats(): Observable<any> {
-  return of({
-    totalPatients: 120,
-    medecinsActifs: 15,
-    totalRendezVous: 85
-  });
+  getDashboardStats() {
+  return this.http.get<{ totalPatients: number; medecinsActifs: number; totalRendezVous: number }>('http://localhost:3000/api/admin/dashboard-stats');
 }
+
 
 getStatsHebdo(): Observable<{ labels: string[], donnees: number[] }> {
     return this.http.get<{ labels: string[], donnees: number[] }>(`${this.apiUrl}/hebdo`);

@@ -1,26 +1,24 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MedecinService } from '../../services/medecin.service';
 import { Router } from '@angular/router';
-import { Medecin } from '../../models/medecin.model'; // 🔁 adapte le chemin selon ton projet
+import { Medecin } from '../../models/medecin.model'; 
+import { SpecialiteService } from '../../services/specialite.service';
 
 @Component({
   selector: 'app-ajouter-medecin',
   templateUrl: './ajouter-medecin.component.html',
   styleUrls: ['./ajouter-medecin.component.css']
 })
-export class AjouterMedecinComponent {
+export class AjouterMedecinComponent implements OnInit {
 
 
     medecinForm: FormGroup;
   @Output() medecinAjoute = new EventEmitter<void>();
 
-  specialites: string[] = [
-    'Médecin généraliste', 'Dermatologie', 'Cardiologie',
-    'Pédiatrie', 'Gynécologie', 'Neurologie'
-  ];
+  specialites: any[] = [];
 
-  constructor(private fb: FormBuilder, private medecinService: MedecinService, private router: Router) {
+  constructor(private fb: FormBuilder, private medecinService: MedecinService, private router: Router, private specialiteService: SpecialiteService) {
   this.medecinForm = this.fb.group({
   nom: ['', Validators.required],
   prenom: ['', Validators.required],
@@ -30,8 +28,21 @@ export class AjouterMedecinComponent {
   motDePasse: ['', Validators.required],
   anneeExperience: [0, [Validators.required, Validators.min(0)]]
 });
+  }
 
+  ngOnInit(): void {
+    this.chargerSpecialites();
+  }
 
+  chargerSpecialites(): void {
+    this.specialiteService.getSpecialites().subscribe({
+      next: (data) => {
+        this.specialites = data;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des spécialités :', err);
+      }
+    });
   }
 
   onSubmit(): void {

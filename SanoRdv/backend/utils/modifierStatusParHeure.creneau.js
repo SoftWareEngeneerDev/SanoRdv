@@ -1,9 +1,10 @@
-// Fonction qui permet de modifier plusieurs statuts horaires dans la base de données.
-export function modifierStatusParHeure(timeSlots, heuresCibles, nouveauStatus = 'indisponible') {
+// ---------- Fonction pour marquer des heures comme "indisponibles"-------------
+export function modifierStatusParHeure(timeSlots, heuresIndisponibles) {
     return timeSlots.map(slot => {
-        if (heuresCibles.includes(slot.time)) {
-            return { ...slot, status: nouveauStatus };
+        if (heuresIndisponibles.includes(slot.time)) {
+            slot.status = 'indisponible';  // Marquer le créneau comme "indisponible"
         }
         return slot;
     });
+    
 }

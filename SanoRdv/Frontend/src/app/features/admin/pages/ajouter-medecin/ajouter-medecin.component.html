@@ -18,7 +18,7 @@
       <label>Spécialité *</label>
       <select formControlName="specialite">
         <option value="">Sélectionner</option>
-        <option *ngFor="let sp of specialites" [value]="sp">{{ sp }}</option>
+        <option *ngFor="let s of specialites" [value]="s._id">{{ s.nom }}</option>
       </select>
     </div>
 

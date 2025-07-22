@@ -42,9 +42,9 @@ export class SpecialitesComponent implements OnInit {
   }
 
   validerEdition(): void {
-    if (this.specialiteEnEdition && this.specialiteEnEdition.id) {
+    if (this.specialiteEnEdition && this.specialiteEnEdition._id) {
       this.specialiteService
-        .modifierSpecialite(this.specialiteEnEdition.id, this.specialiteEnEdition)
+        .modifierSpecialite(this.specialiteEnEdition._id, this.specialiteEnEdition)
         .subscribe(() => {
           this.specialiteEnEdition = null;
           this.chargerSpecialites();

@@ -15,6 +15,6 @@ export class DeconnexionComponent {
 
   deconnecter() {
     localStorage.clear();
-    this.router.navigate(['/']);
+    this.router.navigate(['/Accueil']);
   }
 }

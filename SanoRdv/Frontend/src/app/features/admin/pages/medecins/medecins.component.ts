@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MedecinService } from '../../services/medecin.service';
 import { Medecin } from '../../models/medecin.model';
+import { SpecialiteService } from '../../services/specialite.service';
+import { Specialite } from '../../models/specialites.model';
 
 @Component({
   selector: 'app-medecins',
@@ -13,22 +15,37 @@ export class MedecinsComponent implements OnInit {
   medecins: Medecin[] = [];
   recherche: string = '';
 medecinsFiltres: Medecin[] = [];
+specialites: Specialite[] = [];
+
 
   constructor(
     private router: Router,
-    private medecinService: MedecinService
+    private medecinService: MedecinService,
+    private specialiteService: SpecialiteService
   ) {}
 
-  ngOnInit(): void {
+ ngOnInit(): void {
+  this.specialiteService.getSpecialites().subscribe(specialites => {
+    this.specialites = specialites;
     this.chargerMedecins();
-  }
-
-  chargerMedecins(): void {
-  this.medecinService.getMedecins().subscribe(data => {
-    this.medecins = data;
-    this.medecinsFiltres = data;
   });
 }
+
+
+chargerMedecins(): void {
+  this.medecinService.getMedecins().subscribe(data => {
+    console.log('Médecins:', data);
+    console.log('Spécialités:', this.specialites);
+    this.medecins = data.map(med => {
+      const spec = this.specialites.find(s => s._id === med.specialite);
+      console.log('Recherche spécialité pour', med.specialite, '->', spec);
+      return { ...med, specialite: spec?.nom || 'Inconnue' };
+    });
+    this.medecinsFiltres = this.medecins;
+  });
+}
+
+
 
 filtrer(): void {
   const terme = this.recherche.toLowerCase().trim();
