@@ -69,7 +69,7 @@ button {
   }
 }
 
-.btn-secondary { background-color: #95a5a6; &:hover { background-color: #7f8c8d; } }
+
 .btn-danger { background-color: #e74c3c; &:hover { background-color: #c0392b; } }
 .btn-success { background-color: #2ecc71; &:hover { background-color: #27ae60; } }
 
@@ -129,12 +129,14 @@ table {
 }
 
 .close {
-  color: #aaa;
+  color: black;
   float: right;
-  font-size: 28px;
+  font-size: 48px;
+  position: absolute;
+  right: 25px;
+  top: 30px;
   font-weight: bold;
   cursor: pointer;
-
   &:hover { color: #333; }
 }
 

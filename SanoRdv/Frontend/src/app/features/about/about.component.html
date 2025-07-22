@@ -1,135 +1,214 @@
 <!-- Section Hero -->
-<section class="hero-about">
+<section class="hero-about" id="hero">
+  <div class="hero-background"></div>
   <div class="container">
-    <div class="hero-content">
+    <div class="hero-content" data-aos="fade-up">
       <h1>SANORDV - Votre santé, notre priorité</h1>
       <p class="hero-subtitle">Nous révolutionnons l'accès aux soins médicaux au Burkina Faso</p>
       <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-number">30,000+</span>
-          <span class="stat-label">Rendez-vous</span>
+        <div class="stat-item" *ngFor="let stat of stats; let i = index" 
+             [style.animation-delay]="i * 0.2 + 's'">
+          <i [class]="stat.icon" [style.color]="stat.color"></i>
+          <span class="stat-number">{{ stat.number }}</span>
+          <span class="stat-label">{{ stat.label }}</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-number">100%</span>
-          <span class="stat-label">Satisfaction</span>
-        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn btn-primary" (click)="scrollToSection('contact')">
+          <i class="bi bi-phone"></i> Nous contacter
+        </button>
+        <button class="btn btn-outline" (click)="scrollToSection('mission')">
+          <i class="bi bi-info-circle"></i> En savoir plus
+        </button>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Section Mission -->
-<section class="section-mission">
+<section class="section-mission" id="mission">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header" data-aos="fade-up">
       <h2>NOTRE MISSION</h2>
-      <p class="section-subtitle">Connecter patients et professionnels de santé</p>
+      <p class="section-subtitle">Connecter patients et professionnels de santé pour un accès équitable aux soins</p>
     </div>
     <div class="mission-grid">
-      <div class="mission-card">
+      <div class="mission-card" *ngFor="let card of missionCards; let i = index" 
+           data-aos="fade-up" [attr.data-aos-delay]="i * 200">
         <div class="mission-icon">
-          <i class="fas fa-user-md"></i>
+          <i [class]="card.icon"></i>
         </div>
-        <h3>500+ Médecins</h3>
-        <p>Professionnels qualifiés à votre service</p>
-      </div>
-      <div class="mission-card">
-        <div class="mission-icon">
-          <i class="fas fa-calendar-check"></i>
-        </div>
-        <h3>Rendez-vous simplifiés</h3>
-        <p>Prise de rendez-vous en quelques clics</p>
-      </div>
-      <div class="mission-card">
-        <div class="mission-icon">
-          <i class="fas fa-map-marker-alt"></i>
-        </div>
-        <h3>Couverture nationale</h3>
-        <p>Accessible partout au Burkina Faso</p>
+        <h3>{{ card.title }}</h3>
+        <p>{{ card.description }}</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Section Valeurs -->
-<section class="section-values">
+<section class="section-values" id="values">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header" data-aos="fade-up">
       <h2>NOS VALEURS</h2>
-      <p class="section-subtitle">Les principes qui guident notre action</p>
+      <p class="section-subtitle">Les principes qui guident notre action au quotidien</p>
     </div>
     <div class="values-grid">
-      <div class="value-card">
-        <div class="value-icon">
-          <i class="fas fa-heart"></i>
+      <div class="value-card" *ngFor="let value of values; let i = index" 
+           data-aos="fade-up" [attr.data-aos-delay]="i * 200">
+        <div class="value-icon" [style.color]="value.color">
+          <i [class]="value.icon"></i>
         </div>
-        <h3>Bien-être</h3>
-        <p>Le patient au cœur de nos préoccupations</p>
+        <h3>{{ value.title }}</h3>
+        <p>{{ value.description }}</p>
       </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <i class="fas fa-users"></i>
+    </div>
+  </div>
+</section>
+
+<!-- Section Engagements -->
+<section class="section-engagements" id="engagements">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <h2>NOS ENGAGEMENTS</h2>
+      <p class="section-subtitle">Ce que nous promettons à nos utilisateurs</p>
+    </div>
+    <div class="engagements-list">
+      <div class="engagement-item" *ngFor="let engagement of engagements; let i = index" 
+           data-aos="fade-right" [attr.data-aos-delay]="i * 100">
+        <div class="engagement-icon">
+          <i [class]="engagement.icon"></i>
         </div>
-        <h3>Communauté</h3>
-        <p>Accessibilité des soins pour tous</p>
-      </div>
-      <div class="value-card">
-        <div class="value-icon">
-          <i class="fas fa-handshake"></i>
-        </div>
-        <h3>Engagement</h3>
-        <p>Service fiable et sécurisé</p>
+        <p>{{ engagement.text }}</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Section Contact -->
-<section class="section-contact">
+<section class="section-contact" id="contact">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header" data-aos="fade-up">
       <h2>CONTACTEZ-NOUS</h2>
       <p class="section-subtitle">Une question ? Une suggestion ? Nous sommes à votre écoute</p>
     </div>
     <div class="contact-container">
-      <div class="contact-info">
-        <div class="contact-item">
-          <i class="fas fa-phone-alt"></i>
-          <div>
-            <h4>Téléphone</h4>
-            <p>+226 60000263</p>
-            <p class="small">Lundi-vendredi, 9h-17h</p>
+      <!-- Informations de contact -->
+      <div class="contact-info" data-aos="fade-right">
+        <div class="contact-item" *ngFor="let contact of contactInfo; let i = index" 
+             [attr.data-aos-delay]="i * 200" (click)="handleContactClick(contact)"
+             [class.clickable]="contact.link">
+          <div class="contact-icon">
+            <i [class]="contact.icon"></i>
           </div>
-        </div>
-        <div class="contact-item">
-          <i class="fas fa-envelope"></i>
-          <div>
-            <h4>Email</h4>
-            <p>support@sanordv.com</p>
-          </div>
-        </div>
-        <div class="contact-item">
-          <i class="fas fa-map-marker-alt"></i>
-          <div>
-            <h4>Adresse</h4>
-            <p>123 Rue Exemple</p>
-            <p>Ouagadougou, Burkina Faso</p>
+          <div class="contact-details">
+            <h4>{{ contact.title }}</h4>
+            <p class="contact-main">{{ contact.info }}</p>
+            <p class="contact-sub">{{ contact.details }}</p>
           </div>
         </div>
       </div>
-      <div class="contact-form">
-        <form>
-          <div class="form-group">
-            <input type="text" placeholder="Votre nom">
+
+      <!-- Formulaire de contact -->
+      <div class="contact-form" data-aos="fade-left">
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+          <!-- Messages de statut -->
+          <div class="alert alert-success" *ngIf="submissionSuccess">
+            <i class="bi bi-check-circle"></i>
+            Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.
           </div>
-          <div class="form-group">
-            <input type="email" placeholder="Votre email">
+          
+          <div class="alert alert-danger" *ngIf="submissionError">
+            <i class="bi bi-exclamation-triangle"></i>
+            Une erreur s'est produite. Veuillez réessayer.
           </div>
-          <div class="form-group">
-            <textarea placeholder="Votre message"></textarea>
+
+          <!-- Champs du formulaire -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Nom complet *</label>
+              <input type="text" id="name" formControlName="name" 
+                     [class.is-invalid]="hasError('name')"
+                     placeholder="Votre nom complet">
+              <div class="invalid-feedback" *ngIf="hasError('name')">
+                {{ getErrorMessage('name') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" formControlName="email" 
+                     [class.is-invalid]="hasError('email')"
+                     placeholder="votre@email.com">
+              <div class="invalid-feedback" *ngIf="hasError('email')">
+                {{ getErrorMessage('email') }}
+              </div>
+            </div>
           </div>
-          <button type="submit" class="btn-primary">Envoyer</button>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Téléphone</label>
+              <input type="tel" id="phone" formControlName="phone" 
+                     [class.is-invalid]="hasError('phone')"
+                     placeholder="+226 12 34 56 78">
+              <div class="invalid-feedback" *ngIf="hasError('phone')">
+                {{ getErrorMessage('phone') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="subject">Sujet *</label>
+              <select id="subject" formControlName="subject" 
+                      [class.is-invalid]="hasError('subject')">
+                <option value="">Sélectionnez un sujet</option>
+                <option value="information">Demande d'information</option>
+                <option value="support">Support technique</option>
+                <option value="partenariat">Partenariat médical</option>
+                <option value="feedback">Commentaire/Suggestion</option>
+                <option value="autre">Autre</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="hasError('subject')">
+                {{ getErrorMessage('subject') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message *</label>
+            <textarea id="message" formControlName="message" 
+                      [class.is-invalid]="hasError('message')"
+                      placeholder="Décrivez votre demande en détail..."
+                      rows="5"></textarea>
+            <div class="invalid-feedback" *ngIf="hasError('message')">
+              {{ getErrorMessage('message') }}
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit" 
+                  [disabled]="isSubmitting">
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+            <i class="bi bi-send" *ngIf="!isSubmitting"></i>
+            {{ isSubmitting ? 'Envoi en cours...' : 'Envoyer le message' }}
+          </button>
         </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section CTA -->
+<section class="section-cta">
+  <div class="container">
+    <div class="cta-content" data-aos="fade-up">
+      <h2>Prêt à rejoindre SANORDV ?</h2>
+      <p>Découvrez une nouvelle façon d'accéder aux soins médicaux</p>
+      <div class="cta-buttons">
+        <button class="btn btn-primary btn-lg">
+          <i class="bi bi-download"></i> Télécharger l'app
+        </button>
+        <button class="btn btn-outline btn-lg">
+          <i class="bi bi-person-plus"></i> S'inscrire maintenant
+        </button>
       </div>
     </div>
   </div>

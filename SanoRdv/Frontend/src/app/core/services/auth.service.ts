@@ -120,4 +120,22 @@ export class AuthService {
       return null;
     }
   }
+
+  loginMedecin(credentials: Login): Observable<any> {
+  return this.http.post<any>('http://localhost:3000/api/medecins/login', credentials, {
+    headers: this.headers
+  }).pipe(
+    tap(res => {
+      if (res.token) {
+        localStorage.setItem('token', res.token);
+      }
+      if (res.data) {
+        localStorage.setItem('user', JSON.stringify(res.data));
+      }
+      console.log("Médecin connecté:", res);
+    }),
+    map(res => res)
+  );
+}
+
 }
