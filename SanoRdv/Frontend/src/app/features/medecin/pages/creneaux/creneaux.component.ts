@@ -1,22 +1,31 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MedecinService } from '../../medecin.service';
 @Component({
   selector: 'app-creneaux',
   templateUrl: './creneaux.component.html',
   styleUrls: ['./creneaux.component.css']
 })
-export class CreneauxComponent{
+export class CreneauxComponent implements OnInit{
   viewDate: Date = new Date();
   selectedDate: Date | null = null;
   idCreneauActuel: string | null = null;
-  timeSlots: string[] = [];
+  timeSlots: any[] = [];
   selectedSlots: string[] = [];
+
 
   constructor(
     private http: HttpClient,
     private medecinService : MedecinService
   ) {}
+  ngOnInit(): void {
+  this.selectedDate = new Date();
+  // this.getCreneauxFromBackend();
+}
+  // getCreneauxFromBackend() {
+  //   throw new Error('Method not implemented.');
+  // }
+
 
   previousMonth(): void {
     this.viewDate = new Date(this.viewDate.setMonth(this.viewDate.getMonth() - 1));
@@ -26,6 +35,7 @@ export class CreneauxComponent{
     this.viewDate = new Date(this.viewDate.setMonth(this.viewDate.getMonth() + 1));
   }
 
+  //parcourir tout les timeslots enfin d'identifier celui dont le time egal hour
   toggleSlot(hour: string): void {
     const index = this.selectedSlots.indexOf(hour);
     if (index === -1) {
@@ -73,7 +83,6 @@ export class CreneauxComponent{
   });
 }
 
-
   handleDayClick(date: Date): void {
   this.selectedDate = date;
 
@@ -95,11 +104,12 @@ export class CreneauxComponent{
         localStorage.setItem('agendaId', agenda._id);
       }
 
-      // 🎯 Récupérer les créneaux générés pour cette date
+      //Récupérer les créneaux générés pour cette date
       if (agenda?.creneaux?.length > 0) {
         const premierCreneau = agenda.creneaux[0];
         this.idCreneauActuel = premierCreneau._id;
-        this.timeSlots = premierCreneau.timeSlots.map((slot: any) => slot.time);
+        // this.timeSlots = premierCreneau.timeSlots.map((slot: any) => slot.time);
+        this.timeSlots = premierCreneau.timeSlots;
       } else {
         this.timeSlots = [];
       }
