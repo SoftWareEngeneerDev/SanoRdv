@@ -10,15 +10,16 @@ import { DateTime } from 'luxon';
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE === 'true',
+  secure: process.env.SMTP_SECURE === 'true', // Si 'true', utilise TLS
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD
+    user: process.env.SMTP_USER, // L'adresse e-mail de l'utilisateur
+    pass: process.env.SMTP_PASS // Le mot de passe ou mot de passe d'application
   },
   tls: {
-    rejectUnauthorized: false  // Désactive la vérification des certificats SSL (utile pour les certificats auto-signés)
+    rejectUnauthorized: false // Option de validation des certificats SSL (si nécessaire)
   }
 });
+
 
 // Templates de notification
 const templates = {
