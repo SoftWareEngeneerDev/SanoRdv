@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, importProvidersFrom, OnInit } from '@angular/core';
 import { MedecinService } from '../../medecin.service';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-creneaux',
   templateUrl: './creneaux.component.html',
@@ -8,23 +10,61 @@ import { MedecinService } from '../../medecin.service';
 })
 export class CreneauxComponent implements OnInit{
   viewDate: Date = new Date();
-  selectedDate: Date | null = null;
+  selectedDate: Date = new Date ();
   idCreneauActuel: string | null = null;
   timeSlots: any[] = [];
   selectedSlots: string[] = [];
-
+  medecinId: string | null = null;
+  patientId: string | null = null;
+  isMedecin: boolean = false;
 
   constructor(
     private http: HttpClient,
-    private medecinService : MedecinService
+    private medecinService : MedecinService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
   ngOnInit(): void {
-  this.selectedDate = new Date();
-  // this.getCreneauxFromBackend();
+  
+  this.route.paramMap.subscribe(params => {
+    this.medecinId = params.get('medecinId');
+    this.patientId = params.get('patientId');
+
+    this.isMedecin = this.patientId === 'NaN';
+    if(this.patientId && this.medecinId ) {
+      this.handleDayClick(this.selectedDate);
+    }
+    
+  })
+  
 }
-  // getCreneauxFromBackend() {
-  //   throw new Error('Method not implemented.');
+// obtenirAgenda(): void {
+//   if (!this.medecinId) ;
+
+//   this.medecinService.obtenirAgenda(this.medecinId, this.selectedDate).subscribe({
+//     next: (agendaId) => {
+//       this.timeSlots = agendaId;
+//       console.log('Créneaux disponibles récupérés:', this.timeSlots);
+//     },
+//     error: (err) => {
+//       console.error("Erreur lors de la récupération des créneaux disponibles :", err);
+//     }
+//   });
+// }
+
+  // chargerSlotDisponibles() {
+    
+  //   this.medecinService.getCreneauxDisponibles(this.selectedDate, this.medecinId).subscribe({
+  //     next:(data)=> {
+  //       this.timeSlots = data;
+  //     },
+  //      error: (err) => {
+  //       console.error('erreur du chargement du creneau :', err);
+  //      }
+  //   })
   // }
+  
+
 
 
   previousMonth(): void {
@@ -36,18 +76,16 @@ export class CreneauxComponent implements OnInit{
   }
 
   //parcourir tout les timeslots enfin d'identifier celui dont le time egal hour
+    
   toggleSlot(hour: string): void {
-
     this.timeSlots.forEach(slot =>{
       if(slot.time==hour){
         if (slot.status=='indisponible'){
           slot.status= 'disponible';
-
         }
         else if(slot.status=='disponible') {
           slot.status= 'indisponible';
         }
-
       }
     })
   }
@@ -102,7 +140,6 @@ export class CreneauxComponent implements OnInit{
       if (agenda?.creneaux?.length > 0) {
         const premierCreneau = agenda.creneaux[0];
         this.idCreneauActuel = premierCreneau._id;
-        // this.timeSlots = premierCreneau.timeSlots.map((slot: any) => slot.time);
         this.timeSlots = premierCreneau.timeSlots;
       } else {
         this.timeSlots = [];
@@ -113,8 +150,13 @@ export class CreneauxComponent implements OnInit{
       console.error("Erreur lors de la création de l'agenda :", err);
       alert("Erreur lors de la création de l'agenda.");
     }
+    
   });
+
 }
 
+
+  
+// this.router.navigate(['creneaux',this.medecinId,'NAN'])
 
 }

@@ -19,7 +19,6 @@ export class SidebarComponent implements OnInit {
       prenom: '',
       photo: ''
     };
-
     isCollapsed: boolean = false;
 
     @Output() sidebarToggled = new EventEmitter<boolean>();
@@ -54,3 +53,4 @@ export class SidebarComponent implements OnInit {
       { title: 'PROFIL', link: '/medecin/profil-view', icon: 'fas fa-user fa-0,5x' },
     ];
 }
+

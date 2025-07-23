@@ -19,7 +19,7 @@ const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'rendez-vous', component: MyAppointmentComponent },
-      { path: 'creneaux/:idmedecin/:idpatient', component: CreneauxComponent },
+      { path: 'creneaux/:medecinId/:patientId', component: CreneauxComponent },
       { path: 'patients', component: PatientComponent },
       { path: 'profil-view', component: ProfilViewComponent },
       { path: 'profile', component: ProfileComponent },

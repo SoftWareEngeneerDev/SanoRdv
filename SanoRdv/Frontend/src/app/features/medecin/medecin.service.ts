@@ -57,26 +57,8 @@ export class MedecinService {
     return this.http.put('http://localhost:3000/api/creneaux/update', payload);
   }
 
-  getCreneauxFromBackend(): void {
-  const medecin = JSON.parse(localStorage.getItem('medecin') || '{}');
-  const agendaId = medecin._id;
-  const dateISO = this.selectedDate.toISOString().split('T')[0];
-
-  this.http.get<any>(`http://localhost:3000/api/creneaux/parDate/${agendaId}/${dateISO}`)
-    .subscribe({
-      next: (res) => {
-        if (res.success && res.data && res.data.timeSlots) {
-          this.selectedSlots = res.data.timeSlots
-            .filter((slot: any) => slot.status === 'indisponible')
-            .map((slot: any) => slot.time); // Récupère uniquement les heures
-        }
-      },
-      error: (err) => {
-        console.error("Erreur lors de la récupération :", err);
-        this.selectedSlots = []; // Aucun créneau
-      }
-    });
+  obtenirAgenda(selectedDate : Date, medecinId: string) {
+  return this.http.post('http://localhost:3000/api/agenda/afficherAgenda', {selectedDate,medecinId });
 }
-
 
 }
