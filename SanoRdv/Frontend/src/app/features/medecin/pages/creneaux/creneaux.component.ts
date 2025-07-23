@@ -37,38 +37,32 @@ export class CreneauxComponent implements OnInit{
 
   //parcourir tout les timeslots enfin d'identifier celui dont le time egal hour
   toggleSlot(hour: string): void {
-    const index = this.selectedSlots.indexOf(hour);
-    if (index === -1) {
-      this.selectedSlots.push(hour);
-    } else {
-      this.selectedSlots.splice(index, 1);
-    }
+
+    this.timeSlots.forEach(slot =>{
+      if(slot.time==hour){
+        if (slot.status=='indisponible'){
+          slot.status= 'disponible';
+
+        }
+        else if(slot.status=='disponible') {
+          slot.status= 'indisponible';
+        }
+
+      }
+    })
   }
+
 
   isSlotSelected(hour: string): boolean {
     return this.selectedSlots.includes(hour);
   }
 
   saveUnavailability(): void {
-  if (!this.selectedDate || this.selectedSlots.length === 0) {
-    alert('Veuillez sélectionner une date et au moins une heure.');
-    return;
-  }
 
-  if (!this.idCreneauActuel) {
-    alert("Aucun créneau associé à cette date.");
-    return;
-  }
-
-  // On récupère tous les timeSlots, avec les heures sélectionnées marquées comme indisponibles
-  const updatedSlots = this.timeSlots.map((hour) => ({
-    time: hour,
-    status: this.selectedSlots.includes(hour) ? 'indisponible' : 'disponible'
-  }));
 
   const body = {
     idcreneau: this.idCreneauActuel,
-    timeSlots: updatedSlots
+    timeSlots: this.timeSlots,
   };
 
   this.medecinService.modifierCreneau(body).subscribe({
