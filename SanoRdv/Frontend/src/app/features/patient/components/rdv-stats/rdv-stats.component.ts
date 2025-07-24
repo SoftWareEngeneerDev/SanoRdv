@@ -13,8 +13,25 @@ export class RdvStatsComponent implements OnInit {
   constructor(private rendezVousService: RendezVousService) {}
 
   ngOnInit(): void {
-    this.rendezVousService.nouveauxRdv$.subscribe(count => {
-      this.value = count;
-    });
-  }
+  // 1. Chargement  des stats
+  this.rechargerStats();
+
+  this.rendezVousService.nouveauxRdv$.subscribe(() => {
+    this.rechargerStats();
+  });
+}
+
+rechargerStats(): void {
+  this.rendezVousService.getAllRendezVous().subscribe({
+    next: (rdvList) => {
+      const now = new Date();
+      //  RDV dont la date est à venir ou maintenant
+      this.value = rdvList.filter(rdv => new Date(rdv.date) >= now).length;
+    },
+    error: (err) => {
+      console.error('Erreur chargement stats RDV :', err);
+    }
+  });
+}
+
 }

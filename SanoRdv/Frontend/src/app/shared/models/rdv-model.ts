@@ -1,4 +1,5 @@
 export interface RendezVous {
+  _id: number;
   id: number;
   date: string;
   medecin: {
@@ -6,6 +7,11 @@ export interface RendezVous {
     specialite?: string;
   };
   status?: string;
+  IDpatient?: string;
+ patientId?: string;
+  IDmedecin?: string;
+  medecinId?: string;
+rendezVousId?: string;
 }
 
 

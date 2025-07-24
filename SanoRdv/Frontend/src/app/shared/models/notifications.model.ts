@@ -10,6 +10,7 @@ id?: string;
   read?: boolean;
   canal?: string;
   details?: string;
+   rendezVousId?: string;
    type?:
     | 'rappel'
     | 'mise_a_jour'

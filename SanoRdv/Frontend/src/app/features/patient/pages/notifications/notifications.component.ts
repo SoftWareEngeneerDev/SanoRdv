@@ -44,7 +44,7 @@ export class NotificationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.grouperNotificationsParType(); // 🔄 regrouper au chargement (test local)
+    this.grouperNotificationsParType();
     this.loadNotifications();
   }
 
@@ -60,7 +60,6 @@ export class NotificationsComponent implements OnInit {
       );
       this.unreadCount = this.notifications.filter(n => !n.read).length;
 
-      // 🔄 Recalcul des groupes après réception backend
       this.grouperNotificationsParType();
     });
   }
@@ -87,6 +86,7 @@ export class NotificationsComponent implements OnInit {
   getIconClass(type: string): string {
     switch (type) {
       case 'rappel': return 'bi bi-calendar-event text-info';
+       case 'annulation': return 'bi bi-x-circle-fill text-danger';
       default: return 'bi bi-info-circle text-secondary';
     }
   }
@@ -94,6 +94,7 @@ export class NotificationsComponent implements OnInit {
   getTitre(type: string): string {
     switch (type) {
       case 'rappel': return 'Rappel';
+       case 'annulation': return 'Annulation';
       default: return 'Notification';
     }
   }
@@ -103,6 +104,8 @@ export class NotificationsComponent implements OnInit {
     switch (notif.type) {
       case 'rappel':
         return notif.message || `Rappel : Rendez-vous avec le ${notif.medecin} le ${date}.`;
+         case 'annulation':
+        return notif.message || `Votre rendez-vous avec le ${notif.medecin} le ${date} a été annulé.`;
       default:
         return notif.message || 'Vous avez une nouvelle notification.';
     }
@@ -132,6 +135,6 @@ export class NotificationsComponent implements OnInit {
         this.loadNotifications();
       });
     }
-    this.voirPlusMap[notif.id] = !estOuvert;
+    // this.voirPlusMap[notif.id] = !estOuvert;
   }
 }
