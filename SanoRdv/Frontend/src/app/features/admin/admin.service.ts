@@ -47,7 +47,7 @@ export class AdminService {
 }
 
 
-getStatsHebdo(): Observable<{ labels: string[], donnees: number[] }> {
+  getStatsHebdo(): Observable<{ labels: string[], donnees: number[] }> {
     return this.http.get<{ labels: string[], donnees: number[] }>(`${this.apiUrl}/hebdo`);
   }
 /** fin du service pour le dashboard */
