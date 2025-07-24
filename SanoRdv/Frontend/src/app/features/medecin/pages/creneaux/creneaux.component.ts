@@ -38,34 +38,6 @@ export class CreneauxComponent implements OnInit{
   })
   
 }
-// obtenirAgenda(): void {
-//   if (!this.medecinId) ;
-
-//   this.medecinService.obtenirAgenda(this.medecinId, this.selectedDate).subscribe({
-//     next: (agendaId) => {
-//       this.timeSlots = agendaId;
-//       console.log('Créneaux disponibles récupérés:', this.timeSlots);
-//     },
-//     error: (err) => {
-//       console.error("Erreur lors de la récupération des créneaux disponibles :", err);
-//     }
-//   });
-// }
-
-  // chargerSlotDisponibles() {
-    
-  //   this.medecinService.getCreneauxDisponibles(this.selectedDate, this.medecinId).subscribe({
-  //     next:(data)=> {
-  //       this.timeSlots = data;
-  //     },
-  //      error: (err) => {
-  //       console.error('erreur du chargement du creneau :', err);
-  //      }
-  //   })
-  // }
-  
-
-
 
   previousMonth(): void {
     this.viewDate = new Date(this.viewDate.setMonth(this.viewDate.getMonth() - 1));
@@ -76,7 +48,6 @@ export class CreneauxComponent implements OnInit{
   }
 
   //parcourir tout les timeslots enfin d'identifier celui dont le time egal hour
-    
   toggleSlot(hour: string): void {
     this.timeSlots.forEach(slot =>{
       if(slot.time==hour){
@@ -147,15 +118,6 @@ export class CreneauxComponent implements OnInit{
     }
   });
 }
-
-
-
-
-
-
-
-
-
   
 // this.router.navigate(['creneaux',this.medecinId,'NAN'])
 
