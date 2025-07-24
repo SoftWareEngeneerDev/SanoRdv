@@ -11,6 +11,15 @@ export class AdminHeaderComponent {
   @Input() isCollapsed: boolean = false;
 
   constructor(private router: Router, private authService: AuthService) {}
+  
+  AccueilPage() {
+    this.router.navigate(['/admin/dashboard']); // adapte si ta route est différente
+  }
+
+  AProposPage() {
+    this.router.navigate(['/admin/a-propos']); // adapte selon ta route réelle
+  }
+
 
   notification() {
     this.router.navigate(['/admin/notifications']);

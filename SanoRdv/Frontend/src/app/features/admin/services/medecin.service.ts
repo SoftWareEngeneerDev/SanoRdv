@@ -13,10 +13,8 @@ export class MedecinService {
 
   constructor(private http: HttpClient) {}
 
-  // Récupérer tous les médecins
-  getMedecins(): Observable<Medecin[]> {
-  return this.http.get<{ message: string, medecins: Medecin[] }>(this.apiUrl)
-    .pipe(map(res => res.medecins));
+getMedecins(): Observable<{ medecins: Medecin[], total: number }> {
+  return this.http.get<{ medecins: Medecin[], total: number }>(this.apiUrl);
 }
 
   // Ajouter un médecin
@@ -43,7 +41,6 @@ export class MedecinService {
   getMedecinById(id: string): Observable<Medecin> {
     return this.http.get<Medecin>(`${this.apiUrl}/${id}`);
   }
-
   // Modifier un médecin
   modifierMedecin(id: string, medecin: Medecin): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, medecin);

@@ -19,9 +19,7 @@ export class AdminSidebarComponent implements OnInit {
     { title: 'RENDEZ-VOUS', icon: 'bi-calendar-event', link: '/admin/rendez-vous' },
     { title: 'PATIENTS', icon: 'bi-people-fill', link: '/admin/patients' },
     { title: 'MEDECINS', icon: 'bi-person-badge', link: '/admin/medecins' },
-    { title: 'SPECIALITES', icon: 'bi-diagram-3', link: '/admin/specialites' },
-    { title: 'NOTIFICATIONS', icon: 'bi-bell-fill', link: '/admin/notifications' },
-    { title: 'RAPPORTS', icon: 'bi-file-earmark-text-fill', link: '/admin/rapports' }
+    { title: 'SPECIALITES', icon: 'bi-diagram-3', link: '/admin/specialites' }
   ];
 
   constructor(private router: Router) {}

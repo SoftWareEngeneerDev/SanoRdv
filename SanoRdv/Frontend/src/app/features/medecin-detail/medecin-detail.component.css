@@ -58,6 +58,13 @@ hr {
   margin-top: 30px;
 }
 
+.actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
 .btn-primary {
   background-color: #007bff;
   color: white;

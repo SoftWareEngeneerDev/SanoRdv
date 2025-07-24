@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 import Medecin from '../models/medecin.model.js';
 import Patient from '../models/patient.model.js';
-import Admin from '../models/admin.model.js';      // ← renommé pour cohérence
+import Admin from '../models/admin.model.js';
 import {
   ajouterMedecin,
   createDefaultAdmin,
@@ -16,42 +16,42 @@ import {
   desactiverMedecin,
   desactiverPatient,
   activerPatient,
-  activerMedecin
+  activerMedecin,
+  modifierProfilAdmin // <-- Import de ta nouvelle fonction contrôleur
 } from '../controllers/admin.controller.js';
 
-dotenv.config(); // charge les variables d'environnement (.env ou Render)
+dotenv.config();
 
 const router = express.Router();
+
+// Middleware JSON personnalisé avec limite augmentée (10 Mo)
+const jsonBodyParser10mb = express.json({ limit: '10mb' });
 
 /* -------------------------------------------------------------------------- */
 /*                              ADMIN  –  ROUTES                              */
 /* -------------------------------------------------------------------------- */
 
-/** 📌 1) Créer l’admin “par défaut” (exécuté une seule fois au tout 1er boot) */
+// Créer l’admin “par défaut” (une seule fois)
 router.post('/init', createDefaultAdmin);
 
 router.post('/create-admin', async (req, res) => {
   try {
-    // ① Auth simple par secret
     if (req.headers['x-admin-secret'] !== process.env.ADMIN_CREATION_SECRET) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const { email, password, role = 'admin' } = req.body;
 
-    // ② Validation minimale
     if (!email || !password) {
       return res.status(400).json({ message: 'Email et mot de passe obligatoires' });
     }
 
-    // ③ Un seul admin par email
     if (await Admin.findOne({ email })) {
       return res.status(409).json({ message: 'Un admin avec cet email existe déjà' });
     }
 
-    // ④ Hash & persist
     const hashed = await bcrypt.hash(password, 10);
-    const newAdmin = await Admin.create({ email, password: hashed, role });
+    const newAdmin = await Admin.create({ email, motDePasse: hashed, role });
 
     return res.status(201).json({
       message: 'Admin créé avec succès',
@@ -63,6 +63,9 @@ router.post('/create-admin', async (req, res) => {
   }
 });
 
+// Modifier le profil admin (avec limite 10mb)
+router.put('/:id', jsonBodyParser10mb, modifierProfilAdmin);
+
 /* -------------------------------------------------------------------------- */
 /*                              MÉDECINS – CRUD                               */
 /* -------------------------------------------------------------------------- */
@@ -70,11 +73,12 @@ router.post('/create-admin', async (req, res) => {
 // Ajouter un médecin
 router.post('/ajouter', ajouterMedecin);
 
-// Liste de tous les médecins
+// Liste de tous les médecins + total
 router.get('/medecins', async (req, res) => {
   try {
     const medecins = await Medecin.find().select('-motDePasse -__v');
-    res.json({ medecins });
+    const totalMedecins = await Medecin.countDocuments();
+    res.json({ medecins, total: totalMedecins });
   } catch (error) {
     console.error('Erreur lors du chargement des médecins:', error);
     res.status(500).json({ message: 'Erreur serveur lors du chargement des médecins' });
@@ -99,7 +103,7 @@ router.get('/medecins/:id', async (req, res) => {
   }
 });
 
-// Modifier, supprimer, (dés)activer
+// Modifier, supprimer, (dés)activer médecins
 router.put('/medecins/:id', modifierMedecin);
 router.delete('/medecins/:id', supprimerMedecin);
 router.patch('/medecins/:id/desactivation', desactiverMedecin);
@@ -120,7 +124,7 @@ router.get('/patients', async (req, res) => {
   }
 });
 
-// Modifier, supprimer, (dés)activer
+// Modifier, supprimer, (dés)activer patients
 router.put('/patients/:id', modifierPatient);
 router.delete('/patients/:id', supprimerPatient);
 router.patch('/patients/:id/desactivation', desactiverPatient);
