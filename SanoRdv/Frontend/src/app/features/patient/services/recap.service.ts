@@ -24,14 +24,15 @@ export class RecapService {
     localStorage.setItem(this.patientKey, JSON.stringify(patient));
   }
 
-  setCreneau(creneau: { date: string; heure: string }): void {
-    localStorage.setItem(this.creneauKey, JSON.stringify(creneau));
-  }
+ setCreneau(creneau: { _id: string; date: string; heure: string }): void {
+  localStorage.setItem(this.creneauKey, JSON.stringify(creneau));
+}
 
-  setRdv(medecin: any, date: string, heure: string): void {
-    this.setMedecin(medecin);
-    this.setCreneau({ date, heure });
-  }
+  setRdv(medecin: any, creneau: { _id: string; date: string; heure: string }): void {
+  this.setMedecin(medecin);
+  this.setCreneau(creneau);  
+}
+
 
   // Getters
   getMotif(): string {
@@ -47,11 +48,11 @@ export class RecapService {
     const patientStr = localStorage.getItem(this.patientKey);
     return patientStr ? JSON.parse(patientStr) : null;
   }
+getCreneau(): { _id?: string; date: string; heure: string } | null {
+  const creneauStr = localStorage.getItem(this.creneauKey);
+  return creneauStr ? JSON.parse(creneauStr) : null;
+}
 
-  getCreneau(): { _id?: string; date: string; heure: string } | null {
-    const creneauStr = localStorage.getItem(this.creneauKey);
-    return creneauStr ? JSON.parse(creneauStr) : null;
-  }
 
   getDate(): string | null {
     const creneau = this.getCreneau();

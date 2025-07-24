@@ -18,7 +18,7 @@ export class RecapitulatifComponent implements OnInit {
   ) {}
 
   retour() {
-    this.router.navigate(['/patient/creneau']);
+    this.router.navigate(['/patient/creneau/:medecin_id/:patient_id']);
   }
 
   confirmer() {
@@ -26,7 +26,7 @@ export class RecapitulatifComponent implements OnInit {
       alert('Veuillez sélectionner un créneau avant de confirmer.');
       return;
     }
-    this.recapService.setRdv(this.medecin, this.creneau.date, this.creneau.heure);
+    this.recapService.setRdv(this.medecin, this.creneau);
     this.router.navigate(['/patient/confirmation']);
   }
 
@@ -34,6 +34,10 @@ export class RecapitulatifComponent implements OnInit {
     this.motif = this.recapService.getMotif();
     this.medecin = this.recapService.getMedecin();
     this.creneau = this.recapService.getCreneau();
+
+  console.log('Motif sélectionné :', this.motif);
+  console.log('Heure sélectionnée :', this.creneau?.heure);
+  console.log('Date sélectionnée :', this.creneau?.date);
 
     // if (!this.medecin || !this.creneau) {
     //   // Redirection si données manquantes
