@@ -31,9 +31,9 @@ export class CreneauxComponent implements OnInit{
     this.patientId = params.get('patientId');
 
     this.isMedecin = this.patientId === 'NaN';
-    if(this.patientId && this.medecinId ) {
-      this.handleDayClick(this.selectedDate);
-    }
+    // if(this.patientId && this.medecinId ) {
+    //   this.handleDayClick(this.selectedDate);
+    // }
 
   })
 
@@ -115,49 +115,37 @@ export class CreneauxComponent implements OnInit{
   });
 }
 
-  handleDayClick(date: Date): void {
+ handleDayClick(date: Date): void {
   this.selectedDate = date;
   const dateISO = date.toISOString().split('T')[0];
-  if (!this.medecinId) {
+  const medecin = JSON.parse(localStorage.getItem('user') || '{}');
+  const medecinId = medecin._id;
+  if (!medecinId) {
     alert("Impossible de récupérer l'identifiant du médecin.");
     return;
   }
-  if (this.isMedecin) {
-
-    this.medecinService.creerAgenda(dateISO, this.medecinId).subscribe({
-      next: (res: any) => {
-        console.log('Agenda créé ou récupéré avec succès:', res);
-        const agenda = res?.data;
-        if (agenda?._id) {
-          localStorage.setItem('agendaId', agenda._id);
-        }
-        if (agenda?.creneaux?.length > 0) {
-          const premierCreneau = agenda.creneaux[0];
-          this.idCreneauActuel = premierCreneau._id;
-          this.timeSlots = premierCreneau.timeSlots;
-        } else {
-          this.timeSlots = [];
-        }
-      },
-      error: (err) => {
-        console.error("Erreur lors de la création de l'agenda :", err);
-        alert("Erreur lors de la création de l'agenda.");
+  this.medecinService.creerAgenda(dateISO, medecinId).subscribe({
+    next: (res: any) => {
+      console.log('Agenda créé ou récupéré avec succès:', res);
+      const agenda = res?.data;
+      if (agenda?._id) {
+        localStorage.setItem('agendaId', agenda._id);
       }
-    });
-  } else {
-
-    this.medecinService.obtenirAgenda(this.medecinId, dateISO).subscribe({
-      next: (data: any) => {
-        this.timeSlots = data.timeSlots || [];
-        this.idCreneauActuel = data._id || null;
-        console.log('Créneaux disponibles chargés pour patient:', this.timeSlots);
-      },
-      error: (err) => {
-        console.error('Erreur chargement créneaux disponibles:', err);
+      //Récupérer les créneaux générés pour cette date
+      if (agenda?.creneaux?.length > 0) {
+        const premierCreneau = agenda.creneaux[0];
+        this.idCreneauActuel = premierCreneau._id;
+        // this.timeSlots = premierCreneau.timeSlots.map((slot: any) => slot.time);
+        this.timeSlots = premierCreneau.timeSlots;
+      } else {
         this.timeSlots = [];
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error("Erreur lors de la création de l'agenda :", err);
+      alert("Erreur lors de la création de l'agenda.");
+    }
+  });
 }
 
 

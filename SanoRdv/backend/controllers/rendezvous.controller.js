@@ -1,5 +1,11 @@
 // controllers/rendezvous.controller.js
 import Notification from '../models/notification.model.js';
+import {
+  notifPatientConfirmation,
+  notifPatientAnnulation,
+  notifMedecinConfirmation,
+  notifMedecinAnnulation
+} from './notification.controller.js';
 import RendezVous from '../models/rendezvous.model.js';
 import Creneau from '../models/creneau.model.js';
 
@@ -45,15 +51,11 @@ export const prendreRendezVous = async (req, res) => {
     await creneau.save();
 
     // Envoi de notification
-    await Notification.create({
-      contenu: `Votre rendez-vous avec le médecin a été confirmé pour ${creneau.date.toDateString()} à ${time}.`,
-      destinataire: patientId,
-      destinataireModel: 'patient',
-      rendezVous: rdv._id,
-      type: 'Confirmation'
-    });
+    await notifPatientConfirmation(rdv._id);
+    await notifMedecinConfirmation(rdv._id);
 
-    return res.status(201).json({ message: 'Rendez-vous confirmé', rendezVous: rdv });
+
+    return res.status(201).json({ message: 'Rendez-vous confirmé', rendezVous: rdv, Notification });
   } catch (error) {
     console.error('Erreur prise de rendez-vous:', error);
     return res.status(500).json({ message: 'Erreur serveur' });
@@ -99,15 +101,11 @@ export const annulerRendezVous = async (req, res) => {
     }
 
     // Notification d’annulation
-    await Notification.create({
-      contenu: `Votre rendez-vous prévu le ${rdv.date.toDateString()} à ${rdv.time} a été annulé.`,
-      destinataire: rdv.patient,
-      destinataireModel: 'patient',
-      rendezVous: rdv._id,
-      type: 'Annulation'
-    });
+    await notifPatientAnnulation(rdv._id);
+    await notifMedecinAnnulation(rdv._id);
 
-    res.status(200).json({ message: 'Rendez-vous annulé avec succès.', rdv });
+
+    res.status(200).json({ message: 'Rendez-vous annulé avec succès.', rdv, Notification });
   } catch (err) {
     res.status(500).json({ message: "Erreur serveur", error: err.message });
   }
