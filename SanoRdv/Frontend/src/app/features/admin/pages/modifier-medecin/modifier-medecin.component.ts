@@ -58,16 +58,19 @@ export class ModifierMedecinComponent implements OnInit {
   
       this.medecinForm.patchValue({
           ...medecin,
-          specialite: medecin.specialite // Conserve l'ID original
+          etat: medecin.isActive ? 'Actif' : 'Inactif',
+          specialite: medecin.specialite 
         });
       this.medecinForm.get('dateNaissance')?.setValue(medecin.dateNaissance ? new Date(medecin.dateNaissance).toISOString().substring(0, 10) : '');
+       console.log('Etat dans formulaire:', this.medecinForm.get('etat')?.value);
        console.log('formulaire du médecin:', this.medecinForm.value);
     });
   }
 });    this.chargerSpecialites();
 
   }
-
+ 
+  
     chargerSpecialites(): void {
   this.specialiteService.getSpecialites().subscribe({
     next: (data) => {
@@ -82,26 +85,27 @@ export class ModifierMedecinComponent implements OnInit {
 
 
   onSubmit(): void {
-    console.log('Formulaire soumis:', this.medecinForm);
-    if (this.medecinForm.valid) {
-      this.medecinService.modifierMedecin(this.id, this.medecinForm.value).subscribe(() => {
-        alert('Médecin modifié avec succès.');
-        this.router.navigate(['/admin/medecins']);
-      });
-    }
-
+  if (this.medecinForm.valid) {
     const formValue = { ...this.medecinForm.value };
 
-if (this.photoPreview) {
-  formValue.photo = this.photoPreview.toString(); // base64
+    // Convertir etat en booléen
+    formValue.isActive = formValue.etat === 'Actif';
+
+    // Ajouter la photo si modifiée
+    if (this.photoPreview) {
+      formValue.photo = this.photoPreview.toString(); // base64
+    }
+
+    // Supprimer etat du payload car il ne correspond pas au modèle backend
+    delete formValue.etat;
+
+    this.medecinService.modifierMedecin(this.id, formValue).subscribe(() => {
+      alert('Médecin modifié avec succès.');
+      this.router.navigate(['/admin/medecins']);
+    });
+  }
 }
 
-this.medecinService.modifierMedecin(this.id, formValue).subscribe(() => {
-  alert('Médecin modifié avec succès.');
-  this.router.navigate(['/admin/medecins']);
-});
-
-  }
 
   onCancel(): void {
     this.router.navigate(['/admin/medecins']);

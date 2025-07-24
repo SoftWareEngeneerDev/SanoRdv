@@ -1,4 +1,5 @@
 export interface Patient {
+  IDpatient?: string;
   nom?: string;
   prenom?: string;
   email?: string;
@@ -11,4 +12,6 @@ export interface Patient {
  groupeSanguin?: string;
  photo?: string;
  adresse?: string;
+ id?: string;
+  _id?: string;
 }

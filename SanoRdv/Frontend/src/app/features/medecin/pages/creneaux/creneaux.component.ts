@@ -25,7 +25,7 @@ export class CreneauxComponent implements OnInit{
     private router: Router
   ) {}
   ngOnInit(): void {
-  
+
   this.route.paramMap.subscribe(params => {
     this.medecinId = params.get('medecinId');
     this.patientId = params.get('patientId');
@@ -34,9 +34,9 @@ export class CreneauxComponent implements OnInit{
     // if(this.patientId && this.medecinId ) {
     //   this.handleDayClick(this.selectedDate);
     // }
-    
+
   })
-  
+
 }
 // obtenirAgenda(): void {
 //   if (!this.medecinId) ;
@@ -53,7 +53,7 @@ export class CreneauxComponent implements OnInit{
 // }
 
   // chargerSlotDisponibles() {
-    
+
   //   this.medecinService.getCreneauxDisponibles(this.selectedDate, this.medecinId).subscribe({
   //     next:(data)=> {
   //       this.timeSlots = data;
@@ -63,7 +63,7 @@ export class CreneauxComponent implements OnInit{
   //      }
   //   })
   // }
-  
+
 
 
 
@@ -76,7 +76,7 @@ export class CreneauxComponent implements OnInit{
   }
 
   //parcourir tout les timeslots enfin d'identifier celui dont le time egal hour
-    
+
   toggleSlot(hour: string): void {
     this.timeSlots.forEach(slot =>{
       if(slot.time==hour){
@@ -156,7 +156,6 @@ export class CreneauxComponent implements OnInit{
 
 
 
-  
 // this.router.navigate(['creneaux',this.medecinId,'NAN'])
 
 }
