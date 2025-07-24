@@ -1,15 +1,29 @@
-<!-- Section Hero -->
+<!-- Section Hero - Modifier la partie des statistiques -->
 <section class="hero-about" id="hero">
   <div class="hero-background"></div>
   <div class="container">
     <div class="hero-content" data-aos="fade-up">
       <h1>SANORDV - Votre santé, notre priorité</h1>
-      <p class="hero-subtitle">Nous révolutionnons l'accès aux soins médicaux au Burkina Faso</p>
+      <p class="hero-subtitle">Nous révolutionnons l'accès aux soins médicaux au Burkina Faso</p> 
       <div class="hero-stats">
-        <div class="stat-item" *ngFor="let stat of stats; let i = index" 
-             [style.animation-delay]="i * 0.2 + 's'">
+        <!-- Ajout d'un indicateur de chargement et gestion des erreurs -->
+        <div *ngIf="statsLoading" class="stats-loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+        </div>
+
+        <div *ngIf="statsError" class="stats-error alert alert-warning">
+          <i class="bi bi-exclamation-triangle"></i> Données temporairement indisponibles
+        </div>
+
+        <div class="stat-item" *ngFor="let stat of stats; let i = index"
+             [style.animation-delay]="i * 0.2 + 's'"
+             [class.data-loaded]="!statsLoading && !statsError">
           <i [class]="stat.icon" [style.color]="stat.color"></i>
-          <span class="stat-number">{{ stat.number }}</span>
+          <span class="stat-number">
+            {{ statsLoading ? '...' : stat.number }}
+          </span>
           <span class="stat-label">{{ stat.label }}</span>
         </div>
       </div>
@@ -25,6 +39,7 @@
   </div>
 </section>
 
+
 <!-- Section Mission -->
 <section class="section-mission" id="mission">
   <div class="container">
@@ -33,7 +48,7 @@
       <p class="section-subtitle">Connecter patients et professionnels de santé pour un accès équitable aux soins</p>
     </div>
     <div class="mission-grid">
-      <div class="mission-card" *ngFor="let card of missionCards; let i = index" 
+      <div class="mission-card" *ngFor="let card of missionCards; let i = index"
            data-aos="fade-up" [attr.data-aos-delay]="i * 200">
         <div class="mission-icon">
           <i [class]="card.icon"></i>
@@ -53,7 +68,7 @@
       <p class="section-subtitle">Les principes qui guident notre action au quotidien</p>
     </div>
     <div class="values-grid">
-      <div class="value-card" *ngFor="let value of values; let i = index" 
+      <div class="value-card" *ngFor="let value of values; let i = index"
            data-aos="fade-up" [attr.data-aos-delay]="i * 200">
         <div class="value-icon" [style.color]="value.color">
           <i [class]="value.icon"></i>
@@ -73,7 +88,7 @@
       <p class="section-subtitle">Ce que nous promettons à nos utilisateurs</p>
     </div>
     <div class="engagements-list">
-      <div class="engagement-item" *ngFor="let engagement of engagements; let i = index" 
+      <div class="engagement-item" *ngFor="let engagement of engagements; let i = index"
            data-aos="fade-right" [attr.data-aos-delay]="i * 100">
         <div class="engagement-icon">
           <i [class]="engagement.icon"></i>
@@ -94,7 +109,7 @@
     <div class="contact-container">
       <!-- Informations de contact -->
       <div class="contact-info" data-aos="fade-right">
-        <div class="contact-item" *ngFor="let contact of contactInfo; let i = index" 
+        <div class="contact-item" *ngFor="let contact of contactInfo; let i = index"
              [attr.data-aos-delay]="i * 200" (click)="handleContactClick(contact)"
              [class.clickable]="contact.link">
           <div class="contact-icon">
@@ -116,7 +131,7 @@
             <i class="bi bi-check-circle"></i>
             Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.
           </div>
-          
+
           <div class="alert alert-danger" *ngIf="submissionError">
             <i class="bi bi-exclamation-triangle"></i>
             Une erreur s'est produite. Veuillez réessayer.
@@ -126,17 +141,17 @@
           <div class="form-row">
             <div class="form-group">
               <label for="name">Nom complet *</label>
-              <input type="text" id="name" formControlName="name" 
+              <input type="text" id="name" formControlName="name"
                      [class.is-invalid]="hasError('name')"
                      placeholder="Votre nom complet">
               <div class="invalid-feedback" *ngIf="hasError('name')">
                 {{ getErrorMessage('name') }}
               </div>
             </div>
-            
+
             <div class="form-group">
               <label for="email">Email *</label>
-              <input type="email" id="email" formControlName="email" 
+              <input type="email" id="email" formControlName="email"
                      [class.is-invalid]="hasError('email')"
                      placeholder="votre@email.com">
               <div class="invalid-feedback" *ngIf="hasError('email')">
@@ -148,17 +163,17 @@
           <div class="form-row">
             <div class="form-group">
               <label for="phone">Téléphone</label>
-              <input type="tel" id="phone" formControlName="phone" 
+              <input type="tel" id="phone" formControlName="phone"
                      [class.is-invalid]="hasError('phone')"
                      placeholder="+226 12 34 56 78">
               <div class="invalid-feedback" *ngIf="hasError('phone')">
                 {{ getErrorMessage('phone') }}
               </div>
             </div>
-            
+
             <div class="form-group">
               <label for="subject">Sujet *</label>
-              <select id="subject" formControlName="subject" 
+              <select id="subject" formControlName="subject"
                       [class.is-invalid]="hasError('subject')">
                 <option value="">Sélectionnez un sujet</option>
                 <option value="information">Demande d'information</option>
@@ -175,7 +190,7 @@
 
           <div class="form-group">
             <label for="message">Message *</label>
-            <textarea id="message" formControlName="message" 
+            <textarea id="message" formControlName="message"
                       [class.is-invalid]="hasError('message')"
                       placeholder="Décrivez votre demande en détail..."
                       rows="5"></textarea>
@@ -184,7 +199,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-submit" 
+          <button type="submit" class="btn btn-primary btn-submit"
                   [disabled]="isSubmitting">
             <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
             <i class="bi bi-send" *ngIf="!isSubmitting"></i>
@@ -206,9 +221,9 @@
         <button class="btn btn-primary btn-lg">
           <i class="bi bi-download"></i> Télécharger l'app
         </button>
-        <button class="btn btn-outline btn-lg">
-          <i class="bi bi-person-plus"></i> S'inscrire maintenant
-        </button>
+        <a routerLink="/auth/register" class="btn btn-outline btn-lg">
+  <i class="bi bi-person-plus"></i> S'inscrire maintenant
+</a>
       </div>
     </div>
   </div>
