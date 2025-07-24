@@ -14,8 +14,8 @@ export class MedecinsComponent implements OnInit {
 
   medecins: Medecin[] = [];
   recherche: string = '';
-medecinsFiltres: Medecin[] = [];
-specialites: Specialite[] = [];
+  medecinsFiltres: Medecin[] = [];
+  specialites: Specialite[] = [];
 
 
   constructor(
@@ -33,17 +33,23 @@ specialites: Specialite[] = [];
 
 
 chargerMedecins(): void {
-  this.medecinService.getMedecins().subscribe(data => {
-    console.log('Médecins:', data);
-    console.log('Spécialités:', this.specialites);
-    this.medecins = data.map(med => {
-      const spec = this.specialites.find(s => s._id === med.specialite);
-      console.log('Recherche spécialité pour', med.specialite, '->', spec);
-      return { ...med, specialite: spec?.nom || 'Inconnue' };
+  this.specialiteService.getSpecialites().subscribe(specialites => {
+    this.specialites = specialites;
+
+    this.medecinService.getMedecins().subscribe(data => {
+      this.medecins = data.medecins.map(med => {
+        const spec = this.specialites.find(s => s._id === med.specialite);
+        return {
+          ...med,
+          specialiteNom: spec?.nom || 'Inconnue'
+        };
+      });
+
+      this.medecinsFiltres = this.medecins;
     });
-    this.medecinsFiltres = this.medecins;
   });
 }
+
 
 
 

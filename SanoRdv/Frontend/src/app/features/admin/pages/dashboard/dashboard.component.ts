@@ -10,7 +10,7 @@ import { AdminService } from '../../admin.service';
 })
 export class DashboardComponent implements OnInit {
 
-  totalPatients: number = 0;
+  totalPatients: number = 12;
   medecinsActifs: number = 0;
   totalRendezVous: number = 0;
 
@@ -22,13 +22,13 @@ export class DashboardComponent implements OnInit {
     
   }
 
-  chargerStats(): void {
-    this.adminService.getDashboardStats().subscribe(data => {
-      this.totalPatients = data.totalPatients;
-      this.medecinsActifs = data.medecinsActifs;
-      this.totalRendezVous = data.totalRendezVous;
-    });
-  }
+chargerStats(): void {
+  this.adminService.getDashboardStats().subscribe(data => {
+    this.totalPatients = data.totalPatients;
+    this.medecinsActifs = data.medecinsActifs;
+    this.totalRendezVous = data.totalRendezVous;
+  });
+}
 
  
 }
