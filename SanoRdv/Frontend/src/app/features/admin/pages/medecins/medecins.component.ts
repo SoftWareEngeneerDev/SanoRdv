@@ -94,7 +94,7 @@ filtrer(): void {
       });
     }
   }
-
+ //Gestion des erreurs
  toggleEtat(medecin: Medecin): void {
   if (!medecin._id) return;
 
