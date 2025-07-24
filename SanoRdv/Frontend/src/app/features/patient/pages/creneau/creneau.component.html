@@ -8,13 +8,13 @@
       <!-- Barre de navigation mois -->
       <div class="calendar-header-wrapper">
         <button (click)="moisPrecedent()" class="nav-arrow nav-left">‹</button>
-        <h3>{{ viewDate | date: 'LLLL yyyy':'':'fr' }}</h3>
+        <h3>{{ selectedDate | date: 'LLLL yyyy':'':'fr' }}</h3>
         <button (click)="moisSuivant()" class="nav-arrow nav-right">›</button>
       </div>
 
       <!-- Calendrier Angular -->
       <mwl-calendar-month-view
-        [viewDate]="viewDate"
+        [viewDate]="selectedDate"
         (dayClicked)="selectDate($event.day.date)"
         [locale]="'fr'"
         [weekStartsOn]="1"

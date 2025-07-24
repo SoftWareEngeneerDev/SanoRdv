@@ -64,4 +64,9 @@ export class MedecinService {
   return this.http.get<any>(`${this.apiUrl}/${medecinId}/agenda`);
 }
 
+ creerAgenda(date: string, medecinId: string) {
+    return this.http.post('http://localhost:3000/api/agenda/creer', { date, medecinId });
+  }
+
+
 }
