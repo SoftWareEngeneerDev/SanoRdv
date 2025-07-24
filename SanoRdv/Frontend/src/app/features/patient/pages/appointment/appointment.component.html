@@ -49,8 +49,9 @@
                 <small class="text-muted">{{ rdv.medecin.specialite }}</small>
               </td>
               <td>
-                <button class="btn btn-warning btn-sm me-2" (click)="modifierRdv(rdv.id)">Modifier</button>
-                <button class="btn btn-danger btn-sm" (click)="annulerRdv(rdv.id)">Annuler</button>
+                <!-- Conversion explicite en string avec toString() -->
+                <button class="btn btn-warning btn-sm me-2" (click)="modifierRdv(rdv.id.toString())">Modifier</button>
+                <button class="btn btn-danger btn-sm" (click)="annulerRdv(rdv.id.toString())">Annuler</button>
               </td>
             </tr>
           </tbody>
@@ -112,7 +113,7 @@
 
         <div class="mb-3">
           <label for="motif" class="form-label fw-bold text-primary">Motif d’annulation</label>
-          <select class="form-select" [(ngModel)]="motifSelectionne">
+          <select class="form-select" [(ngModel)]="motifSelectionne" id="motif">
             <option value="">-- Choisissez un motif --</option>
             <option *ngFor="let motif of motifs" [value]="motif">{{ motif }}</option>
             <option value="autre">Autre motif</option>
@@ -130,4 +131,3 @@
     </div>
   </div>
 </div>
-

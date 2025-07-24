@@ -86,8 +86,8 @@ prendreRDV(): void {
   }
 
   if (this.medecin && this.medecin._id && patientId) {
-    this.recapService.setMedecin(this.medecin);      // <-- Ajoute ceci
-    this.recapService.setPatient({ _id: patientId }); // <-- Et ceci
+    this.recapService.setMedecin(this.medecin);
+    this.recapService.setPatient({ _id: patientId }); 
 
     this.router.navigate(['/patient/motif', this.medecin._id, patientId]);
   } else {

@@ -6,16 +6,18 @@ import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Modal } from 'bootstrap';
 
-
-// @ts-ignore : Si Bootstrap n'est pas reconnu, à corriger via typings
-// declare var bootstrap: any;
-
 @Component({
   selector: 'app-rendezvous',
   templateUrl: './appointment.component.html',
   styleUrls: ['./appointment.component.css']
 })
 export class RendezvousComponent implements OnInit {
+modifierRdv(arg0: string) {
+throw new Error('Method not implemented.');
+}
+formatDate(arg0: string) {
+throw new Error('Method not implemented.');
+}
   rendezvousAVenir: RendezVous[] = [];
   rendezvousPasses: RendezVous[] = [];
   loading = false;
@@ -24,7 +26,7 @@ export class RendezvousComponent implements OnInit {
   ongletActif: 'avenir' | 'passes' = 'avenir';
 
   // Modal d'annulation
-  rdvASupprimerId: number | null = null;
+  rdvASupprimerId: string | null = null;
   motifs: string[] = ['Indisponibilité', 'Erreur de prise', 'Problème personnel'];
   motifSelectionne: string = '';
   autreMotif: string = '';
@@ -40,20 +42,22 @@ export class RendezvousComponent implements OnInit {
   }
 
   loadRendezvous(): void {
-    // this.loading = true;
     this.error = '';
+    this.loading = true;
 
     this.rendezVousService.getAllRendezVous().subscribe({
       next: (data) => {
         const now = new Date();
+
         this.rendezvousAVenir = data.filter(rdv => new Date(rdv.date) >= now);
         this.rendezvousPasses = data.filter(rdv => new Date(rdv.date) < now);
-        // this.loading = false;
+
+        this.loading = false;
       },
-      // error: () => {
-      //   this.error = 'Erreur lors du chargement des rendez-vous.';
-      //   this.loading = false;
-      // }
+      error: () => {
+        this.error = 'Erreur lors du chargement des rendez-vous.';
+        this.loading = false;
+      }
     });
   }
 
@@ -62,7 +66,7 @@ export class RendezvousComponent implements OnInit {
     this.ongletActif = onglet;
   }
 
-  annulerRdv(id: number): void {
+  annulerRdv(id: string): void {
     this.rdvASupprimerId = id;
     this.motifSelectionne = '';
     this.autreMotif = '';
@@ -74,61 +78,44 @@ export class RendezvousComponent implements OnInit {
     }
   }
 
-  confirmerAnnulation(): void {
-    if (!this.rdvASupprimerId) return;
+ confirmerAnnulation(): void {
+  if (!this.rdvASupprimerId) return;
 
-    const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
+  const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
 
-    if (!motif || motif.trim() === '') {
-      alert('Veuillez sélectionner ou préciser un motif.');
-      return;
-    }
+  if (!motif || motif.trim() === '') {
+    alert('Veuillez sélectionner ou préciser un motif.');
+    return;
+  }
 
-    this.rendezVousService.annulerRendezVous(this.rdvASupprimerId, motif).subscribe({
-      next: () => {
-        forkJoin([
-          this.notificationsService.envoyerNotificationAnnulationPatient(this.rdvASupprimerId!),
-          this.notificationsService.envoyerNotificationAnnulationMedecin(this.rdvASupprimerId!)
-        ]).subscribe({
-          next: () => {
-            this.rendezvousAVenir = this.rendezvousAVenir.filter(rdv => rdv.id !== this.rdvASupprimerId);
+  // Convertir l'id string en number pour les notifications
+  const idNumber = Number(this.rdvASupprimerId);
 
-            const modalElement = document.getElementById('annulationModal');
-            if (modalElement) {
-              const modal = Modal.getInstance(modalElement);
+  this.rendezVousService.annulerRendezVous(this.rdvASupprimerId, motif).subscribe({
+    next: () => {
+      forkJoin([
+        this.notificationsService.envoyerNotificationAnnulationPatient(idNumber),
+        this.notificationsService.envoyerNotificationAnnulationMedecin(idNumber)
+      ]).subscribe({
+        next: () => {
+          this.rendezvousAVenir = this.rendezvousAVenir.filter(rdv => String(rdv.id) !== this.rdvASupprimerId);
+
+          const modalElement = document.getElementById('annulationModal');
+          if (modalElement) {
+            const modal = Modal.getInstance(modalElement);
             if (modal) modal.hide();
-
-            }
-            this.router.navigate(['/patient/appointment']);
-          },
-          error: () => {
-            alert("Erreur lors de l'envoi des notifications d'annulation.");
           }
-        });
-      },
-      error: () => {
-        alert("Une erreur est survenue lors de l'annulation.");
-      }
-    });
-  }
-
-  modifierRdv(id: number): void {
-    this.router.navigate(['/patient/creneau']);
-  }
-
-  formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    return date.toLocaleString('fr-FR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
+          this.router.navigate(['/patient/appointment']);
+        },
+        error: () => {
+          alert("Erreur lors de l'envoi des notifications d'annulation.");
+        }
+      });
+    },
+    error: () => {
+      alert("Une erreur est survenue lors de l'annulation.");
+    }
+  });
 }
 
-
-
-
-
+}

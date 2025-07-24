@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RendezVous } from '../../shared/models/rdv-model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RendezVousService {
-
   private nouveauxRdvSubject = new BehaviorSubject<number>(0);
   nouveauxRdv$ = this.nouveauxRdvSubject.asObservable();
 
@@ -15,9 +14,18 @@ export class RendezVousService {
 
   constructor(private http: HttpClient) {}
 
+  // Méthode privée pour ajouter le token dans les headers
+  private getHeaders(): { headers: HttpHeaders } {
+    const token = localStorage.getItem('token') || '';
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      }),
+    };
+  }
+
   increment(): void {
-    const current = this.nouveauxRdvSubject.value;
-    this.nouveauxRdvSubject.next(current + 1);
+    this.nouveauxRdvSubject.next(this.nouveauxRdvSubject.value + 1);
   }
 
   decrement(): void {
@@ -32,22 +40,24 @@ export class RendezVousService {
   }
 
   getAllRendezVous(): Observable<RendezVous[]> {
-    return this.http.get<RendezVous[]>(this.apiUrl);
+    return this.http.get<RendezVous[]>(this.apiUrl, this.getHeaders());
   }
 
-  annulerRendezVous(id: number, motif: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/annuler`, { motif });
+  getRendezVousParPatient(patientId: string): Observable<RendezVous[]> {
+    return this.http.get<RendezVous[]>(`${this.apiUrl}/patient/${patientId}`, this.getHeaders());
   }
 
-  modifierRendezVous(id: number, data: Partial<RendezVous>): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+  annulerRendezVous(id: string, motif: string): Observable<any> {
+    // Appelle la route PUT /:id/annuler avec motif dans le body et headers avec token
+    return this.http.put(`${this.apiUrl}/${id}/annuler`, { motif }, this.getHeaders());
+  }
+
+  modifierRendezVous(id: string, data: Partial<RendezVous>): Observable<any> {
+    // Appelle la route PUT /:id/modifier
+    return this.http.put(`${this.apiUrl}/${id}/modifier`, data, this.getHeaders());
   }
 
   creerRendezVous(rdv: Partial<RendezVous>): Observable<RendezVous> {
-    return this.http.post<RendezVous>(this.apiUrl, rdv);
+    return this.http.post<RendezVous>(this.apiUrl, rdv, this.getHeaders());
   }
-
 }
-
-
-

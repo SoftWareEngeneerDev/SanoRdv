@@ -287,8 +287,4 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
     console.error("Erreur récupération RDV admin :", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> origin/master

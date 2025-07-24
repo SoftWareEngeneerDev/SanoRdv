@@ -81,7 +81,7 @@ export class CreneauComponent implements OnInit {
         if (response.success && response.data && response.data._id) {
           this.agendaId = response.data._id;
 
-          // Vérification explicite de agendaId avant usage
+          // Vérification de agendaId 
           if (!this.agendaId) {
             this.messageErreur = "Agenda ID introuvable dans la réponse.";
             return;
