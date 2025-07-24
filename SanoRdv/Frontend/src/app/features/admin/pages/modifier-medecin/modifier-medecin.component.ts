@@ -58,16 +58,19 @@ export class ModifierMedecinComponent implements OnInit {
   
       this.medecinForm.patchValue({
           ...medecin,
-          specialite: medecin.specialite // Conserve l'ID original
+          etat: medecin.isActive ? 'Actif' : 'Inactif',
+          specialite: medecin.specialite 
         });
       this.medecinForm.get('dateNaissance')?.setValue(medecin.dateNaissance ? new Date(medecin.dateNaissance).toISOString().substring(0, 10) : '');
+       console.log('Etat dans formulaire:', this.medecinForm.get('etat')?.value);
        console.log('formulaire du médecin:', this.medecinForm.value);
     });
   }
 });    this.chargerSpecialites();
 
   }
-
+ 
+  
     chargerSpecialites(): void {
   this.specialiteService.getSpecialites().subscribe({
     next: (data) => {
