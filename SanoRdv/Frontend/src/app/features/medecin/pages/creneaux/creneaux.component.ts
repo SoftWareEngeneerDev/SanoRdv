@@ -118,6 +118,8 @@ export class CreneauxComponent implements OnInit{
   handleDayClick(date: Date): void {
   this.selectedDate = date;
   const dateISO = date.toISOString().split('T')[0];
+  // const dateISO = date;  // Passer directement l'objet Date
+
   if (!this.medecinId) {
     alert("Impossible de récupérer l'identifiant du médecin.");
     return;
