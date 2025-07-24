@@ -24,7 +24,7 @@
 
     <!-- Affichage des créneaux -->
     <div class="slots-container" *ngIf="selectedDate">
-      <h4>Créneaux disponibles - {{ selectedDate | date:'fullDate':'':'fr' }}</h4>
+      <h4>Créneaux disponibles - {{ selectedDate| date:'fullDate':'':'fr' }}</h4>
 
       <div *ngIf="horairesDispo.length > 0; else aucunCreneau" class="slots">
         <button

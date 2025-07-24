@@ -46,7 +46,7 @@ export class RechercheMedecinService {
       .set('fuzzyEnabled', 'true')
       .set('phoneticEnabled', 'true');
 
-    this.http.get(`${this.baseUrl}/recherche-avancee`, { params }).subscribe({
+    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
       next: (data: any) => {
         console.log('Données reçues du backend:', data);
 
@@ -85,7 +85,7 @@ export class RechercheMedecinService {
       .set('fuzzyEnabled', 'true')
       .set('phoneticEnabled', 'true');
 
-    this.http.get(`${this.baseUrl}/recherche-avancee`, { params }).subscribe({
+    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
       next: (data: any) => {
         console.log('Données reçues pour autocomplétion:', data);
 

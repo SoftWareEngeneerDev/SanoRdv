@@ -1,69 +1,82 @@
 // controllers/rendezvous.controller.js
+import Notification from '../models/notification.model.js';
 import RendezVous from '../models/rendezvous.model.js';
 import Creneau from '../models/creneau.model.js';
 
 
 
 export const prendreRendezVous = async (req, res) => {
-  try {
-    const { patientId, medecinId, creneauId, time, motif } = req.body;
-    const creneau = await Creneau.findById(creneauId);
-    if (!creneau) {
-      return res.status(404).json({ message: 'Créneau introuvable' });
-    }
-    const slot = creneau.timeSlots.find(s => s.time === time);
-    if (!slot) {
-      return res.status(400).json({ message: 'Heure non trouvée dans ce créneau' });
-    }
-    if (slot.status === 'indisponible') {
-      return res.status(400).json({ message: 'Ce créneau horaire est déjà réservé.' });
-    }
-    const existingRdv = await RendezVous.findOne({ creneau: creneauId, time });
-    if (existingRdv) {
-      return res.status(400).json({ message: 'Ce créneau est déjà pris.' });
-    }
-    const rdv = await RendezVous.create({
-      patient: patientId,
-      medecin: medecinId,
-      creneau: creneauId,
-      date: creneau.date,
-      time,
-      motif,
-      statut: 'confirmé'
-    });
-    slot.status = 'indisponible';
-    await creneau.save();
-    return res.status(201).json({ message: 'Rendez-vous confirmé', rendezVous: rdv });
-  } catch (error) {
-    console.error('Erreur prise de rendez-vous:', error);
-    return res.status(500).json({ message: 'Erreur serveur' });
-  }
+  try {
+    const { patientId, medecinId, creneauId, time, motif } = req.body;
+
+    const creneau = await Creneau.findById(creneauId);
+    if (!creneau) {
+      return res.status(404).json({ message: 'Créneau introuvable' });
+    }
+
+    const slot = creneau.timeSlots.find(s => s.time === time);
+    if (!slot) {
+      return res.status(400).json({ message: 'Heure non trouvée dans ce créneau' });
+    }
+
+    if (slot.status !== 'disponible') {
+      return res.status(400).json({ message: 'Ce créneau horaire est indisponible.' });
+    }
+
+    const existingRdv = await RendezVous.findOne({ creneau: creneauId, time });
+    if (existingRdv) {
+      return res.status(400).json({ message: 'Ce créneau est déjà pris.' });
+    }
+
+    // Création du RDV
+    const rdv = await RendezVous.create({
+      patient: patientId,
+      medecin: medecinId,
+      creneau: creneauId,
+      date: creneau.date,
+      time,
+      motif,
+      statut: 'confirmé'
+    });
+
+    // Mise à jour du créneau
+    slot.status = 'indisponible';
+    slot.patientId = patientId;
+    await creneau.save();
+
+    // Envoi de notification
+    await Notification.create({
+      contenu: `Votre rendez-vous avec le médecin a été confirmé pour ${creneau.date.toDateString()} à ${time}.`,
+      destinataire: patientId,
+      destinataireModel: 'patient',
+      rendezVous: rdv._id,
+      type: 'Confirmation'
+    });
+
+    return res.status(201).json({ message: 'Rendez-vous confirmé', rendezVous: rdv });
+  } catch (error) {
+    console.error('Erreur prise de rendez-vous:', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
 };
+
 
 
 export const annulerRendezVous = async (req, res) => {
   try {
     const { id } = req.params;
-    const { motif } = req.body; 
+    const { motif } = req.body;
 
-    // Extraire l'utilisateur connecté
     const userId = req.user?.id;
     const userRole = req.user?.role;
 
     const rdv = await RendezVous.findById(id);
-    if (!rdv) {
-      return res.status(404).json({ message: "Rendez-vous introuvable." });
-    }
+    if (!rdv) return res.status(404).json({ message: "Rendez-vous introuvable." });
 
-    // Vérification d'autorisation
     const estPatient = rdv.patient.toString() === userId;
     const estMedecin = rdv.medecin.toString() === userId;
 
-    if (
-      userRole !== 'admin' &&
-      !estPatient &&
-      !estMedecin
-    ) {
+    if (userRole !== 'admin' && !estPatient && !estMedecin) {
       return res.status(403).json({ message: "Non autorisé à annuler ce rendez-vous." });
     }
 
@@ -74,11 +87,32 @@ export const annulerRendezVous = async (req, res) => {
     rdv.dateAnnulation = new Date();
     await rdv.save();
 
+    // Mise à jour du créneau
+    const creneau = await Creneau.findById(rdv.creneau);
+    if (creneau) {
+      const slot = creneau.timeSlots.find(s => s.time === rdv.time);
+      if (slot) {
+        slot.status = 'disponible';
+        slot.patientId = null;
+      }
+      await creneau.save();
+    }
+
+    // Notification d’annulation
+    await Notification.create({
+      contenu: `Votre rendez-vous prévu le ${rdv.date.toDateString()} à ${rdv.time} a été annulé.`,
+      destinataire: rdv.patient,
+      destinataireModel: 'patient',
+      rendezVous: rdv._id,
+      type: 'Annulation'
+    });
+
     res.status(200).json({ message: 'Rendez-vous annulé avec succès.', rdv });
   } catch (err) {
     res.status(500).json({ message: "Erreur serveur", error: err.message });
   }
 };
+
 
 
 
@@ -255,4 +289,8 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
     console.error("Erreur récupération RDV admin :", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> origin/master

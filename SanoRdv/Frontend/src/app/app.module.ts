@@ -15,6 +15,8 @@ import { RouterModule } from '@angular/router';
 import { AboutComponent } from './features/about/about.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth.interceptor'; // ajuste le chemin si besoin
+import { CommonModule } from '@angular/common';
+import { MedecinDetailComponent } from './features/medecin-detail/medecin-detail.component';
 
 // Enregistrement de la locale française
 registerLocaleData(localeFr);
@@ -24,7 +26,8 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent
+    AboutComponent,
+    MedecinDetailComponent
 
   ],
   imports: [
@@ -35,6 +38,7 @@ registerLocaleData(localeFr);
     ReactiveFormsModule,     // Utile pour les formulaires dans Auth
     SharedModule,
     BrowserAnimationsModule,
+    CommonModule,
     // CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
     RouterModule.forRoot([]),
 

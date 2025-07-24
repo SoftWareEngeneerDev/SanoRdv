@@ -32,4 +32,10 @@ export class PatientService {
   // saveProfile(data: any): Observable<any> {
   //   return this.http.post(`${this.apiUrl}/save`, data);
   // }
+
+  // medecin.service.ts
+obtenirAgenda(date: string, medecinId: string): Observable<any> {
+  return this.http.post(`http://localhost:3000/api/agenda/afficherAgenda`, { date, medecinId });
+}
+
 }

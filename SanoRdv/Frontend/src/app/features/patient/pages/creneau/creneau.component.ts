@@ -28,6 +28,7 @@ export class CreneauComponent implements OnInit {
   agendaId: string | null = null;
   selectedMedecin: any;
 
+
   constructor(
     private route: ActivatedRoute,
     private creneauService: CreneauService,
@@ -134,7 +135,7 @@ export class CreneauComponent implements OnInit {
   isReserved(horaire: string): boolean {
     return this.creneauxReserves.includes(horaire);
   }
-
+  /* SÉLECTION CRÉNEAU */
   selectCreneau(horaire: string): void {
     if (!this.isReserved(horaire)) {
       this.selectedCreneau = horaire;

@@ -9,6 +9,8 @@ export class MedecinService {
   private baseUrl = 'http://localhost:3000/api';
   private apiUrl = `${this.baseUrl}/medecins`;
   private rdvUrl = `${this.baseUrl}/rendezvous`;
+  selectedSlots: any;
+  selectedDate: any;
 
   constructor(private http: HttpClient) {}
 
@@ -48,11 +50,15 @@ export class MedecinService {
   }
 
   creerAgenda(date: string, medecinId: string) {
-  return this.http.post('http://localhost:3000/api/agenda/creer', { date, medecinId });
-}
+    return this.http.post('http://localhost:3000/api/agenda/creer', { date, medecinId });
+  }
 
-modifierCreneau(payload: any) {
-  return this.http.put('http://localhost:3000/api/creneaux/update', payload);
+  modifierCreneau(payload: any) {
+    return this.http.put('http://localhost:3000/api/creneaux/update', payload);
+  }
+
+  obtenirAgenda(selectedDate : Date, medecinId: string) {
+  return this.http.post('http://localhost:3000/api/agenda/afficherAgenda', {selectedDate,medecinId });
 }
 
 }

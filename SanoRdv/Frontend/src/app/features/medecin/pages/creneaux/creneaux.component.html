@@ -24,13 +24,15 @@
 
     <div class="slots">
       <button
-        *ngFor="let hour of timeSlots"
-        [class.selected]="isSlotSelected(hour)"
-        (click)="toggleSlot(hour)">
-        {{ hour }}
+        *ngFor="let timeSlot of timeSlots"
+        [ngClass]="{ 'indisponible': timeSlot.status=='indisponible', 'disponible':  timeSlot.status=='disponible', 'reserve':  timeSlot.status=='reserve' }"
+        (click)="toggleSlot(timeSlot.time)"
+        [disabled]="timeSlot.status=='reserve'">
+        {{ timeSlot.time }}
       </button>
     </div>
 
-    <button class="save-btn" (click)="saveUnavailability()">Sauvegarder les indisponibilités</button>
+    <button class="save-btn" (click)="saveUnavailability()"
+     *ngIf="idCreneauActuel">Sauvegarder les indisponibilités</button>
   </div>
 </div>
