@@ -1,10 +1,12 @@
-<header [class.header-collapsed]="isCollapsed" [class.header-expanded]="!isCollapsed" class="admin-header d-flex justify-content-end align-items-center px-3 px-md-4 py-2">
+<header
+  [class.header-collapsed]="isCollapsed"
+  [class.header-expanded]="!isCollapsed"
+  class="patient-header d-flex justify-content-between align-items-center px-3 px-md-4 py-2">
 
-  <div class="admin-icons text-wite h2 d-flex align-items-center gap-3">
-    <a routerLink="/accueil" routerLinkActive="active-link" class="nav-link">ACCUEIL</a>
-    <a routerLink="/a-propos" routerLinkActive="active-link" class="nav-link">A-PROPOS</a>
-    <i class="bi bi-bell-fill fs-5" title="Notifications" (click)="notification()"></i>
-    <a routerLink="/auth/login" routerLinkActive="active-link" class="nav-link" (click)="deconnexion()">DECONNEXION</a>
-    
+  <div class="patient-icons text-black d-flex align-items-center gap-3">
+    <a routerLink="" (click)="AccueilPage()">ACCUEIL</a>
+    <a routerLink="" (click)="AProposPage()">A-PROPOS</a>
+    <a routerLink="/admin/log-out">DECONNEXION</a>
   </div>
 </header>
+

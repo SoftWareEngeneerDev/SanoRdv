@@ -16,10 +16,10 @@
 
     <div class="form-group">
       <label>Spécialité *</label>
-      <select formControlName="specialite">
-        <option value="">Sélectionner</option>
-        <option *ngFor="let s of specialites" [value]="s._id">{{ s.nom }}</option>
-      </select>
+        <select id="specialite" formControlName="specialite" class="form-control" required>
+              <option [ngValue]="null">Sélectionner une spécialité</option>
+              <option *ngFor="let s of specialites" [ngValue]="s.nom">{{ s.nom }}</option>
+        </select>
     </div>
 
     <div class="form-group">

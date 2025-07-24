@@ -48,7 +48,7 @@ export class AjouterMedecinComponent implements OnInit {
   onSubmit(): void {
     if (this.medecinForm.valid) {
       const nouveauMedecin: Medecin = this.medecinForm.value;
-
+      console.log('données envoyé', this.medecinForm.value);
       this.medecinService.ajouterMedecin(nouveauMedecin).subscribe(() => {
         alert('Médecin ajouté avec succès !');
         

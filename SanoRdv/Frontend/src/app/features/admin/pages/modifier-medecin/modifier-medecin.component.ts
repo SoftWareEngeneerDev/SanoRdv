@@ -56,7 +56,10 @@ export class ModifierMedecinComponent implements OnInit {
   if (this.id) {
     this.medecinService.getMedecinById(this.id).subscribe((medecin: Medecin) => {
   
-      this.medecinForm.patchValue(medecin);
+      this.medecinForm.patchValue({
+          ...medecin,
+          specialite: medecin.specialite // Conserve l'ID original
+        });
       this.medecinForm.get('dateNaissance')?.setValue(medecin.dateNaissance ? new Date(medecin.dateNaissance).toISOString().substring(0, 10) : '');
        console.log('formulaire du médecin:', this.medecinForm.value);
     });
