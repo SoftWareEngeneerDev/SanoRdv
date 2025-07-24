@@ -25,9 +25,13 @@
   <h4>Parcours professionnel</h4>
   <p>{{ profile.parcours }}</p>
 
-  <div class="actions">
-    <button class="btn-primary" (click)="prendreRendezVous()">
-      <i class="fas fa-calendar-check"></i> Prendre rendez-vous
-    </button>
-  </div>
+  <div class="actions actions-row">
+  <button class="btn-primary" (click)="retourAccueil()" style="margin-right: auto;">
+    <i class="fas fa-home"></i> Retour à l’accueil
+  </button>
+
+  <button class="btn-primary" (click)="prendreRendezVous()">
+    <i class="fas fa-calendar-check"></i> Prendre rendez-vous
+  </button>
+</div>
 </div>
