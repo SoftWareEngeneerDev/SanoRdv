@@ -17,7 +17,7 @@
   <div class="d-flex align-items-center gap-2 mb-3" *ngIf="!isCollapsed">
     <div class="position-relative">
       <img
-        [src]="patient.photo && patient.photo.length > 0 ? patient.photo : 'assets/default-avatar.png'"
+        [src]="user.photo && user.photo.length > 0 ? user.photo : 'assets/default-avatar.png'"
         alt="patient"
         class="patient-avatar"
         title="Modifier le profil" />
@@ -26,7 +26,7 @@
     </div>
 
     <div>
-      <h5 class="mb-0 fw-bold">{{ patient.nom }} {{ patient.prenom }}</h5>
+      <h5 class="mb-0 fw-bold">{{ user.nom }} {{ user.prenom }}</h5>
     </div>
   </div>
 
@@ -34,7 +34,7 @@
   <div *ngIf="isCollapsed" class="text-center mb-3">
     <div class="position-relative d-inline-block">
       <img
-        [src]="patient.photo && patient.photo.length > 0 ? patient.photo : 'assets/default-avatar.png'"
+        [src]="user.photo && user.photo.length > 0 ? user.photo : 'assets/default-avatar.png'"
         alt="patient"
         class="patient-avatar mb-2"
         title="Modifier le profil" />

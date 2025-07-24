@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MedecinService } from '../../services/medecin.service';
 import { Medecin } from '../../models/medecin.model';
-import { SpecialiteService } from '../../services/specialite.service';
-import { Specialite } from '../../models/specialites.model';
 
 @Component({
   selector: 'app-medecins',
@@ -15,52 +13,34 @@ export class MedecinsComponent implements OnInit {
   medecins: Medecin[] = [];
   recherche: string = '';
   medecinsFiltres: Medecin[] = [];
-  specialites: Specialite[] = [];
-
 
   constructor(
     private router: Router,
-    private medecinService: MedecinService,
-    private specialiteService: SpecialiteService
+    private medecinService: MedecinService
   ) {}
 
- ngOnInit(): void {
-  this.specialiteService.getSpecialites().subscribe(specialites => {
-    this.specialites = specialites;
+  ngOnInit(): void {
     this.chargerMedecins();
-  });
-}
+  }
 
-
-chargerMedecins(): void {
-  this.specialiteService.getSpecialites().subscribe(specialites => {
-    this.specialites = specialites;
-
+  chargerMedecins(): void {
     this.medecinService.getMedecins().subscribe(data => {
-      this.medecins = data.medecins.map(med => {
-        const spec = this.specialites.find(s => s._id === med.specialite);
-        return {
-          ...med,
-          specialiteNom: spec?.nom || 'Inconnue'
-        };
-      });
-
-      this.medecinsFiltres = this.medecins;
+      this.medecins = data.map(m => ({
+        ...m,
+        etat: m.isActive ? 'Actif' : 'Inactif'
+      }));
+      this.medecinsFiltres = [...this.medecins];
     });
-  });
-}
+  }
 
-
-
-
-filtrer(): void {
-  const terme = this.recherche.toLowerCase().trim();
-  this.medecinsFiltres = this.medecins.filter(m =>
-    m.nom.toLowerCase().includes(terme) ||
-    m.specialite.toLowerCase().includes(terme) ||
-    m.email.toLowerCase().includes(terme)
-  );
-}
+  filtrer(): void {
+    const terme = this.recherche.toLowerCase().trim();
+    this.medecinsFiltres = this.medecins.filter(m =>
+      m.nom.toLowerCase().includes(terme) ||
+      m.specialite.toLowerCase().includes(terme) ||
+      m.email.toLowerCase().includes(terme)
+    );
+  }
 
   activer(medecin: Medecin): void {
     if (!medecin._id) return;
@@ -81,13 +61,12 @@ filtrer(): void {
   }
 
   voirFiche(medecin: Medecin): void {
-  this.router.navigate(['/admin/detail-medecin'], {
-    queryParams: { id: medecin._id }
-  });
-}
+    this.router.navigate(['/admin/detail-medecin'], {
+      queryParams: { id: medecin._id }
+    });
+  }
 
-
-  supprimer(medecin : Medecin): void {
+  supprimer(medecin: Medecin): void {
     if (confirm('Voulez-vous vraiment supprimer ce médecin ?')) {
       this.medecinService.supprimerMedecin(medecin._id).subscribe(() => {
         this.chargerMedecins();
@@ -95,22 +74,21 @@ filtrer(): void {
     }
   }
 
- toggleEtat(medecin: Medecin): void {
-  if (!medecin._id) return;
+  toggleEtat(medecin: Medecin): void {
+    if (!medecin._id) return;
 
-  const action = medecin.etat === 'Actif' ? 'désactiver' : 'activer';
-  const confirmToggle = confirm(`Voulez-vous vraiment ${action} ce médecin ?`);
+    const action = medecin.etat === 'Actif' ? 'désactiver' : 'activer';
+    const confirmToggle = confirm(`Voulez-vous vraiment ${action} ce médecin ?`);
 
-  if (confirmToggle) {
-    const actionObservable = medecin.etat === 'Actif'
-      ? this.medecinService.desactiverMedecin(medecin._id)
-      : this.medecinService.activerMedecin(medecin._id);
+    if (confirmToggle) {
+      const actionObservable = medecin.etat === 'Actif'
+        ? this.medecinService.desactiverMedecin(medecin._id)
+        : this.medecinService.activerMedecin(medecin._id);
 
-    actionObservable.subscribe(() => {
-      this.chargerMedecins(); // Recharge la liste
-    });
+      actionObservable.subscribe(() => {
+        this.chargerMedecins(); // Recharge la liste
+      });
+    }
   }
-}
-
 
 }
