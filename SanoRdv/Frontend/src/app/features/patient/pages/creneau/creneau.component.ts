@@ -29,11 +29,12 @@ export class CreneauComponent implements OnInit {
   /* ---------- Gestion d’erreur ---------- */
   messageErreur: string | null = null;
 
+
   constructor(
     private route: ActivatedRoute,
     private medecinService: MedecinService,
     private recapService: RecapService,
-    private router: Router
+    private router: Router,
   ) {}
 
   /* ============================ INIT ============================ */
@@ -105,7 +106,6 @@ export class CreneauComponent implements OnInit {
     });
 
   }
-
   /* ======================= SÉLECTION CRÉNEAU ====================== */
   selectCreneau(horaire: string): void {
     this.selectedCreneau = horaire;
