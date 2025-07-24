@@ -68,4 +68,7 @@ export class MedecinDetailComponent implements OnInit {
       state: { medecinInfo: this.profile }
     });
   }
+  retourAccueil(): void {
+    this.router.navigate(['/']);
+  }
 }
