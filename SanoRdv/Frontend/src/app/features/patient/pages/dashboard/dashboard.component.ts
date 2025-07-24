@@ -8,25 +8,17 @@ import { DashboardService } from '../../services/dashboard.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  sidebarOpen: any;
-  toggleSidebar() {
-    throw new Error('Method not implemented.');
-  }
-
-  nbreDossiers = 0;
-  totalNotif: number = 0;
-  prenom: string = 'Invité';
-  rdvTotal: number = 0;
-  prochainRDV: any = null;
-  data: any;
-  totalDossiers: number = 0;
+  sidebarOpen = false;
   isSidebarCollapsed = false;
 
-  isLoading = false;
+  nbreDossiers = 0;
+  totalNotif = 0;
+  prenom = '';
+  rdvTotal = 0;
+  prochainRDV: any = null;
+  totalDossiers = 0;
 
-  onSidebarToggle(collapsed: boolean) {
-    this.isSidebarCollapsed = collapsed;
-  }
+  isLoading = false;
 
   constructor(
     private dashboardService: DashboardService,
@@ -34,40 +26,65 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadDashboard();
+  }
+
+  private loadDashboard(): void {
     this.isLoading = true;
 
-    const patientId = localStorage.getItem('patientId');
+    // Récupérer l'objet user complet pour extraire _id
+    const userDataString = localStorage.getItem('user');
+    let patientId: string | null = null;
 
-    if (patientId && patientId.trim().length > 0) {
-      this.dashboardService.getDashboardData(patientId).subscribe({
-        next: (data: { prenom: string; rdvTotal: number; prochainRDV: any; totalNotif: number; totalDossiers: number; }) => {
-          this.prenom = data.prenom;
-          this.rdvTotal = data.rdvTotal;
-          this.prochainRDV = data.prochainRDV;
-          this.totalNotif = data.totalNotif;
-          this.totalDossiers = data.totalDossiers;
-          this.isLoading = false;
-        },
-        error: (err: any) => {
-          console.error('Erreur lors du chargement des données du dashboard :', err);
-          this.isLoading = false;
-        }
-      });
-    } else {
+    if (userDataString) {
+      try {
+        const userData = JSON.parse(userDataString);
+        // Récupérer uniquement _id
+        patientId = userData._id || null;
+      } catch (e) {
+        console.error('Erreur lors du parsing de user depuis localStorage', e);
+      }
+    }
+
+    console.log('DashboardComponent - patientId récupéré:', patientId);
+
+    if (!patientId || patientId.trim().length === 0) {
       console.warn('patientId non trouvé, chargement sans données spécifiques.');
       this.isLoading = false;
+      // Optionnel : rediriger vers login si patientId manquant
+      // this.router.navigate(['/patient/login']);
+      return;
     }
+
+    this.dashboardService.getDashboardData(patientId).subscribe({
+      next: (data) => {
+        this.prenom = data.prenom || 'Invité';
+        this.rdvTotal = data.rdvTotal || 0;
+        this.prochainRDV = data.prochainRDV || null;
+        this.totalNotif = data.totalNotif || 0;
+        this.totalDossiers = data.totalDossiers || 0;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des données du dashboard :', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  rendezVous() {
-    this.router.navigate(['/patients/pages/appointment']);
+  onSidebarToggle(collapsed: boolean): void {
+    this.isSidebarCollapsed = collapsed;
   }
 
-  dossiers() {
-    this.router.navigate(['/patients/pages/dossiers-medicaux']);
+  rendezVous(): void {
+    this.router.navigate(['/patient/pages/appointment']);
   }
 
-  notifications() {
-    this.router.navigate(['/patients/pages/notifications']);
+  dossiers(): void {
+    this.router.navigate(['/patient/pages/dossiers-medicaux']);
+  }
+
+  notifications(): void {
+    this.router.navigate(['/patient/pages/notifications']);
   }
 }

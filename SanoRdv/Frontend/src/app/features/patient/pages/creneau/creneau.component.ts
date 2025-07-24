@@ -26,8 +26,6 @@ export class CreneauComponent implements OnInit {
   patientId!: string;
   messageErreur: string | null = null;
   agendaId: string | null = null;
-  selectedMedecin: any;
-
 
   constructor(
     private route: ActivatedRoute,
@@ -49,16 +47,6 @@ export class CreneauComponent implements OnInit {
 
       this.medecinId = medecinId;
       this.messageErreur = null;
-
-      this.medecinService.getAgendaIdByMedecinId(this.medecinId).subscribe({
-  next: (agendaId) => {
-    this.agendaId = agendaId;
-    console.log('Agenda ID reçu :', agendaId);
-  },
-  error: (err) => {
-    console.error('Erreur récupération agenda ID :', err);
-  }
-});
     });
   }
 
@@ -88,54 +76,57 @@ export class CreneauComponent implements OnInit {
       return;
     }
 
-    console.log('Données envoyées au service afficherAgenda :', {
-      medecin_id: this.medecinId,
-      date: dateString
-    });
+    this.creneauService.afficherAgenda({ medecinId: this.medecinId, date: dateString }).subscribe({
+      next: (response) => {
+        if (response.success && response.data && response.data._id) {
+          this.agendaId = response.data._id;
 
-    this.creneauService.afficherAgenda({
-  medecinId: this.medecinId,
-  date: dateString
-}).subscribe({
-  next: (response) => {
-    if (response.success && response.data && response.data.creneaux) {
-      const horairesSet = new Set<string>();
-
-      response.data.creneaux.forEach((creneau: any) => {
-        creneau.timeSlots.forEach((slot: any) => {
-          if (slot.status === 'disponible') {
-            horairesSet.add(slot.time);
+          // Vérification explicite de agendaId avant usage
+          if (!this.agendaId) {
+            this.messageErreur = "Agenda ID introuvable dans la réponse.";
+            return;
           }
-        });
-      });
 
-      this.horairesDispo = Array.from(horairesSet).sort((a, b) => {
-        const [hA, mA] = a.split(':').map(Number);
-        const [hB, mB] = b.split(':').map(Number);
-        return hA !== hB ? hA - hB : mA - mB;
-      });
+          this.creneauService.getCreneauxDispoByAgenda(this.agendaId, dateString).subscribe({
+            next: (disponibles) => {
+              this.horairesDispo = disponibles;
 
-      if (this.horairesDispo.length === 0) {
-        this.messageErreur = "Aucun créneau disponible pour cette date.";
-      } else {
-        this.messageErreur = null;
+              this.creneauService.getCreneauxReservesByAgenda(this.agendaId!, dateString).subscribe({
+                next: (reserves) => {
+                  this.creneauxReserves = reserves;
+
+                  if (this.horairesDispo.length === 0) {
+                    this.messageErreur = "Aucun créneau disponible pour cette date.";
+                  } else {
+                    this.messageErreur = null;
+                  }
+                },
+                error: (err) => {
+                  console.error('Erreur récupération créneaux réservés:', err);
+                  this.messageErreur = "Erreur lors de la récupération des créneaux réservés.";
+                }
+              });
+            },
+            error: (err) => {
+              console.error('Erreur récupération créneaux disponibles:', err);
+              this.messageErreur = "Erreur lors de la récupération des créneaux disponibles.";
+            }
+          });
+        } else {
+          this.messageErreur = "Aucun agenda trouvé pour ce médecin à cette date.";
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération de l’agenda:', err);
+        this.messageErreur = "Erreur lors de la récupération de l’agenda.";
       }
-    } else {
-      this.messageErreur = "Aucun agenda trouvé pour cette date.";
-    }
-  },
-  error: (err) => {
-    this.messageErreur = "Erreur lors de la récupération de l’agenda.";
-    console.error(err);
-  }
-});
-
+    });
   }
 
   isReserved(horaire: string): boolean {
     return this.creneauxReserves.includes(horaire);
   }
-  /* SÉLECTION CRÉNEAU */
+
   selectCreneau(horaire: string): void {
     if (!this.isReserved(horaire)) {
       this.selectedCreneau = horaire;

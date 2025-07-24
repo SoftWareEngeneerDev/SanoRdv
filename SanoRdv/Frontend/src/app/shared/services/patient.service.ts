@@ -16,7 +16,7 @@ export class PatientService {
   }
 
   getProfilPatient(): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/patients`);
+    return this.http.get<Patient>(`${this.apiUrl}`);
   }
 
   // mettre à jour le profil du patient

@@ -32,65 +32,69 @@ export class ProfilMedecinComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    const hasReloaded = sessionStorage.getItem('hasReloaded');
+ ngOnInit(): void {
+  const navigation: Navigation | null = this.router.getCurrentNavigation();
+  const medecinFromState = navigation?.extras?.state?.['medecin'] || null;
 
-    if (!hasReloaded) {
-      sessionStorage.setItem('hasReloaded', 'true');
-      window.location.reload();
-      return;
-    }
-
-    const navigation: Navigation | null = this.router.getCurrentNavigation();
-    const medecinFromState = navigation?.extras?.state?.['medecin'] || null;
-
-    if (medecinFromState) {
-      this.medecin = {
-        ...medecinFromState,
-        age: this.calculerAge(medecinFromState.dateNaissance)
-      };
-      this.loading = false;
-      console.log('Medecin reçu via navigation.state:', this.medecin);
+  if (medecinFromState) {
+    this.medecin = {
+      ...medecinFromState,
+      age: this.calculerAge(medecinFromState.dateNaissance)
+    };
+    this.loading = false;
+    console.log('Médecin reçu via navigation.state:', this.medecin);
+  } else {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.medecinService.getMedecinById(id).subscribe({
+        next: (data) => {
+          this.medecin = {
+            ...data,
+            age: this.calculerAge(data.dateNaissance)
+          };
+          this.loading = false;
+          console.log('Médecin récupéré depuis API:', this.medecin);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la récupération du médecin par ID:', error);
+          this.errorMessage = 'Médecin introuvable ou erreur serveur.';
+          this.loading = false;
+        }
+      });
     } else {
-      const id = this.route.snapshot.paramMap.get('id');
-      if (id) {
-        this.medecinService.getMedecinById(id).subscribe({
-          next: (data) => {
-            this.medecin = {
-              ...data,
-              age: this.calculerAge(data.dateNaissance)
-            };
-            this.loading = false;
-            console.log('Medecin récupéré depuis API:', this.medecin);
-          },
-          error: (error) => {
-            console.error('Erreur lors de la récupération du médecin par id:', error);
-            this.errorMessage = 'Médecin introuvable ou erreur serveur.';
-            this.loading = false;
-          }
-        });
-      } else {
-        this.errorMessage = 'Aucun médecin sélectionné.';
-        this.loading = false;
-      }
+      this.errorMessage = 'Aucun médecin sélectionné.';
+      this.loading = false;
     }
   }
-
-    prendreRDV(): void {
-      console.log('medecin._id =', this.medecin?._id);
-      if (this.medecin && this.medecin.nom && this.medecin._id) {
-        this.recapService.setMedecin(this.medecin);
-        this.router.navigate(['/patient/motif', this.medecin._id]); 
-      } else {
-        console.warn('Aucun médecin sélectionné ou id manquant');
-      }
-    }
-
-
+}
 
   retour(): void {
     this.router.navigate(['/patient/dashboard']);
   }
+
+prendreRDV(): void {
+  const patientDataString = localStorage.getItem('user');
+  let patientId: string | null = null;
+
+  if (patientDataString) {
+    try {
+      const patientData = JSON.parse(patientDataString);
+      patientId = patientData._id || null;
+    } catch {
+      console.warn('Impossible de récupérer patient depuis localStorage');
+    }
+  }
+
+  if (this.medecin && this.medecin._id && patientId) {
+    this.recapService.setMedecin(this.medecin);      // <-- Ajoute ceci
+    this.recapService.setPatient({ _id: patientId }); // <-- Et ceci
+
+    this.router.navigate(['/patient/motif', this.medecin._id, patientId]);
+  } else {
+    console.warn('Médecin ou patient ID manquant');
+  }
+}
+
 
   calculerAge(dateNaissance: string): number {
     if (!dateNaissance) return 0;
