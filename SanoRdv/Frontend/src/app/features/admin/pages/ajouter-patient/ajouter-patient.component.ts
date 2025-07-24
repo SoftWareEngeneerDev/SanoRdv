@@ -1,74 +1,70 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { PatientService } from '../../services/patient.service';
+import { Router } from '@angular/router';
 import { Patient } from '../../models/patient.model';
 
 @Component({
   selector: 'app-ajouter-patient',
   templateUrl: './ajouter-patient.component.html',
-  styleUrls: ['./ajouter-patient.component.css']
+  styleUrls: ['./ajouter-patient.component.css'],
 })
-export class AjouterPatientComponent {
-  patientForm: FormGroup;
-  isSubmitting = false;
-  errorMessage = '';
-  successMessage = '';
+export class AjouterPatientComponent implements OnInit {
+  patientForm!: FormGroup;
+  successMessage: string = '';
+  errorMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
     private patientService: PatientService,
     private router: Router
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     this.patientForm = this.fb.group({
-      nom: ['', [Validators.required, Validators.minLength(2)]],
-      prenom: ['', [Validators.required, Validators.minLength(2)]],
+      nom: ['', Validators.required],
+      prenom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
-      sex: ['', Validators.required],
-      dateNaissance: ['', Validators.required],
-      adresse: [''],
+      telephone: ['', Validators.required],
+      motDePasse: ['', [Validators.required, Validators.minLength(8)]],
+      confirmationMotDePasse: ['', Validators.required],
+      sex: [''],
       localite: [''],
-      nationalite: [''],
-      motDePasse: ['', [Validators.required, Validators.minLength(6)]]
+      dateNaissance: [''],
+      adresse: [''],
+      photo: [''],
+    });
+  }
+
+  onSubmit(): void {
+    if (this.patientForm.invalid) {
+      this.errorMessage = 'Veuillez remplir tous les champs obligatoires.';
+      return;
+    }
+
+    const formValue = this.patientForm.value;
+
+    const nouveauPatient: Patient = {
+      ...formValue,
+      sex: formValue.sex || '',
+      dateNaissance: formValue.dateNaissance
+        ? new Date(formValue.dateNaissance).toISOString()
+        : undefined,
+    };
+
+    this.patientService.ajouterPatient(nouveauPatient).subscribe({
+      next: (response : any) => {
+        this.successMessage = response.message || 'Patient ajouté avec succès.';
+        this.router.navigate(['/admin/patients']);
+      },
+      error: (error) => {
+        this.errorMessage = error.error.message || 'Une erreur est survenue.';
+      },
     });
   }
 
   annuler(): void {
-    this.router.navigate(['/admin/patients']);
-  }
-
-  onSubmit(): void {
-  if (this.patientForm.invalid) {
-    this.errorMessage = 'Veuillez remplir tous les champs obligatoires correctement';
-    return;
-  }
-
-  this.isSubmitting = true;
-  this.errorMessage = '';
-  this.successMessage = '';
-
-  const nouveauPatient: Patient = {
-    ...this.patientForm.value,
-    sex: this.patientForm.value.sex || '', // S'assurer qu'il est bien transmis
-  };
-
-  this.patientService.ajouterPatient(nouveauPatient).subscribe({
-    next: (res) => {
-      this.isSubmitting = false;
-      this.successMessage = '✅ Patient ajouté avec succès ! Redirection...';
-      
-      // Redirection avec état pour afficher message dans la liste
-      setTimeout(() => {
-        this.router.navigate(['/admin/patients'], { state: { patientAdded: true } });
-      }, 1500);
-    },
-    error: (err) => {
-      this.isSubmitting = false;
-      this.errorMessage = err.error?.message || '❌ Erreur lors de l\'ajout du patient';
-      console.error('Erreur ajout patient:', err);
-    }
-  });
+  this.router.navigate(['/admin/patients']);
 }
 
 }

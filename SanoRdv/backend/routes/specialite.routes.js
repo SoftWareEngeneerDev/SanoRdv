@@ -3,7 +3,8 @@ import {
   ajouterSpecialite,
   listerSpecialites,
   modifierSpecialite,
-  desactiverSpecialite
+  desactiverSpecialite,
+  supprimerSpecialite
 } from '../controllers/specialite.controller.js';
 import { authentifier, estAdmin } from '../middlewares/auth.middleware.js';
 
@@ -36,5 +37,13 @@ router.put('/:id', authentifier, estAdmin, modifierSpecialite);
  * @access  Admin uniquement
  */
 router.patch('/:id/desactiver', authentifier, estAdmin, desactiverSpecialite);
+
+
+/**
+ * @route   DELETE /api/specialites/:id
+ * @desc    Supprimer une spécialité
+ * @access  Admin uniquement
+ */
+router.delete('/:id', authentifier, estAdmin, supprimerSpecialite);
 
 export default router;

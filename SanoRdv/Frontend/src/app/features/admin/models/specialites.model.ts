@@ -1,6 +1,6 @@
 export interface Specialite {
-   id: string;
+  _id?: string; 
   nom: string;
   description: string;
-  nombreMedecins: number;
+  nombreMedecins?: number;
 }
