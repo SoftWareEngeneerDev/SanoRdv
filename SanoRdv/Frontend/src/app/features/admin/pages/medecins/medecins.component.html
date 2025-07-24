@@ -40,8 +40,10 @@
           <td>Dr. {{ medecin.nom }} {{ medecin.prenom }}</td>
           <td>{{ medecin.specialite }}</td>
           <td>
-              <span class="badge" [ngClass]="{'badge-actif': medecin.etat === 'Actif','badge-inactif': medecin.etat === 'Inactif'}">
-                           {{ medecin.etat }}</span>
+              <span class="badge" [ngClass]="{'badge-actif': medecin.isActive, 'badge-inactif': !medecin.isActive}">
+  {{ medecin.isActive ? 'Actif' : 'Inactif' }}
+</span>
+
           </td>
           <td>{{ medecin.email }}</td>
           <td class="actions">

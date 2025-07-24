@@ -3,16 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Notification } from '../../shared/models/notifications.model';
 import { tap } from 'rxjs/operators';
-import { environment} from 'src/environment/environments'
+import { environment } from 'src/environment/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
-  private apiUrl = environment.apiUrl + '/notifications';
+  private apiUrl = 'http://localhost:3000/api/rendezvous';
 
   private notifications: Notification[] = [];
 
+  // Compteur des notifications non lues
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
 
@@ -32,12 +33,12 @@ export class NotificationsService {
     );
   }
 
-  // Retourne les notifications
+  //  Retourne la liste actuelle des notifications en cache
   getNotifications(): Notification[] {
     return this.notifications;
   }
 
-  // Marque une notification comme lue (PUT)
+  //  Marque une notification comme lue
   markAsRead(id: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/mark-as-read`, {}).pipe(
       tap(() => {
@@ -50,18 +51,29 @@ export class NotificationsService {
     );
   }
 
-  // Exemple de création d'une notification
- creerNotification(notification: Notification): Observable<Notification> {
-  return this.http.post<Notification>(this.apiUrl, notification).pipe(
-    tap((createdNotif) => {
-      this.notifications.push(createdNotif);
-      this.updateUnreadCount(); // Met à jour le compteur de non lues
-    })
-  );
-}
+  //  Crée une nouvelle notification 
+  creerNotification(notification: Notification): Observable<Notification> {
+    return this.http.post<Notification>(this.apiUrl, notification).pipe(
+      tap((createdNotif) => {
+        this.notifications.push(createdNotif);
+        this.updateUnreadCount();
+      })
+    );
+  }
+
+  //  Incrémente le compteur
+  incrementUnreadCount(): void {
+    this.unreadCountSubject.next(this.unreadCountSubject.value + 1);
+  }
 
 
-  // Nettoie les notifications plus anciennes que 30 jours
+  // Réinitialise le compteur
+  resetUnreadCount(): void {
+    this.unreadCountSubject.next(0);
+  }
+
+
+  //  Nettoie les notifications plus anciennes que 30 jours
   private cleanOldNotifications(notifs: Notification[]): Notification[] {
     const now = new Date();
     return notifs.filter(n => {
@@ -70,9 +82,19 @@ export class NotificationsService {
     });
   }
 
-  // Met à jour le nombre de notifications non lues
+  //  Met à jour le compteur en fonction des notifications non lues
   private updateUnreadCount() {
     const count = this.notifications.filter(n => !n.read).length;
     this.unreadCountSubject.next(count);
   }
+
+   //  Envoi notification au médecin
+  envoyerNotificationAnnulationPatient(rdvId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/notification/patient/annulation/${rdvId}`, {});
+  }
+
+  envoyerNotificationAnnulationMedecin(rdvId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/notification/medecin/annulation/${rdvId}`, {});
+  }
 }
+
