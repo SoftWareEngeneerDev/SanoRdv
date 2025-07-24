@@ -30,7 +30,7 @@ export class CreneauxComponent implements OnInit{
     this.medecinId = params.get('medecinId');
     this.patientId = params.get('patientId');
 
-    this.isMedecin = this.patientId === 'NaN';
+    // this.isMedecin = this.patientId === 'NaN';
     // if(this.patientId && this.medecinId ) {
     //   this.handleDayClick(this.selectedDate);
     // }
@@ -60,7 +60,6 @@ export class CreneauxComponent implements OnInit{
       }
     })
   }
-
 
   isSlotSelected(hour: string): boolean {
     return this.selectedSlots.includes(hour);
