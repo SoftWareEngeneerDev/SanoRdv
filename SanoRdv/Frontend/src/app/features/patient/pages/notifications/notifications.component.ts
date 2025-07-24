@@ -44,7 +44,7 @@ export class NotificationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.grouperNotificationsParType(); // 🔄 regrouper au chargement (test local)
+    this.grouperNotificationsParType();
     this.loadNotifications();
   }
 
@@ -60,7 +60,6 @@ export class NotificationsComponent implements OnInit {
       );
       this.unreadCount = this.notifications.filter(n => !n.read).length;
 
-      // 🔄 Recalcul des groupes après réception backend
       this.grouperNotificationsParType();
     });
   }
@@ -136,6 +135,6 @@ export class NotificationsComponent implements OnInit {
         this.loadNotifications();
       });
     }
-    this.voirPlusMap[notif.id] = !estOuvert;
+    // this.voirPlusMap[notif.id] = !estOuvert;
   }
 }

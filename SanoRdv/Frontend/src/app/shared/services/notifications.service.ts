@@ -13,7 +13,7 @@ export class NotificationsService {
 
   private notifications: Notification[] = [];
 
-  // Compteur des notifications non lues (pour l'affichage en temps réel)
+  // Compteur des notifications non lues
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
 
@@ -51,7 +51,7 @@ export class NotificationsService {
     );
   }
 
-  //  Crée une nouvelle notification côté API et met à jour les statistiques
+  //  Crée une nouvelle notification 
   creerNotification(notification: Notification): Observable<Notification> {
     return this.http.post<Notification>(this.apiUrl, notification).pipe(
       tap((createdNotif) => {

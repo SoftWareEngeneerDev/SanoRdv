@@ -11,6 +11,7 @@ export class RecapitulatifComponent implements OnInit {
   motif: string = '';
   medecin: any;
   creneau: any;
+  patient: any;
 
   constructor(
     private recapService: RecapService,
@@ -34,7 +35,11 @@ export class RecapitulatifComponent implements OnInit {
     this.motif = this.recapService.getMotif();
     this.medecin = this.recapService.getMedecin();
     this.creneau = this.recapService.getCreneau();
+  this.patient = this.recapService.getPatient(); 
 
+  if (!this.medecin || !this.patient) {
+    this.router.navigate(['/patient/search-medecin']);
+  }
     // if (!this.medecin || !this.creneau) {
     //   // Redirection si données manquantes
     //   this.router.navigate(['/patient/motif']);

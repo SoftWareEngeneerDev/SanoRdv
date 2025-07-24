@@ -22,7 +22,7 @@ export class ProfilMedecinComponent implements OnInit {
     localite: '',
     adresse: ''
   };
-  loading = true;       // État de chargement
+  loading = true;
   errorMessage: string | null = null;
 
   constructor(
@@ -38,7 +38,7 @@ export class ProfilMedecinComponent implements OnInit {
     if (!hasReloaded) {
       sessionStorage.setItem('hasReloaded', 'true');
       window.location.reload();
-      return; // stop execution before reload
+      return;
     }
 
     const navigation: Navigation | null = this.router.getCurrentNavigation();
@@ -76,14 +76,17 @@ export class ProfilMedecinComponent implements OnInit {
     }
   }
 
-  prendreRDV(): void {
-    if (this.medecin && this.medecin.nom) {
-      this.recapService.setMedecin(this.medecin);
-      this.router.navigate(['/patient/motif']);
-    } else {
-      console.warn('Aucun médecin sélectionné pour prise de rendez-vous');
+    prendreRDV(): void {
+      console.log('medecin._id =', this.medecin?._id);
+      if (this.medecin && this.medecin.nom && this.medecin._id) {
+        this.recapService.setMedecin(this.medecin);
+        this.router.navigate(['/patient/motif', this.medecin._id]); 
+      } else {
+        console.warn('Aucun médecin sélectionné ou id manquant');
+      }
     }
-  }
+
+
 
   retour(): void {
     this.router.navigate(['/patient/dashboard']);

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RecapService } from './../../services/recap.service';
 
@@ -7,27 +7,36 @@ import { RecapService } from './../../services/recap.service';
   templateUrl: './motif.component.html',
   styleUrls: ['./motif.component.css']
 })
-export class MotifComponent {
+export class MotifComponent implements OnInit {
   motifConsultation: string = '';
-  motifLibre: string = '';  // pour le texte libre si "Autres" choisi
+  motifLibre: string = '';
   medecin: any;
   precedentClickedOnce: boolean = false;
+  patient: any;
 
   constructor(
     private router: Router,
     private recapService: RecapService
   ) {}
 
-  onMotifChange() {
+  ngOnInit(): void {
+    // Récupérer le médecin depuis le service
+    this.medecin = this.recapService.getMedecin();
+    this.patient = this.recapService.getPatient();
+
+  //   if (!this.medecin) {
+  //   this.router.navigate(['/patient/search-medecin']);
+  // }
+
+  // if (!this.patient) {
+  //   this.router.navigate(['/patient/login']); // ou la page correspondante
+  // }
+  }
+
+  onMotifChange(): void {
     this.precedentClickedOnce = false;
 
-    // Si "Autres" est sélectionné, on garde tout ici et on affiche un champ texte dans le template (pas de redirection)
-    // Si tu veux garder la redirection vers une autre page, remets ta ligne suivante et supprime le champ texte dans ce composant.
-    // if (this.motifConsultation === 'Autres') {
-    //   this.router.navigate(['/patient/autre-motif']);
-    // }
-
-    // Si l'utilisateur change de motif et ce n'est pas "Autres", on reset le texte libre
+    // Si l'utilisateur choisit un motif autre que "Autres"
     if (this.motifConsultation !== 'Autres') {
       this.motifLibre = '';
     }
@@ -39,7 +48,7 @@ export class MotifComponent {
     return true;
   }
 
-  precedent() {
+  precedent(): void {
     if (!this.precedentClickedOnce) {
       this.motifConsultation = '';
       this.motifLibre = '';
@@ -49,9 +58,16 @@ export class MotifComponent {
     }
   }
 
-  suivant() {
+  suivant(): void {
+    if (!this.isMotifValide()) return;
+
     const motifFinal = this.motifConsultation === 'Autres' ? this.motifLibre.trim() : this.motifConsultation;
     this.recapService.setMotif(motifFinal);
-    this.router.navigate(['/patient/creneau']);
+
+  if (this.medecin && this.patient) {
+      this.router.navigate(['/patient/creneau', this.medecin._id, this.patient._id]);
+    } else {
+      alert("Erreur : informations patient ou médecin manquantes.");
+    }
   }
 }

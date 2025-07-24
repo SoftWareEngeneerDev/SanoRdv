@@ -42,6 +42,9 @@ export interface ResetPassword {
   providedIn: 'root'
 })
 export class AuthService {
+  getUserIdFromToken(): string {
+    throw new Error('Method not implemented.');
+  }
   // URL base pointant sur Render (backend déployé)
   private baseUrl = 'http://localhost:3000/api/auth';
   private url = 'http://localhost:3000/api/patients';

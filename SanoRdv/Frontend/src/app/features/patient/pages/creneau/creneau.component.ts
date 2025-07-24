@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MedecinService } from '../../../../shared/services/medecin.service';
 import { RecapService } from '../../services/recap.service';
-import {CreneauService } from '../../services/creneau.service';
+import { CreneauService } from '../../services/creneau.service';
+import { MedecinService } from '../../../../shared/services/medecin.service';
 import { format, addMonths, subMonths } from 'date-fns';
 import { CalendarView } from 'angular-calendar';
 
@@ -20,36 +20,44 @@ export class CreneauComponent implements OnInit {
   selectedDate: Date | null = null;
   selectedCreneau: string | null = null;
   horairesDispo: string[] = [];
-  creneauxReserves: string[] = []; 
+  creneauxReserves: string[] = [];
 
   medecinId!: string;
-  agendaId!: string;
-
+  patientId!: string;
   messageErreur: string | null = null;
+  agendaId: string | null = null;
+  selectedMedecin: any;
 
   constructor(
     private route: ActivatedRoute,
-    private medecinService: MedecinService,
-     private creneauService: CreneauService,
+    private creneauService: CreneauService,
     private recapService: RecapService,
+    private medecinService: MedecinService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (!id) {
+      const medecinId = params.get('medecin_id');
+      console.log('ID médecin récupéré :', medecinId);
+
+      if (!medecinId) {
         this.messageErreur = "Aucun identifiant de médecin trouvé.";
         return;
       }
 
-      this.medecinId = id;
+      this.medecinId = medecinId;
       this.messageErreur = null;
 
       this.medecinService.getAgendaIdByMedecinId(this.medecinId).subscribe({
-        next: (agendaId: string) => (this.agendaId = agendaId),
-        error: () => (this.messageErreur = "Impossible de récupérer l'agenda du médecin.")
-      });
+  next: (agendaId) => {
+    this.agendaId = agendaId;
+    console.log('Agenda ID reçu :', agendaId);
+  },
+  error: (err) => {
+    console.error('Erreur récupération agenda ID :', err);
+  }
+});
     });
   }
 
@@ -74,35 +82,53 @@ export class CreneauComponent implements OnInit {
     this.horairesDispo = [];
     this.creneauxReserves = [];
 
-    if (!this.agendaId) {
-      this.messageErreur = "L’agenda du médecin n’est pas encore chargé. Veuillez patienter.";
+    if (!this.medecinId) {
+      this.messageErreur = "L'identifiant du médecin n'est pas disponible.";
       return;
     }
 
-    // Récupère tous les créneaux disponibles
-    this.creneauService.getCreneauxDispoByAgenda(this.agendaId, dateString).subscribe({
-      next: horaires => {
-        this.horairesDispo = horaires;
-        if (!horaires.length) {
-          this.messageErreur = "Aucun créneau disponible pour cette date.";
-        }
+    console.log('Données envoyées au service afficherAgenda :', {
+      medecin_id: this.medecinId,
+      date: dateString
+    });
 
-        // Ensuite, récupérer les réservés pour la même date
-        this.creneauService.getCreneauxReservesByAgenda(this.agendaId, dateString).subscribe({
-          next: reserves => {
-            this.creneauxReserves = reserves;
-          },
-          error: () => {
-            this.creneauxReserves = [];
-            console.warn("Impossible de récupérer les créneaux réservés.");
+    this.creneauService.afficherAgenda({
+  medecinId: this.medecinId,
+  date: dateString
+}).subscribe({
+  next: (response) => {
+    if (response.success && response.data && response.data.creneaux) {
+      const horairesSet = new Set<string>();
+
+      response.data.creneaux.forEach((creneau: any) => {
+        creneau.timeSlots.forEach((slot: any) => {
+          if (slot.status === 'disponible') {
+            horairesSet.add(slot.time);
           }
         });
-      },
-      error: () => {
-        this.horairesDispo = [];
-        this.messageErreur = "Une erreur est survenue lors du chargement des créneaux.";
+      });
+
+      this.horairesDispo = Array.from(horairesSet).sort((a, b) => {
+        const [hA, mA] = a.split(':').map(Number);
+        const [hB, mB] = b.split(':').map(Number);
+        return hA !== hB ? hA - hB : mA - mB;
+      });
+
+      if (this.horairesDispo.length === 0) {
+        this.messageErreur = "Aucun créneau disponible pour cette date.";
+      } else {
+        this.messageErreur = null;
       }
-    });
+    } else {
+      this.messageErreur = "Aucun agenda trouvé pour cette date.";
+    }
+  },
+  error: (err) => {
+    this.messageErreur = "Erreur lors de la récupération de l’agenda.";
+    console.error(err);
+  }
+});
+
   }
 
   isReserved(horaire: string): boolean {

@@ -8,7 +8,23 @@ import { Observable } from 'rxjs';
 export class MedecinService {
   private apiUrl = 'http://localhost:3000/api/medecins';
 
+  private selectedMedecin: any = null;
+
   constructor(private http: HttpClient) {}
+
+  //Medecin selectionné
+  setSelectedMedecin(medecin: any): void {
+    this.selectedMedecin = medecin;
+  }
+
+  getSelectedMedecin(): any {
+    return this.selectedMedecin;
+  }
+
+  clearSelectedMedecin(): void {
+    this.selectedMedecin = null;
+  }
+
 
   // Obtenir tous les médecins
   getAllMedecins(): Observable<any[]> {
@@ -20,31 +36,32 @@ export class MedecinService {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  // Obtenir médecins par spécialité
+  // Obtenir les médecins par spécialité
   getMedecinsParSpecialite(specialite: string): Observable<any[]> {
     const params = new HttpParams().set('specialite', specialite);
     return this.http.get<any[]>(`${this.apiUrl}/recherche`, { params });
   }
 
-  // Obtenir médecins par nom
+  // Obtenir les médecins par nom
   getMedecinsParNom(nom: string): Observable<any[]> {
     const params = new HttpParams().set('nom', nom);
     return this.http.get<any[]>(`${this.apiUrl}/recherche`, { params });
   }
 
-  // Obtenir médecins par prénom
+  // Obtenir les médecins par prénom
   getMedecinsParPrenom(prenom: string): Observable<any[]> {
     const params = new HttpParams().set('prenom', prenom);
     return this.http.get<any[]>(`${this.apiUrl}/recherche`, { params });
   }
 
+  // Mettre à jour la photo du médecin
   uploadPhoto(formData: FormData, medecinId: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/${medecinId}/photo`, formData);
   }
 
-getAgendaIdByMedecinId(medecinId: string): Observable<string> {
-  return this.http.get<string>(`${this.apiUrl}/${medecinId}/agenda`);
+  // Obtenir l'agenda ID du médecin
+  getAgendaIdByMedecinId(medecinId: string): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/${medecinId}/agenda`);
 }
-
 
 }

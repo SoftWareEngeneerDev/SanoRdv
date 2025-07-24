@@ -19,8 +19,8 @@ import { AuthGuard } from 'src/app/core/guards/auth.guard';  // Importation du A
 
 const routes: Routes = [
   { path: 'informations/:id', component: ProfilMedecinComponent, canActivate: [AuthGuard] },
-  { path: 'motif', component: MotifComponent, canActivate: [AuthGuard] },
-  { path: 'creneau', component: CreneauComponent, canActivate: [AuthGuard] },
+  { path: 'motif/:medecin_id', component: MotifComponent, canActivate: [AuthGuard] },
+ { path: 'creneau/:medecin_id/:patient_id', component: CreneauComponent, canActivate: [AuthGuard] },
   { path: 'recapitulatif', component: RecapitulatifComponent, canActivate: [AuthGuard] },
   { path: 'confirmation', component: ConfirmationComponent, canActivate: [AuthGuard] },
   { path: 'deconnexion', component: DeconnexionComponent,  canActivate: [AuthGuard, AuthGuard ]},

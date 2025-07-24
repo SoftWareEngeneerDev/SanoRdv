@@ -15,7 +15,7 @@ export class DashboardComponent implements OnInit {
 
   nbreDossiers = 0;
   totalNotif: number = 0;
-  prenom: string = 'Invité';  // valeur par défaut si pas de patientId
+  prenom: string = 'Invité';
   rdvTotal: number = 0;
   prochainRDV: any = null;
   data: any;
@@ -34,7 +34,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoading = true; // Affiche le contenu initial (loader ou pas)
+    this.isLoading = true;
 
     const patientId = localStorage.getItem('patientId');
 
@@ -54,7 +54,6 @@ export class DashboardComponent implements OnInit {
         }
       });
     } else {
-      // Pas de patientId, on charge juste sans données spécifiques
       console.warn('patientId non trouvé, chargement sans données spécifiques.');
       this.isLoading = false;
     }

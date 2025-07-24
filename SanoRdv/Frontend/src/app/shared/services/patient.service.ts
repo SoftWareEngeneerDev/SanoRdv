@@ -19,7 +19,7 @@ export class PatientService {
     return this.http.get<Patient>(`${this.apiUrl}/patients`);
   }
 
-  // Ici on change le type du paramètre en FormData pour correspondre à ce que tu envoies
+  // mettre à jour le profil du patient
  updateProfile(id: string, data: FormData): Observable<any> {
   const token = localStorage.getItem('token');
   const headers = {
