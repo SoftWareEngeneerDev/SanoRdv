@@ -9,16 +9,13 @@ import { Router } from '@angular/router';
 export class AdminHeaderComponent {
  
   @Input() isCollapsed: boolean = false;
-
-    constructor(private router: Router) {}
-
-
-  notification() {
-    this.router.navigate(['/admin/notifications']);
+constructor(private router: Router) {}
+    AccueilPage() {
+    localStorage.clear();
+    this.router.navigate(['/']);
   }
-
-  deconnexion(){
-    this.router.navigate(['/auth/login']);
+    AProposPage() {
+    this.router.navigate(['/about']);
   }
 
 }

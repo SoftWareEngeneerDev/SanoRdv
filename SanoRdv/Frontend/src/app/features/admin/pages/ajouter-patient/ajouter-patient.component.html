@@ -34,14 +34,24 @@
   </div>
 </div>
 
+<div class="mb-3">
+  <label for="confirmationMotDePasse" class="form-label">Confirmation mot de passe</label>
+  <input type="password" formControlName="confirmationMotDePasse" class="form-control" id="confirmationMotDePasse" required>
+  <div *ngIf="patientForm.hasError('passwordMismatch') && patientForm.get('confirmationMotDePasse')?.touched" class="text-danger">
+    Les mots de passe ne correspondent pas
+  </div>
+</div>
+
+
 
     <div class="row mb-3">
       <div class="col-md-6">
         <label for="sex" class="form-label fw-semibold">Sexe *</label>
         <select class="form-select" id="sex" formControlName="sex">
           <option value="">-- Sélectionnez --</option>
-          <option value="Homme">Homme</option>
-          <option value="Femme">Femme</option>
+          <option value="masculin">masculin</option>
+          <option value="féminin">féminin</option>
+          <option value="other">autre</option>
         </select>
       </div>
       <div class="col-md-6">

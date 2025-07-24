@@ -24,7 +24,7 @@
     <input class="form-control" type="date" formControlName="dateNaissance" />
     <input class="form-control" type="number" placeholder="Année d’expérience" formControlName="anneeExperience" />
     <select class="form-select" formControlName="specialite">
-      <option *ngFor="let sp of specialites" [value]="sp">{{ sp }}</option>
+       <option *ngFor="let s of specialites" [value]="s.nom">{{ s.nom }}</option>
     </select>
   </div>
 
