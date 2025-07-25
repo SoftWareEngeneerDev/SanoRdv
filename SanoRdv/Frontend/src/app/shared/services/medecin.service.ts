@@ -6,6 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MedecinService {
+  modifierCreneau(body: { idcreneau: any; timeSlots: any; }) {
+    throw new Error('Method not implemented.');
+  }
   private apiUrl = 'http://localhost:3000/api/medecins';
 
   private selectedMedecin: any = null;
@@ -63,5 +66,10 @@ export class MedecinService {
   getAgendaIdByMedecinId(medecinId: string): Observable<any> {
   return this.http.get<any>(`${this.apiUrl}/${medecinId}/agenda`);
 }
+
+ creerAgenda(date: string, medecinId: string) {
+    return this.http.post('http://localhost:3000/api/agenda/creer', { date, medecinId });
+  }
+
 
 }
