@@ -7,6 +7,7 @@ import {
   notifMedecinAnnulation,
   scheduleRappels
 } from '../controllers/notification.controller.js'; 
+import { getNotifications } from '../controllers/notification.controller.js';
 
 const router = express.Router();
 
@@ -80,5 +81,9 @@ router.post('/notification/schedule/rappels', async (req, res) => {
     res.status(500).json({ success: false, message: 'Erreur lors de l\'envoi des rappels', error: error.message });
   }
 });
+
+
+// Route pour récupérer les notifications d'un patient ou d'un médecin
+router.get('/:type/:id', getNotifications);
 
 export default router;
