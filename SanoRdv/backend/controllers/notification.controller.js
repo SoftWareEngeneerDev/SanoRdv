@@ -26,7 +26,7 @@ const templates = {
   patient: {
     Confirmation: (rdv) => ({
       subject: `Confirmation de votre rendez-vous du ${formatDate(rdv.date)}`,
-      text: `Votre rendez-vous avec le Dr ${rdv.medecin.nom} est confirmé pour le ${formatDate(rdv.date)} à ${formatTime(rdv.date)}.`,
+      text: `Votre rendez-vous avec le Dr ${rdv.medecin.nom} est confirmé pour le ${formatDate(rdv.date)} à ${formatTime(rdv.time)}.`,
       html: modelPatientEmail(rdv, 'confirmé')
     }),
     Annulation: (rdv) => ({
@@ -43,7 +43,7 @@ const templates = {
   medecin: {
     Confirmation: (rdv) => ({
       subject: `Nouveau rendez-vous avec ${rdv.patient.nom}`,
-      text: `Vous avez un nouveau rendez-vous avec ${rdv.patient.nom} le ${formatDate(rdv.date)} à ${formatTime(rdv.date)}.`,
+      text: `Vous avez un nouveau rendez-vous avec ${rdv.patient.nom} le ${formatDate(rdv.date)} à ${formatTime(rdv.time)}.`,
       html: modelMedecinEmail(rdv, 'nouveau')
     }),
     Annulation: (rdv) => ({
@@ -60,13 +60,13 @@ const formatTime = (date) => DateTime.fromJSDate(date).setLocale('fr').toLocaleS
 
 const modelPatientEmail = (rdv, status) => `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-    <h2 style="color: #2c3e50;">Rendez-vous ${status}</h2>
+    <h2 style="color: #3173b4ff;">Rendez-vous ${status}</h2>
     <p>Bonjour ${rdv.patient.nom},</p>
     
     <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
       <p><strong>Statut:</strong> ${status.toUpperCase()}</p>
       <p><strong>Date:</strong> ${formatDate(rdv.date)}</p>
-      <p><strong>Heure:</strong> ${formatTime(rdv.date)}</p>
+      <p><strong>Heure:</strong> ${formatTime(rdv.time)}</p>
       <p><strong>Médecin:</strong> Dr. ${rdv.medecin.nom}</p>
       ${status === 'annulé' ? '<p><strong>Motif:</strong> Veuillez contacter le secrétariat</p>' : ''}
     </div>
@@ -83,7 +83,7 @@ const modelMedecinEmail = (rdv, status) => `
     <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
       <p><strong>Patient:</strong> ${rdv.patient.nom}</p>
       <p><strong>Date:</strong> ${formatDate(rdv.date)}</p>
-      <p><strong>Heure:</strong> ${formatTime(rdv.date)}</p>
+      <p><strong>Heure:</strong> ${formatTime(rdv.time)}</p>
       ${status === 'annulé' ? '<p><strong>Motif:</strong> Le patient a annulé</p>' : ''}
     </div>
 
@@ -153,6 +153,7 @@ export const notifPatientAnnulation = (rdvId) => envoieNotification(rdvId, 'pati
 export const notifPatientRappel = (rdvId) => envoieNotification(rdvId, 'patient', 'Rappel');
 export const notifMedecinConfirmation = (rdvId) => envoieNotification(rdvId, 'medecin', 'Confirmation');
 export const notifMedecinAnnulation = (rdvId) => envoieNotification(rdvId, 'medecin', 'Annulation');
+//export const notifMedecintRappel = (rdvId) => envoieNotification(rdvId, 'medecin', 'Rappel');
 
 // Planificateur de rappels (à appeler dans un cron job)
 export const scheduleRappels = async () => {
@@ -173,3 +174,47 @@ export const scheduleRappels = async () => {
   }
 };
 
+// ------------------Fonction qui retourne les notifications du medecin ou du patient
+
+
+// Controller pour récupérer les notifications d'un patient ou d'un médecin
+export const getNotifications = async (req, res) => {
+  try {
+    const { type, id } = req.params;  // Type et ID du destinataire (patient ou medecin)
+
+    // Vérification du type de destinataire
+    if (!['patient', 'medecin'].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Le type de destinataire doit être "patient" ou "medecin".'
+      });
+    }
+
+    // Trouver les notifications pour un patient ou un médecin
+    const notifications = await Notification.find({
+      destinataireModel: type, // patient ou medecin
+      destinataire: id // ID du destinataire
+    })
+      .populate('rendezVous')  // Peupler le modèle du rendez-vous si nécessaire
+      .sort({ createdAt: -1 }); // Trier les notifications par date décroissante
+
+    if (!notifications.length) {
+      return res.status(404).json({
+        success: false,
+        message: `Aucune notification trouvée pour ce ${type}.`
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      notifications
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des notifications:", error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erreur serveur lors de la récupération des notifications.',
+      error: error.message
+    });
+  }
+};

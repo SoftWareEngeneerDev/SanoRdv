@@ -88,6 +88,18 @@ h3 {
   border-color: #5399f0;
 }
 
+.reserved {
+  background-color: #ccc;
+  color: #666;
+
+}
+
+.disponible {
+  background-color: #19b165;
+  color: #666;
+
+}
+
 .slot-btn:hover {
   background-color: #5399f0;
   color: white;

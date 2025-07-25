@@ -1,15 +1,29 @@
-<!-- Section Hero -->
+<!-- Section Hero - Modifier la partie des statistiques -->
 <section class="hero-about" id="hero">
   <div class="hero-background"></div>
   <div class="container">
     <div class="hero-content" data-aos="fade-up">
       <h1>SANORDV - Votre santé, notre priorité</h1>
-      <p class="hero-subtitle">Nous révolutionnons l'accès aux soins médicaux au Burkina Faso</p>
+      <p class="hero-subtitle">Nous révolutionnons l'accès aux soins médicaux au Burkina Faso</p> 
       <div class="hero-stats">
+        <!-- Ajout d'un indicateur de chargement et gestion des erreurs -->
+        <div *ngIf="statsLoading" class="stats-loading">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+        </div>
+
+        <div *ngIf="statsError" class="stats-error alert alert-warning">
+          <i class="bi bi-exclamation-triangle"></i> Données temporairement indisponibles
+        </div>
+
         <div class="stat-item" *ngFor="let stat of stats; let i = index"
-             [style.animation-delay]="i * 0.2 + 's'">
+             [style.animation-delay]="i * 0.2 + 's'"
+             [class.data-loaded]="!statsLoading && !statsError">
           <i [class]="stat.icon" [style.color]="stat.color"></i>
-          <span class="stat-number">{{ stat.number }}</span>
+          <span class="stat-number">
+            {{ statsLoading ? '...' : stat.number }}
+          </span>
           <span class="stat-label">{{ stat.label }}</span>
         </div>
       </div>
@@ -24,6 +38,7 @@
     </div>
   </div>
 </section>
+
 
 <!-- Section Mission -->
 <section class="section-mission" id="mission">
