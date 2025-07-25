@@ -6,82 +6,76 @@ import Patient from '../models/patient.model.js';
 
 
 export async function retrieveOrCreateCreneau(agendaId, date) {
-    try {
+  try {
 
-        if (!mongoose.Types.ObjectId.isValid(agendaId)) {
-            throw new Error("Identifiant 'agendaId' invalide");
-        }
+    if (!mongoose.Types.ObjectId.isValid(agendaId)) {
+        throw new Error("Identifiant 'agendaId' invalide");
+    }
 
-        // 2. Récupérer les timeSlots du creneau à la date indiquée
-        // const timeSlots = await retrieveTimeSlotsByDate(date);
- 
-            // 2. Recherche dans la base de données
-            const dateOnly = new Date(date);
-          dateOnly.setHours(0, 0, 0, 0);
+    
+    const dateOnly = new Date(date);
+    dateOnly.setHours(0, 0, 0, 0);
 
-          let creneauToRetrieve = null;
-          const creneauExistant = await Creneau.findOne({ agenda: agendaId });
-          console.log('Voici le creneau que j\'ai trouvé:', creneauExistant, agendaId);               
-          // 3. Si aucun creneau à cette date alors créons le
-          if (creneauExistant) {
-              creneauToRetrieve = creneauExistant;
+    // 2. Recherche dans la base de données
+    // Trouver le creneau pour l'agenda indiquée
+    const creneauExistant = await Creneau.findOne({ 
+      agenda: agendaId,
+      date: dateOnly
+    });
 
-          }else{  
-              // Génération des créneaux par défaut (8h-17h30, toutes les 30 minutes)
-              const timeSlots = [];
-              const startTime = 8;   // Heure de début configurable
-              const endTime = 17.5;   // Heure de fin configurable
-              const interval = 0.5;   // Intervalle configurable (30 minutes)
-      
-              for (let time = startTime; time <= endTime; time += interval) {
-                  const hours = Math.floor(time);
-                  const minutes = (time % 1 === 0.5) ? '30' : '00';
-                  const timeString = `${hours}:${minutes}`;
-                  
-                  timeSlots.push({
-                      time: timeString,
-                      status: 'disponible', // Statut par défaut
-                      // Ajoutez d'autres champs requis par votre modèle si nécessaire
-                  });
-              }
-
-              creneauToRetrieve = new Creneau({
-              date: new Date(date),
-              timeSlots: timeSlots,
-              agenda: agendaId
-          });
-          await creneauToRetrieve.save();
-          }
-
-
-        // // 5. Mise à jour ou création
-        // let operationType = 'update';
-        // let creneau;
-
-        // if (existingCreneau) {
-        //     existingCreneau.timeSlots = timeSlots;
-        //     creneau = await existingCreneau.save();
-        // } else {
-        //     operationType = 'create';
-        //     creneau = new Creneau({
-        //         date: new Date(date),
-        //         timeSlots: timeSlots,
-        //         agenda: agendaId
-        //     });
-        //     await creneau.save();
-        // }
-
-        // 6. Retour du résultat
+    // // Affichage 
+    // console.log('// ---------------------------------------------------');
+    // console.log('Ce creneau existe dans la base de données:', creneauExistant, agendaId);
+    // console.log('// ---------------------------------------------------');
+    
+    // Si un créneau existe déjà, le retourner
+    if (creneauExistant) {
+        console.log("Créneau existant récupéré :", creneauExistant);
         return {
             success: true,
-            operation: 'create',
-            data: creneauExistant
+            operation: 'retrieved',
+            data: creneauExistant // Retourne simplement le créneau existant
         };
-
-    } catch (error) {
-        console.error("Erreur lors de la génération des créneaux:", error);
-        throw error; // Propagation de l'erreur pour gestion par l'appelant
     }
+
+    // Si le créneau n'existe pas, créer un nouveau créneau
+    const timeSlots = [];
+    const startTime = 8;  // Heure de début
+    const endTime = 17.5;  // Heure de fin
+    const interval = 0.5;  // Intervalle de 30 minutes
+
+    for (let time = startTime; time <= endTime; time += interval) {
+        const hours = Math.floor(time);
+        const minutes = (time % 1 === 0.5) ? '30' : '00';
+        const timeString = `${hours}:${minutes}`;
+        timeSlots.push({
+            time: timeString,
+            status: 'disponible',
+        });
+    }
+
+    // Créer un nouveau créneau
+    const creneauToRetrieve = new Creneau({
+        date: new Date(date),
+        timeSlots: timeSlots,
+        agenda: agendaId
+    });
+
+    // Sauvegarder le créneau
+    await creneauToRetrieve.save();
+    console.log("Nouveau créneau créé :", creneauToRetrieve);
+
+    // Retourner le nouveau créneau créé
+    return {
+        success: true,
+        operation: 'created',
+        data: creneauToRetrieve
+    };
+
+  } catch (error) {
+      console.error("Erreur lors de la génération des créneaux:", error);
+      throw error; // Propagation de l'erreur pour gestion par l'appelant
+  }
 }
 
 // --------- Fonction pour modifier Creneau --------------------------- //
