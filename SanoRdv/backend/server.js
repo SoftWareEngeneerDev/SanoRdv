@@ -14,6 +14,7 @@ import creneauRouter from './routes/creneau.routes.js';
 import agendaRouter from './routes/agenda.routes.js';
 import medecinRouter from './routes/medecin.routes.js'; // corrigé : medecinRouter au lieu de medecinRoutes
 import notificationRouter from './routes/notification.routes.js';
+import stateRouter from './routes/state.routes.js'
 
 // Configuration des variables d'environnement
 dotenv.config();
@@ -38,8 +39,8 @@ const port = process.env.PORT || 3000;
   }));
 
   // Middleware pour parser le JSON et les données url-encoded
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' })); // limite augmentée
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); 
 
   // Définition des routes
   app.use('/api/auth', userRoutes);        // Routes pour les utilisateurs
@@ -52,6 +53,9 @@ const port = process.env.PORT || 3000;
   app.use('/api/creneaux', creneauRouter); // Routes pour les créneaux horaires
   app.use('/api/agenda', agendaRouter);   // Routes pour l'agenda
   app.use('/api/notifications', notificationRouter); // Routes pour les notifications
+  app.use('/api/rendezvous', rendezvousRoutes);
+  app.use('/api/state', stateRouter)
+
 
   // Gestion des erreurs 404 (Route non trouvée)
   app.use((req, res) => {

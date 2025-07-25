@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Patient } from '../models/patient.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PatientService {
   private apiUrl = 'http://localhost:3000/api/patients';
@@ -16,20 +16,26 @@ export class PatientService {
   }
 
   getProfilPatient(): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/patients`);
+    return this.http.get<Patient>(`${this.apiUrl}`);
   }
 
-  // Ici on change le type du paramètre en FormData pour correspondre à ce que tu envoies
-updateProfile(data: FormData): Observable<any> {
+  // mettre à jour le profil du patient
+ updateProfile(id: string, data: FormData): Observable<any> {
   const token = localStorage.getItem('token');
   const headers = {
-    Authorization: `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   };
-  return this.http.put(`${this.apiUrl}/me`, data, { headers });
+  return this.http.put(`${this.apiUrl}/me/${id}`, data, { headers });
 }
 
 
   // saveProfile(data: any): Observable<any> {
   //   return this.http.post(`${this.apiUrl}/save`, data);
   // }
+
+  // medecin.service.ts
+obtenirAgenda(date: string, medecinId: string): Observable<any> {
+  return this.http.post(`http://localhost:3000/api/agenda/afficherAgenda`, { date, medecinId });
+}
+
 }

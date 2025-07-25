@@ -25,11 +25,13 @@ export interface AuthResponse {
   token?: string;
   resetToken?: string;
   user?: {
-    id: string;
+    _id: string;  // <-- correction ici : c'est _id, pas id
+    IDpatient?: string;
     nom: string;
     prenom: string;
     email: string;
     role: string;
+    [key: string]: any;
   };
 }
 
@@ -42,10 +44,12 @@ export interface ResetPassword {
   providedIn: 'root'
 })
 export class AuthService {
-  // URL base pointant sur Render (backend déployé)
+  getUserIdFromToken(): string {
+    throw new Error('Method not implemented.');
+  }
+
   private baseUrl = 'http://localhost:3000/api/auth';
   private url = 'http://localhost:3000/api/patients';
-
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   constructor(private http: HttpClient) {}
@@ -66,6 +70,13 @@ export class AuthService {
         }
         if (res.user) {
           localStorage.setItem('user', JSON.stringify(res.user));
+          // Stocker l'_id (champ MongoDB) selon rôle
+          if (res.user.role === 'patient' && res.user._id) {
+            localStorage.setItem('patientId', res.user._id);
+          }
+          if (res.user.role === 'medecin' && res.user._id) {
+            localStorage.setItem('medecinId', res.user._id);
+          }
         }
         console.log("Réponse du backend:", res);
       }),
@@ -84,6 +95,12 @@ export class AuthService {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
+
+    // Nettoyer localStorage lors du logout
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('patientId');
+    localStorage.removeItem('medecinId');
 
     return this.http.post<AuthResponse>(`${this.baseUrl}/logout`, {}, { headers });
   }
@@ -119,5 +136,25 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  loginMedecin(credentials: Login): Observable<any> {
+    return this.http.post<any>('http://localhost:3000/api/medecins/login', credentials, {
+      headers: this.headers
+    }).pipe(
+      tap(res => {
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+        }
+        if (res.data) {
+          localStorage.setItem('user', JSON.stringify(res.data));
+          if (res.data._id) {
+            localStorage.setItem('medecinId', res.data._id);
+          }
+        }
+        console.log("Médecin connecté:", res);
+      }),
+      map(res => res)
+    );
   }
 }

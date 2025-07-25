@@ -163,3 +163,15 @@ export const desactiverSpecialite = async (req, res) => {
     });
   }
 };
+
+export const supprimerSpecialite = async (req, res) => {
+  try {
+    const specialite = await Specialite.findByIdAndDelete(req.params.id);
+    if (!specialite) {
+      return res.status(404).json({ message: 'Spécialité non trouvée.' });
+    }
+    return res.status(200).json({ message: 'Spécialité supprimée avec succès.' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Erreur serveur.' });
+  }
+};

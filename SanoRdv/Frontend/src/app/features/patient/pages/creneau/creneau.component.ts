@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MedecinService } from '../../../../shared/services/medecin.service';
 import { RecapService } from '../../services/recap.service';
+import { MedecinService } from '../../../../shared/services/medecin.service';
 import { format, addMonths, subMonths } from 'date-fns';
 import { CalendarView } from 'angular-calendar';
 
@@ -12,143 +12,140 @@ import { CalendarView } from 'angular-calendar';
 })
 export class CreneauComponent implements OnInit {
 
-  /* ---------- Angular‑Calendar ---------- */
-  view: CalendarView = CalendarView.Month;   // vue mensuelle
-  CalendarView = CalendarView;               // alias pour le template
-  viewDate: Date = new Date();               // date actuellement affichée
+  view: CalendarView = CalendarView.Month;
+  CalendarView = CalendarView;
+  selectedDate: Date = new Date();
+  selectedSlot: any= null;
+listeDeSlots: any [] = [];
+timeSlotGlobal: any [] = [];
 
-  /* ---------- Sélection et données ---------- */
-  selectedDate: Date | null = null;
-  selectedCreneau: string | null = null;
-  horairesDispo: string[] = [];
 
-  /* ---------- Médecin / agenda ---------- */
   medecinId!: string;
-  agendaId!: string;
+  patientId!: string;
+  messageErreur: string  = '';
+  idCreneau: string = '';
 
-  /* ---------- Gestion d’erreur ---------- */
-  messageErreur: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private medecinService: MedecinService,
     private recapService: RecapService,
+    private medecinService: MedecinService,
     private router: Router
   ) {}
 
-  /* ============================ INIT ============================ */
   ngOnInit(): void {
-    /* Récupération de l’ID du médecin dans l’URL */
+    this.patientId = localStorage.getItem('patientId') || '';
+
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (!id) {
+      const medecinId = params.get('medecin_id');
+      if (!medecinId) {
         this.messageErreur = "Aucun identifiant de médecin trouvé.";
         return;
       }
-
-      this.medecinId = id;
-      this.messageErreur = null;
-
-      /* Récupérer l’ID d’agenda du médecin */
-      this.medecinService.getAgendaIdByMedecinId(this.medecinId).subscribe({
-        next: agendaId => (this.agendaId = agendaId),
-        error: () => (this.messageErreur = "Impossible de récupérer l'agenda du médecin.")
-      });
+      this.medecinId = medecinId;
+      this.messageErreur = '';
+      this.selectDate(this.selectedDate);
     });
   }
 
-  /* ===================== NAVIGATION MENSUELLE ===================== */
   moisPrecedent(): void {
-    this.viewDate = subMonths(this.viewDate, 1);
+    this.selectedDate = subMonths(this.selectedDate, 1);
+    this.selectDate(this.selectedDate);
   }
 
   moisSuivant(): void {
-    this.viewDate = addMonths(this.viewDate, 1);
+    this.selectedDate = addMonths(this.selectedDate, 1);
+    this.selectDate(this.selectedDate);
   }
 
-  /* ====================== GESTION DU CLIC JOUR ===================== */
   dayClicked(date: Date): void {
     this.selectDate(date);
   }
 
   selectDate(date: Date): void {
     this.selectedDate = date;
-    const dateString = format(date, 'yyyy-MM-dd');
+    const dateISO = format(date, 'yyyy-MM-dd');
 
-    /* Réinitialise la sélection de créneau */
-    this.selectedCreneau = null;
-    this.messageErreur = null;
+    this.messageErreur = '';
 
-    /* --- Simulation backend --- */
-    // this.horairesDispo = this.getFakeCreneaux(dateString);
-    // if (this.horairesDispo.length === 0) {
-    //   this.messageErreur = "Aucun créneau disponible pour cette date.";
-    // }
+this.medecinService.creerAgenda(dateISO, this.medecinId).subscribe({
+      next: (res: any) => {
+        const agenda = res?.data;
+        if (agenda?._id) {
 
-    //  Exemple si tu repasses à l’API réelle
-    if (!this.agendaId) {
-      this.messageErreur = "L’agenda du médecin n’est pas encore chargé. Veuillez patienter.";
-      return;
-    }
 
-    this.medecinService.getCreneauxDispoByAgenda(this.agendaId, dateString).subscribe({
-      next: horaires => {
-        this.horairesDispo = horaires;
-        if (!horaires.length) {
-          this.messageErreur = "Aucun créneau disponible pour cette date.";
+          const creneaux = agenda.creneaux ;
+          this.timeSlotGlobal = creneaux[0].timeSlots;
+          this.idCreneau = creneaux[0]._id;
+
+
+console.log ('afficher creneau:', creneaux);
+
+            for (let slot of this.timeSlotGlobal) {
+              if (slot.status === 'disponible') {
+                this.listeDeSlots.push(slot);
+              }
+              if (slot.status === 'reserve' && slot.patient === this.patientId ) {
+                this.listeDeSlots.push(slot);
+              }
+            }
+
+
+          if (this.listeDeSlots.length === 0 ) {
+            this.messageErreur = "Aucun créneau disponible pour cette date.";
+          } else {
+            this.messageErreur = ''
+          }
         }
       },
-      error: () => {
-        this.horairesDispo = [];
-        this.messageErreur = "Une erreur est survenue lors du chargement des créneaux.";
+      error: (err: any) => {
+        console.error("Erreur lors de la récupération de l'agenda :", err);
+        this.messageErreur = "Erreur lors de la récupération de l'agenda.";
       }
     });
-
   }
 
-  /* ======================= SÉLECTION CRÉNEAU ====================== */
-  selectCreneau(horaire: string): void {
-    this.selectedCreneau = horaire;
+  isReserved(horaire: string): boolean {
+    return this.listeDeSlots.includes(horaire);
   }
 
-  /* ========================= FAKE DONNÉES ========================= */
-  // private getFakeCreneaux(dateString: string): string[] {
-  //   const sample: Record<string, string[]> = {
-  //     '2025-07-09': ['09:00', '10:30', '14:00', '16:30'],
-  //     '2025-07-10': ['08:00', '12:00', '15:00'],
-  //     '2025-07-11': ['11:00', '13:30', '17:00'],
-  //   };
-  //   return sample[dateString] ?? ['09:00', '10:00', '11:00', '14:00', '15:00'];
-  // }
 
-  /* ======================= NAVIGATION ÉTAPES ====================== */
+ selectCreneau(creneauString: string): void {
+    this.listeDeSlots.forEach(slot =>{
+      if(slot.time==creneauString){
+        if(slot.status=='disponible') {
+          slot.status= 'reserve';
+          slot.patient = this.patientId;
+          this.selectedSlot = slot;
+
+        }
+      }
+    })
+
+    this.listeDeSlots.forEach(slot =>{
+      if(slot.time!= this.selectedSlot.time){
+        slot.status= 'disponible';
+        slot.patient = '';
+      }
+    })
+  }
+
   retourMotif(): void {
-    if (this.selectedDate) {
-      /* Premier clic : annule la sélection */
-      this.selectedDate = null;
-      this.selectedCreneau = null;
-      this.horairesDispo = [];
-    } else {
-      /* Deuxième clic : retourne à la page Motif */
-      this.router.navigate(['/patient/motif']);
-    }
+    this.router.navigate(['/patient/motif', this.medecinId, this.patientId]);
   }
 
   allerSuivant(): void {
-    if (!this.selectedDate) {
-      this.messageErreur = "Veuillez sélectionner une date avant de continuer.";
-      return;
-    }
-    if (!this.selectedCreneau) {
-      this.messageErreur = "Veuillez sélectionner un créneau horaire avant de continuer.";
+    if (!this.selectDate) {
+      alert("Veuillez sélectionner un créneau horaire avant de continuer.");
       return;
     }
 
-    /* Enregistre le créneau choisi dans le RecapService */
-    const dateString = format(this.selectedDate, 'yyyy-MM-dd');
-    this.recapService.setCreneau({ date: dateString, heure: this.selectedCreneau });
 
-    /* Redirige vers le récapitulatif */
+    // Stocker uniquement la date et l'heure du créneau sélectionné
+    this.recapService.setCreneau({
+      patientId: this.patientId, dateSelectionne: this.selectedDate, slot:this.selectedSlot, timeSlots:this.timeSlotGlobal, idCreneau: this.idCreneau
+    });
+
     this.router.navigate(['/patient/recapitulatif']);
   }
 }

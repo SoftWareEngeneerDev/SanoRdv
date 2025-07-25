@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-interface PatientLocal {
+interface Patient {
+  _id: string;
   nom: string;
   prenom: string;
   photo?: string;
@@ -14,10 +15,11 @@ interface PatientLocal {
   styleUrls: ['./sidebar-patient.component.css']
 })
 export class SidebarPatientComponent implements OnInit {
-  patient: PatientLocal = {
+  patient: Patient = {
+    _id: '',
     nom: '',
     prenom: '',
-    photo: ''
+    photo: '',
   };
 
   isCollapsed: boolean = false;
@@ -33,6 +35,7 @@ export class SidebarPatientComponent implements OnInit {
     if (userDataString) {
       try {
         const userData = JSON.parse(userDataString);
+        this.patient._id = userData._id ;
         this.patient.nom = userData.nom || '';
         this.patient.prenom = userData.prenom || '';
         this.patient.photo = userData.photo || '';  // peut être vide

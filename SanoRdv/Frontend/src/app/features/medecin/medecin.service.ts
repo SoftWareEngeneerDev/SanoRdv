@@ -9,6 +9,8 @@ export class MedecinService {
   private baseUrl = 'http://localhost:3000/api';
   private apiUrl = `${this.baseUrl}/medecins`;
   private rdvUrl = `${this.baseUrl}/rendezvous`;
+  selectedSlots: any;
+  selectedDate: any;
 
   constructor(private http: HttpClient) {}
 
@@ -16,15 +18,15 @@ export class MedecinService {
     return this.http.get(`${this.rdvUrl}/medecin/${medecinId}`);
   }
 
-  annulerRendezVous(rendezvousId: string): Observable<any> {
-    return this.http.put(`${this.rdvUrl}/annuler`, { id: rendezvousId });
+  annulerRendezVous(id: string): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
+  }
+  confirmerRendezVous(id: string): Observable<any> {
+    return this.http.put(`${this.rdvUrl}/${id}/annuler`, {});
   }
 
   modifierRendezVous(rendezvousId: string, data: any): Observable<any> {
-    return this.http.put(`${this.rdvUrl}/modifier`, {
-      id: rendezvousId,
-      ...data
-    });
+    return this.http.put(`${this.rdvUrl}/${rendezvousId}/modifier`, data);
   }
 
   ajouterCreneau(payload: any): Observable<any> {
@@ -36,16 +38,27 @@ export class MedecinService {
   }
 
   getMedecinById(id: string): Observable<any> {
-  return this.http.get(`${this.apiUrl}/${id}`);
-}
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
   updateMedecin(id: string, data: any): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${id}`, data);
-}
+    return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
 
   getAgendaId(): string {
-  // Suppose que tu as stocké le médecin connecté dans localStorage ou via API
-  const medecin = JSON.parse(localStorage.getItem('medecin') || '{}');
-  return medecin.agendaId;
+    const medecin = JSON.parse(localStorage.getItem('medecin') || '{}');
+    return medecin.agendaId;
+  }
+
+  creerAgenda(date: string, medecinId: string) {
+    return this.http.post('http://localhost:3000/api/agenda/creer', { date, medecinId });
+  }
+
+  modifierCreneau(payload: any) {
+    return this.http.put('http://localhost:3000/api/creneaux/update', payload);
+  }
+
+  obtenirAgenda(selectedDate : Date, medecinId: string) {
+  return this.http.post('http://localhost:3000/api/agenda/afficherAgenda', {selectedDate,medecinId });
 }
 
 }

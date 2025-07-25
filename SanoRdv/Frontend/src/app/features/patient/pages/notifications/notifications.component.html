@@ -16,6 +16,7 @@
         <div *ngFor="let groupe of notificationsGroupes" class="notif-card mb-4"
              [ngClass]="{
                'rappel': groupe.type === 'rappel',
+               'echec': groupe.type === 'annulation'
              }"
         >
           <!-- Titre du groupe -->

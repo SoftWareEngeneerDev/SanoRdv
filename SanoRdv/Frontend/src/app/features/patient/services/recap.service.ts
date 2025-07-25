@@ -4,58 +4,71 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class RecapService {
-  motif: string = '';
-  medecin: any = null; // { nom, prenom, specialite, clinique, localisation, etc. }
-  creneau: { date: string; heure: string } | null = null;
+  private motifKey = 'recap_motif';
+  private medecinKey = 'recap_medecin';
+  private patientKey = 'recap_patient';
+  private creneauKey = 'recap_creneau';
 
   constructor() {}
 
   // Setters
-  setMotif(motif: string) {
-    this.motif = motif;
+  setMotif(motif: string): void {
+    localStorage.setItem(this.motifKey, motif);
   }
 
-  setMedecin(medecin: any) {
-    this.medecin = medecin;
+  setMedecin(medecin: any): void {
+    localStorage.setItem(this.medecinKey, JSON.stringify(medecin));
   }
 
-  setCreneau(creneau: { date: string; heure: string }) {
-    this.creneau = creneau;
+  setPatient(patient: any): void {
+    localStorage.setItem(this.patientKey, JSON.stringify(patient));
   }
 
-  // Méthode unique pour setter medecin, date et heure en même temps
-  setRdv(medecin: any, date: string, heure: string) {
-    this.medecin = medecin;
-    this.creneau = { date, heure };
-  }
+ setCreneau(creneau: { patientId: string; dateSelectionne: Date; slot: any ; timeSlots: any []; idCreneau: string}): void {
+  localStorage.setItem(this.creneauKey, JSON.stringify(creneau));
+}
+
+  setRdv(medecin: any, creneau: { _id: string; date: string; heure: string }): void {
+  this.setMedecin(medecin);
+  // this.setCreneau(creneau);
+}
+
 
   // Getters
   getMotif(): string {
-    return this.motif;
+    return localStorage.getItem(this.motifKey) || '';
   }
 
   getMedecin(): any {
-    return this.medecin;
+    const medecinStr = localStorage.getItem(this.medecinKey);
+    return medecinStr ? JSON.parse(medecinStr) : null;
   }
 
-  getCreneau(): { date: string; heure: string } | null {
-    return this.creneau;
+  getPatient(): any {
+    const patientStr = localStorage.getItem(this.patientKey);
+    return patientStr ? JSON.parse(patientStr) : null;
   }
+getCreneau(): any {
+  const creneauStr = localStorage.getItem(this.creneauKey);
+  return creneauStr ? JSON.parse(creneauStr) : null;
+}
 
-  // Récupérer uniquement la date du créneau
+
   getDate(): string | null {
-    return this.creneau ? this.creneau.date : null;
+    const creneau = this.getCreneau();
+    return creneau ? creneau.date : null;
   }
 
-  // Récupérer uniquement l'heure du créneau
   getHeure(): string | null {
-    return this.creneau ? this.creneau.heure : null;
+    const creneau = this.getCreneau();
+    return creneau ? creneau.heure : null;
   }
 
-  // Reset (si besoin de vider les données)
-  clearData() {
-    this.motif = '';
-    this.medecin = null;
-    this.creneau = null;
+  // Clear all
+  clearData(): void {
+    localStorage.removeItem(this.motifKey);
+    localStorage.removeItem(this.medecinKey);
+    localStorage.removeItem(this.patientKey);
+    localStorage.removeItem(this.creneauKey);
   }
 }

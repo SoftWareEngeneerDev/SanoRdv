@@ -11,6 +11,7 @@ date: any;
     nom: string;
     prenom: string;
     email: string;
+    telephone:string,
     _id: string;
   };
   creneau: {
@@ -28,7 +29,7 @@ export class MyAppointmentComponent implements OnInit {
   appointments: Appointment[] = [];
   filteredAppointments: Appointment[] = [];
   selectedAppointment: Appointment | null = null;
-  query: string = '';
+  recherche: string = '';
 
   constructor(private medecinService: MedecinService) {}
 
@@ -43,6 +44,18 @@ export class MyAppointmentComponent implements OnInit {
     }
   }
 
+  filtrer(): void {
+  const terme = this.recherche.toLowerCase().trim();
+
+  this.filteredAppointments = this.appointments.filter(appointment =>
+    appointment.patient.nom.toLowerCase().includes(terme) ||
+    appointment.patient.prenom.toLowerCase().includes(terme) ||
+    appointment.statut.toLowerCase().includes(terme) ||
+    appointment.patient._id.toLowerCase().includes(terme)
+  );
+}
+
+
  loadAppointments(medecinId: string): void {
     this.medecinService.getRendezVousParMedecin(medecinId).subscribe({
       next: (rendezVous: Appointment[]) => {
@@ -56,6 +69,7 @@ export class MyAppointmentComponent implements OnInit {
   }
 
   viewAppointmentDetails(appointment: Appointment): void {
+     console.log('Rendez-vous sélectionné :', appointment);
       this.selectedAppointment = { ...appointment };
   }
 
@@ -92,16 +106,42 @@ export class MyAppointmentComponent implements OnInit {
   }
 
   annulerRendezVous(appointment: Appointment): void {
-    if (!appointment._id) return;
+   if (!appointment._id) return;
 
     this.medecinService.annulerRendezVous(appointment._id).subscribe({
-      next: () => {
-        appointment.statut = 'annulé';
-        this.closeModal();
-      },
-      error: err => {
-        console.error('Erreur annulation :', err);
-      }
+        next: () => {
+          // Met à jour le statut dans l'objet concerné
+          appointment.statut = 'annulé';
+          // Met à jour la modale si elle est ouverte
+          if (this.selectedAppointment && this.selectedAppointment._id === appointment._id) {
+            this.selectedAppointment.statut = 'annulé';
+          }
+          // 💥 Force Angular à détecter le changement dans le tableau
+          this.filteredAppointments = [...this.filteredAppointments];
+        },
+        error: err => {
+          console.error('Erreur annulation :', err);
+        }
+    });
+  }
+
+  confirmerRendezVous(appointment: Appointment): void {
+   if (!appointment._id) return;
+
+    this.medecinService.confirmerRendezVous(appointment._id).subscribe({
+        next: () => {
+          // Met à jour le statut dans l'objet concerné
+          appointment.statut = 'confirmé';
+          // Met à jour la modale si elle est ouverte
+          if (this.selectedAppointment && this.selectedAppointment._id === appointment._id) {
+            this.selectedAppointment.statut = 'confirmé';
+          }
+          // 💥 Force Angular à détecter le changement dans le tableau
+          this.filteredAppointments = [...this.filteredAppointments];
+        },
+        error: err => {
+          console.error('Erreur annulation :', err);
+        }
     });
   }
 

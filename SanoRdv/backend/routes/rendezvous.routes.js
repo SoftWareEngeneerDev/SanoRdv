@@ -18,7 +18,7 @@ const router = express.Router();
 router.post('/', prendreRendezVous);
 
 // ✔️ Annuler un rendez-vous
-router.patch('/annuler/:id', authentifier, annulerRendezVous);
+router.patch('/annuler/:id', annulerRendezVous);
 
 
 // ✔️ Modifier un rendez-vous

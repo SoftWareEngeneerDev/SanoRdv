@@ -165,6 +165,41 @@ export const createDefaultAdmin = async (email, motDePasse, additionalInfo = {})
 };
 
 
+export const modifierProfilAdmin = async (req, res) => {
+  try {
+    const adminId = req.params.id;
+    const { email, photo } = req.body;
+
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ message: "Administrateur introuvable." });
+    }
+
+    // Mise à jour uniquement des champs email et photo
+    if (email) admin.email = email;
+    if (photo) admin.photo = photo;
+
+    await admin.save();
+
+    res.status(200).json({
+      message: "Profil mis à jour avec succès.",
+      admin: {
+        _id: admin._id,
+        IDadmin: admin.IDadmin,
+        email: admin.email,
+        photo: admin.photo,
+        role: admin.role,
+        isActive: admin.isActive
+      }
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du profil admin :", error);
+    res.status(500).json({ message: "Erreur serveur lors de la mise à jour du profil." });
+  }
+};
+
+
+
 export const listAdmins = async () => {
   try {
     const admins = await Admin.find({ role: 'admin' })
