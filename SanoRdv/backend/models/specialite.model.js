@@ -25,7 +25,7 @@ const specialiteSchema = new mongoose.Schema({
 });
 
 // Index pour garantir l'unicité
-specialiteSchema.index({ nom: 1 }, { unique: true });
+//specialiteSchema.index({ nom: 1 }, { unique: true });
 
 const Specialite = mongoose.model('Specialite', specialiteSchema);
 
