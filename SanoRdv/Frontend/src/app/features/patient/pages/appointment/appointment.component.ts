@@ -54,10 +54,10 @@ throw new Error('Method not implemented.');
 
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Erreur lors du chargement des rendez-vous.';
-        this.loading = false;
-      }
+      // error: () => {
+      //   this.error = 'Erreur lors du chargement des rendez-vous.';
+      //   this.loading = false;
+      // }
     });
   }
 

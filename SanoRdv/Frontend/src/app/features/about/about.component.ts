@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http'; // Import HttpClient pour les appels API
 
 interface StatItem {
   number: string;
@@ -38,6 +39,8 @@ export class AboutComponent implements OnInit {
   isSubmitting = false;
   submissionSuccess = false;
   submissionError = false;
+  statsLoading = true; // Nouveau: Indicateur de chargement pour les stats
+  statsError = false; // Nouveau: Indicateur d'erreur pour les stats
 
   // Données structurées avec types
   values: ValueItem[] = [
@@ -61,15 +64,16 @@ export class AboutComponent implements OnInit {
     }
   ];
 
+  // Stats initialisées avec des valeurs par défaut (seront mises à jour via API)
   stats: StatItem[] = [
     { 
-      number: '500+', 
+      number: '0', // Valeur temporaire remplacée par l'API
       label: 'Médecins enregistrés',
       icon: 'bi-person-badge',
       color: '#00a3e0'
     },
     { 
-      number: '30,000+', 
+      number: '0', // Valeur temporaire remplacée par l'API
       label: 'Rendez-vous pris',
       icon: 'bi-calendar-check',
       color: '#2ecc71'
@@ -132,7 +136,10 @@ export class AboutComponent implements OnInit {
     }
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient // Injection de HttpClient pour les appels API
+  ) {
     this.contactForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -143,18 +150,50 @@ export class AboutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Animation d'entrée pour les statistiques
-    this.animateStats();
+    this.loadStats(); // Remplace animateStats() par le chargement des stats depuis l'API
   }
 
-  // Méthode pour animer les statistiques
-  animateStats(): void {
-    // Logique d'animation des compteurs (optionnel)
-    setTimeout(() => {
-      // Animation des chiffres
-    }, 500);
+  /**
+   * Charge les statistiques depuis l'API backend
+   */
+  loadStats(): void {
+    this.statsLoading = true;
+    this.statsError = false;
+
+    this.http.get<any>('http://localhost:3000/api/state/dashboard').subscribe({
+      next: (data) => {
+        // Mise à jour des valeurs avec les données de l'API
+        this.stats[0].number = `${data.medecinsActifs}`; // Médecins actifs
+        this.stats[1].number = `${data.totalRendezVous}`; // Rendez-vous confirmés
+        
+        // Optionnel: Animation des chiffres
+        this.animateNumbers();
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des statistiques:', err);
+        this.statsError = true;
+        
+        // Valeurs de fallback
+        this.stats[0].number = '500+';
+        this.stats[1].number = '30,000+';
+      },
+      complete: () => {
+        this.statsLoading = false;
+      }
+    });
   }
 
+  /**
+   * Animation des chiffres (optionnel)
+   */
+  private animateNumbers(): void {
+    // Implémente ici une animation si nécessaire
+    // Ex: Compteur qui monte progressivement
+  }
+
+  // ... (le reste des méthodes existantes reste inchangé)
+  // [Gestion du formulaire, méthodes utilitaires, etc.]
+  // --------------------------------------------------
   // Gestion du formulaire de contact
   onSubmit(): void {
     if (this.contactForm.valid && !this.isSubmitting) {
