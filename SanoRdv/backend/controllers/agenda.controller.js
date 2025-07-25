@@ -8,7 +8,7 @@ import { retrieveOrCreateCreneau } from '../controllers/creneau.controller.js';
 export async function creerAgenda(req, res) {
     try {
         const { date, medecinId } = req.body;
-
+        
         // 1. Validation des données
         if (!date || !medecinId) {
             return res.status(400).json({ 
@@ -16,7 +16,7 @@ export async function creerAgenda(req, res) {
                 message: "Les champs 'date' et 'medecinId' sont obligatoires" 
             });
         }
-
+        // console.log('Voici la date:', date);
         if (!mongoose.Types.ObjectId.isValid(medecinId)) {
             return res.status(400).json({ 
                 success: false,
@@ -24,35 +24,38 @@ export async function creerAgenda(req, res) {
             });
         }
 
+        // 2. Normaliser la date pour ne comparer que la partie date
+        const normalizedDate = new Date(date);
+        normalizedDate.setHours(0, 0, 0, 0);  // Ignore l'heure, ne garde que la date
+
         // 2. Vérifier si un agenda existe déjà pour cette date et ce médecin
+        // Recherche d'un agenda existant pour la date et le médecin
         const existingAgenda = await Agenda.findOne({ 
-            date: new Date(date),
+            date: normalizedDate,
             medecin: medecinId
         });
-      let nouvelAgenda = null;
-        if (existingAgenda) {
-          nouvelAgenda = existingAgenda;
-        }
-        if (!existingAgenda) {
-        // 3. Créer le nouvel agenda (sans creneaux pour l'instant)
-            nouvelAgenda = new Agenda({
-            date: new Date(date),
+
+        // Si un agenda existe déjà, on l'utilise, sinon on en crée un nouveau
+        const nouvelAgenda = existingAgenda || new Agenda({
+            date: normalizedDate,
             medecin: medecinId,
             statut: 'Actif'
         });
-
         // 4. Sauvegarder l'agenda pour obtenir son ID
         await nouvelAgenda.save();
-      }
+
         // 5. Récupérer ou créer le creneau attacher à l'agenda
         const { data: creneauGenere } = await retrieveOrCreateCreneau(
             nouvelAgenda._id, 
-            date
+            normalizedDate
         );
 
-        // 6. Lier le créneau à l'agenda
-        nouvelAgenda.creneaux.push(creneauGenere._id);
-        await nouvelAgenda.save();
+        // 5. Vérifier si le créneau est déjà lié à l'agenda pour éviter les doublons
+        if (!nouvelAgenda.creneaux.includes(creneauGenere._id)) {
+            // Lier le créneau à l'agenda uniquement s'il n'est pas déjà lié
+            nouvelAgenda.creneaux.push(creneauGenere._id);
+            await nouvelAgenda.save();
+        }
 
         // 7. Récupérer l'agenda complet avec les données peuplées
         const agendaComplet = await Agenda.findById(nouvelAgenda._id)
@@ -80,77 +83,77 @@ export async function creerAgenda(req, res) {
 
 
 
-export async function obtenirAgenda(req, res) {
-    try {
-        const { date, medecinId } = req.body;
-        const heuresIndisponibles = getHeuresIndisponibles();
+// export async function obtenirAgenda(req, res) {
+//     try {
+//         const { date, medecinId } = req.body;
+//         const heuresIndisponibles = getHeuresIndisponibles();
 
-        // 1. Validation des données
-        if (!date || !medecinId) {
-            return res.status(400).json({ 
-                success: false,
-                message: "Les champs 'date' et 'medecinId' sont obligatoires" 
-            });
-        }
+//         // 1. Validation des données
+//         if (!date || !medecinId) {
+//             return res.status(400).json({ 
+//                 success: false,
+//                 message: "Les champs 'date' et 'medecinId' sont obligatoires" 
+//             });
+//         }
 
-        if (!mongoose.Types.ObjectId.isValid(medecinId)) {
-            return res.status(400).json({ 
-                success: false,
-                message: "Identifiant médecin invalide" 
-            });
-        }
+//         if (!mongoose.Types.ObjectId.isValid(medecinId)) {
+//             return res.status(400).json({ 
+//                 success: false,
+//                 message: "Identifiant médecin invalide" 
+//             });
+//         }
 
-        // 2. Vérifier si un agenda existe déjà pour cette date et ce médecin
-        const existingAgenda = await Agenda.findOne({ 
-            date: new Date(date),
-            medecin: medecinId
-        });
-      let nouvelAgenda = null;
-        if (existingAgenda) {
-          nouvelAgenda = existingAgenda;          
-        }
-        if (!existingAgenda) {
-        // 3. Créer le nouvel agenda (sans creneaux pour l'instant)
-            nouvelAgenda = new Agenda({
-            date: new Date(date),
-            medecin: medecinId,
-            statut: 'Actif'
-        });
+//         // 2. Vérifier si un agenda existe déjà pour cette date et ce médecin
+//         const existingAgenda = await Agenda.findOne({ 
+//             date: new Date(date),
+//             medecin: medecinId
+//         });
+//       let nouvelAgenda = null;
+//         if (existingAgenda) {
+//           nouvelAgenda = existingAgenda;          
+//         }
+//         if (!existingAgenda) {
+//         // 3. Créer le nouvel agenda (sans creneaux pour l'instant)
+//             nouvelAgenda = new Agenda({
+//             date: new Date(date),
+//             medecin: medecinId,
+//             statut: 'Actif'
+//         });
 
-        // 4. Sauvegarder l'agenda pour obtenir son ID
-        await nouvelAgenda.save();
-      }
-        // 5. Générer et enregistrer les créneaux dans la collection Creneau
-        const { data: creneauGenere } = await genererEtEnregistrerCreneau(
-            nouvelAgenda._id, 
-            date,
-            heuresIndisponibles
-        );
+//         // 4. Sauvegarder l'agenda pour obtenir son ID
+//         await nouvelAgenda.save();
+//       }
+//         // 5. Générer et enregistrer les créneaux dans la collection Creneau
+//         const { data: creneauGenere } = await genererEtEnregistrerCreneau(
+//             nouvelAgenda._id, 
+//             date,
+//             heuresIndisponibles
+//         );
 
-        // 6. Lier le créneau à l'agenda
-        nouvelAgenda.creneaux.push(creneauGenere._id);
-        await nouvelAgenda.save();
+//         // 6. Lier le créneau à l'agenda
+//         nouvelAgenda.creneaux.push(creneauGenere._id);
+//         await nouvelAgenda.save();
 
-        // 7. Récupérer l'agenda complet avec les données peuplées
-        const agendaComplet = await Agenda.findById(nouvelAgenda._id)
-            .populate('medecin')
-            .populate({
-                path: 'creneaux',
-                select: 'date timeSlots' // Seulement les champs nécessaires
-            });
+//         // 7. Récupérer l'agenda complet avec les données peuplées
+//         const agendaComplet = await Agenda.findById(nouvelAgenda._id)
+//             .populate('medecin')
+//             .populate({
+//                 path: 'creneaux',
+//                 select: 'date timeSlots' // Seulement les champs nécessaires
+//             });
 
-        return res.status(201).json({ 
-            success: true,
-            message: "Agenda créé avec succès",
-            data: agendaComplet
-        });
+//         return res.status(201).json({ 
+//             success: true,
+//             message: "Agenda créé avec succès",
+//             data: agendaComplet
+//         });
 
-    } catch (error) {
-        console.error("Erreur lors de la création de l'agenda:", error);
-        return res.status(500).json({ 
-            success: false,
-            message: "Erreur serveur lors de la création de l'agenda",
-            error: error.message 
-        });
-    }
-}
+//     } catch (error) {
+//         console.error("Erreur lors de la création de l'agenda:", error);
+//         return res.status(500).json({ 
+//             success: false,
+//             message: "Erreur serveur lors de la création de l'agenda",
+//             error: error.message 
+//         });
+//     }
+// }
