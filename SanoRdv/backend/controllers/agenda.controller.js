@@ -45,13 +45,15 @@ export async function creerAgenda(req, res) {
         await nouvelAgenda.save();
       }
         // 5. Récupérer ou créer le creneau attacher à l'agenda
-        const { data: creneauGenere } = await retrieveOrCreateCreneau(
-            nouvelAgenda._id, 
-            date
-        );
+        const resultCreneauGenere= await retrieveOrCreateCreneau(nouvelAgenda._id, date );
+
+        console.log("Creneau généré:", resultCreneauGenere);
 
         // 6. Lier le créneau à l'agenda
-        nouvelAgenda.creneaux.push(creneauGenere._id);
+        if( resultCreneauGenere && resultCreneauGenere.success=== true && resultCreneauGenere.isNewCreation) {
+          nouvelAgenda.creneaux.push(resultCreneauGenere.data._id);
+        }
+        
         await nouvelAgenda.save();
 
         // 7. Récupérer l'agenda complet avec les données peuplées

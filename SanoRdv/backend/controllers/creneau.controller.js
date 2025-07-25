@@ -19,14 +19,19 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
             const dateOnly = new Date(date);
           dateOnly.setHours(0, 0, 0, 0);
 
+          let isNewInstance=false; 
           let creneauToRetrieve = null;
           const creneauExistant = await Creneau.findOne({ agenda: agendaId });
           console.log('Voici le creneau que j\'ai trouvé:', creneauExistant, agendaId);               
           // 3. Si aucun creneau à cette date alors créons le
           if (creneauExistant) {
+              console.log('Creneau déjà existant pour cet agenda:', creneauExistant);
               creneauToRetrieve = creneauExistant;
-
+              isNewInstance = false;
           }else{  
+              console.log('Creneau non existant pour cet agenda:', creneauExistant);
+              isNewInstance = true;
+
               // Génération des créneaux par défaut (8h-17h30, toutes les 30 minutes)
               const timeSlots = [];
               const startTime = 8;   // Heure de début configurable
@@ -51,9 +56,8 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
               agenda: agendaId
           });
           await creneauToRetrieve.save();
+
           }
-
-
         // // 5. Mise à jour ou création
         // let operationType = 'update';
         // let creneau;
@@ -73,9 +77,9 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
 
         // 6. Retour du résultat
         return {
-            success: true,
-            operation: 'create',
-            data: creneauExistant
+            isNewCreation: isNewInstance,
+            success: true,            
+            data: creneauToRetrieve
         };
 
     } catch (error) {
