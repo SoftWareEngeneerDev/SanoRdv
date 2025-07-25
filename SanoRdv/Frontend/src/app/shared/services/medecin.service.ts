@@ -6,6 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MedecinService {
+  modifierCreneau(body: { idcreneau: any; timeSlots: any; }) {
+    throw new Error('Method not implemented.');
+  }
   private apiUrl = 'http://localhost:3000/api/medecins';
 
   private selectedMedecin: any = null;

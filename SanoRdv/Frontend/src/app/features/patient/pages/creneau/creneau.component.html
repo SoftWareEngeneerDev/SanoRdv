@@ -26,15 +26,13 @@
     <div class="slots-container" *ngIf="selectedDate">
       <h4>Créneaux disponibles - {{ selectedDate| date:'fullDate':'':'fr' }}</h4>
 
-      <div *ngIf="horairesDispo.length > 0; else aucunCreneau" class="slots">
+      <div *ngIf="listeDeSlots.length > 0; else aucunCreneau" class="slots">
         <button
-          *ngFor="let h of horairesDispo"
+          *ngFor="let slot of listeDeSlots"
           class="slot-btn"
-          [class.selected]="h === selectedCreneau"
-          [class.reserved]="isReserved(h)"
-          [disabled]="isReserved(h)"
-          (click)="selectCreneau(h)">
-          {{ h }}
+          [ngClass]="{ 'reserved': slot.status=='reserve', 'disponible':  slot.status=='disponible' }"
+          (click)="selectCreneau(slot.time)">
+          {{ slot.time }}
         </button>
       </div>
 

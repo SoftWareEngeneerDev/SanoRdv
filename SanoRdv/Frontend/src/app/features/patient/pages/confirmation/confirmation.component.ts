@@ -20,7 +20,7 @@ export class ConfirmationComponent implements OnInit {
   heure: string = '';
   date: Date | null = null;
   motif: string = '';
-  rendezVousCree: any = null; // ✅ pour afficher les infos dans le HTML
+  rendezVousCree: any = null;
   erreur: string = '';
 
   constructor(
@@ -47,7 +47,7 @@ export class ConfirmationComponent implements OnInit {
       });
     }
 
-    // Vérifier que toutes les données sont bien présentes
+    // Vérifie que toutes les données sont bien présentes
     if (!this.medecin || !this.patient || !this.heure || !this.date || !this.motif) {
       this.erreur = "Informations de rendez-vous incomplètes.";
       return;
