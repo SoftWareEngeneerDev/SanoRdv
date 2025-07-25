@@ -19,8 +19,8 @@
 
     <h5>Date et Heure</h5>
     <span>
-      {{ creneau?.date | dateStringToDate | date : "EEEE d MMMM yyyy" : "" : "fr" }}
-      à {{ creneau?.heure }}
+      {{ creneau?.dateSelectionne | dateStringToDate | date : "EEEE d MMMM yyyy" : "" : "fr" }}
+      à {{ creneau?.slot.time }}
     </span>
     <hr />
 
