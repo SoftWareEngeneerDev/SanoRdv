@@ -17,6 +17,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { ProfilViewComponent } from './pages/profil-view/profil-view.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LogOutComponent } from './pages/log-out/log-out.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
 
 
 
@@ -31,7 +32,8 @@ import { LogOutComponent } from './pages/log-out/log-out.component';
     LayoutComponent,
     ProfileComponent,
     ProfilViewComponent,
-    LogOutComponent
+    LogOutComponent,
+    NotificationsComponent
     ],
   imports: [
     CommonModule,

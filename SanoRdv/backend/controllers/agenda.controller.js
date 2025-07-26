@@ -2,13 +2,12 @@ import mongoose from 'mongoose';
 import Agenda from '../models/agenda.model.js';
 import Creneau from '../models/creneau.model.js';
 import { getHeuresIndisponibles } from '../utils/CreneauIndisponible.creneau.js';
-import { genererEtEnregistrerCreneau } from '../controllers/creneau.controller.js';
+import { retrieveOrCreateCreneau } from '../controllers/creneau.controller.js';
 
 
 export async function creerAgenda(req, res) {
     try {
         const { date, medecinId } = req.body;
-        const heuresIndisponibles = getHeuresIndisponibles();
 
         // 1. Validation des données
         if (!date || !medecinId) {
@@ -33,19 +32,8 @@ export async function creerAgenda(req, res) {
       let nouvelAgenda = null;
         if (existingAgenda) {
           nouvelAgenda = existingAgenda;
-          // console.log("L'agenda trouvé:",existingAgenda);
-          //   return res.status(200).json({ 
-          //       success: true,
-          //       data: existingAgenda.populate('medecin')
-          //                           .populate({
-          //                               path: 'creneaux',
-          //                               select: 'date timeSlots' // Seulement les champs nécessaires
-          //                             }),
-          //       message: "Agenda trouvé pour ce médecin" 
-          //   });
-          
         }
-if (!existingAgenda) {
+        if (!existingAgenda) {
         // 3. Créer le nouvel agenda (sans creneaux pour l'instant)
             nouvelAgenda = new Agenda({
             date: new Date(date),
@@ -56,15 +44,16 @@ if (!existingAgenda) {
         // 4. Sauvegarder l'agenda pour obtenir son ID
         await nouvelAgenda.save();
       }
-        // 5. Générer et enregistrer les créneaux dans la collection Creneau
-        const { data: creneauGenere } = await genererEtEnregistrerCreneau(
-            nouvelAgenda._id, 
-            date,
-            heuresIndisponibles
-        );
+        // 5. Récupérer ou créer le creneau attacher à l'agenda
+        const resultCreneauGenere= await retrieveOrCreateCreneau(nouvelAgenda._id, date );
+
+        console.log("Creneau généré:", resultCreneauGenere);
 
         // 6. Lier le créneau à l'agenda
-        nouvelAgenda.creneaux.push(creneauGenere._id);
+        if( resultCreneauGenere && resultCreneauGenere.success=== true && resultCreneauGenere.isNewCreation) {
+          nouvelAgenda.creneaux.push(resultCreneauGenere.data._id);
+        }
+        
         await nouvelAgenda.save();
 
         // 7. Récupérer l'agenda complet avec les données peuplées

@@ -61,4 +61,8 @@ export class MedecinService {
   return this.http.post('http://localhost:3000/api/agenda/afficherAgenda', {selectedDate,medecinId });
 }
 
+
+
+
+
 }
