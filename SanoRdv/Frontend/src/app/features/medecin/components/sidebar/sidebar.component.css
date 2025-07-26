@@ -235,7 +235,12 @@ h5 {
 
 
 /*  Grand écran : Sidebar réduite (collapsed) */
-@media (min-width: 769px) {
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* .patient-sidebar {
+    width: 180px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  } */
   .patient-sidebar.collapsed {
     width: 150px;
     padding-left: 1rem;
