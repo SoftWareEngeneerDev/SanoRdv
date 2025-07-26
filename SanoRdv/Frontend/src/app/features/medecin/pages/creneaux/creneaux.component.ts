@@ -73,7 +73,7 @@ export class CreneauxComponent implements OnInit{
     this.medecinService.modifierCreneau(body).subscribe({
       next: (res: any) => {
         alert(res.message || 'Indisponibilités mises à jour');
-        this.selectedSlots = [];
+        // this.selectedSlots = [];
       },
       error: (err) => {
         alert('Erreur serveur lors de la mise à jour du créneau');

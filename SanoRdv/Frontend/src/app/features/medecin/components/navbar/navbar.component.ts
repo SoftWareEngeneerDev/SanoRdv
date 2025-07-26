@@ -10,10 +10,11 @@ export class NavbarComponent {
   @Input() isCollapsed: boolean = false;
   constructor(private router: Router) {}
     AccueilPage() {
-    localStorage.clear();
-    this.router.navigate(['/']);
-  }
+      localStorage.clear();
+      this.router.navigate(['/']);
+    }
     AProposPage() {
-    this.router.navigate(['/about']);
-  }
+      this.router.navigate(['/about']);
+    }
+
 }

@@ -37,14 +37,15 @@ export class SidebarComponent implements OnInit {
           const userData = JSON.parse(userDataString);
           this.user.nom = userData.nom || '';
           this.user.prenom = userData.prenom || '';
-          this.user.photo = userData.photo || ''; 
+          this.user.photo = userData.photo || '';
           this.user._id = userData._id;
-    
+
       this.menuItems = [
         { title: 'TABLEAU DE BORD', link: '/medecin/dashboard', icon: 'bi-grid-fill' },
         { title: 'RENDEZ-VOUS', icon: 'bi-calendar-event', link: '/medecin/rendez-vous' },
         { title: 'AGENDA', icon: 'bi-people-fill', link: `/medecin/creneaux/${this.user._id}/NAN` },
         { title: 'PATIENTS', icon: 'bi-person-badge', link: '/medecin/patients' },
+        { title: 'NOTIFICATIONS', icon: 'bi bi-bell-fill fs-5', link: '/medecin/notifications' },
         { title: 'PROFIL', link: '/medecin/profil-view', icon: 'fas fa-user fa-0,5x' },
       ];
       } catch (e) {
@@ -60,4 +61,3 @@ export class SidebarComponent implements OnInit {
 
 }
 
- 

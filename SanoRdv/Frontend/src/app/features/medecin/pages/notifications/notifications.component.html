@@ -1,0 +1,20 @@
+<div class="notification-container">
+  <h2 class="title"> NOTIFICATIONS NOTIFICATIONS</h2>
+  <hr>
+  <div *ngIf="loading">Chargement des notifications...</div>
+
+  <div *ngIf="!loading && notifications.length === 0">
+    Aucune notification disponible.
+  </div>
+
+  <ul *ngIf="!loading && notifications.length > 0">
+    <li *ngFor="let notif of notifications" [class.unread]="notif.statut !== 'Envoyé'">
+      <div class="header">
+        <span class="type">{{ notif.type }}</span>
+        <span class="date">{{ notif.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="content">{{ notif.contenu }}</div>
+      <div class="status">Statut : {{ notif.statut }}</div>
+    </li>
+  </ul>
+</div>

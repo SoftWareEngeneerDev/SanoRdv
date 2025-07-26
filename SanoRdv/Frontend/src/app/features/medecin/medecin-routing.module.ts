@@ -10,6 +10,7 @@ import { AuthGuard } from 'src/app/core/guards/auth.guard';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ProfilViewComponent } from './pages/profil-view/profil-view.component';
 import { LogOutComponent } from './pages/log-out/log-out.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,7 @@ const routes: Routes = [
       { path: 'profil-view', component: ProfilViewComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'log-out', component: LogOutComponent },
+      { path: 'notifications', component: NotificationsComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   }
