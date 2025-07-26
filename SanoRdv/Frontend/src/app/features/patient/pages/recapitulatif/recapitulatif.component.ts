@@ -39,7 +39,7 @@ export class RecapitulatifComponent implements OnInit {
     this.creneau.timeSlots.forEach((element: any) => {
       if (element.time==this.creneau.slot.time) {
         element.status=this.creneau.slot.status;
-        element.patient=this.creneau.slot.patient;
+        element.patientId=this.creneau.slot.patientId;
 
       }
 

@@ -15,16 +15,14 @@ export class CreneauComponent implements OnInit {
   view: CalendarView = CalendarView.Month;
   CalendarView = CalendarView;
   selectedDate: Date = new Date();
-  selectedSlot: any= null;
-listeDeSlots: any [] = [];
-timeSlotGlobal: any [] = [];
-
+  selectedSlot: any = null;
+  listeDeSlots: any[] = [];
+  timeSlotGlobal: any[] = [];
 
   medecinId!: string;
   patientId!: string;
-  messageErreur: string  = '';
+  messageErreur: string = '';
   idCreneau: string = '';
-
 
   constructor(
     private route: ActivatedRoute,
@@ -65,36 +63,33 @@ timeSlotGlobal: any [] = [];
   selectDate(date: Date): void {
     this.selectedDate = date;
     const dateISO = format(date, 'yyyy-MM-dd');
-
     this.messageErreur = '';
+    this.listeDeSlots = [];
 
-this.medecinService.creerAgenda(dateISO, this.medecinId).subscribe({
+    this.medecinService.creerAgenda(dateISO, this.medecinId).subscribe({
       next: (res: any) => {
         const agenda = res?.data;
         if (agenda?._id) {
-
-
-          const creneaux = agenda.creneaux ;
+          const creneaux = agenda.creneaux;
           this.timeSlotGlobal = creneaux[0].timeSlots;
           this.idCreneau = creneaux[0]._id;
 
+          console.log('afficher creneau:', creneaux);
 
-console.log ('afficher creneau:', creneaux);
-
-            for (let slot of this.timeSlotGlobal) {
-              if (slot.status === 'disponible') {
-                this.listeDeSlots.push(slot);
-              }
-              if (slot.status === 'reserve' && slot.patient === this.patientId ) {
-                this.listeDeSlots.push(slot);
-              }
+          for (let slot of this.timeSlotGlobal) {
+            const dejaExistant = this.listeDeSlots.some(s => s.time === slot.time);
+            if (!dejaExistant && (
+              slot.status === 'disponible' ||
+              (slot.status === 'reserve' && slot.patientId === this.patientId)
+            )) {
+              this.listeDeSlots.push(slot);
             }
+          }
 
-
-          if (this.listeDeSlots.length === 0 ) {
+          if (this.listeDeSlots.length === 0) {
             this.messageErreur = "Aucun créneau disponible pour cette date.";
           } else {
-            this.messageErreur = ''
+            this.messageErreur = '';
           }
         }
       },
@@ -106,28 +101,27 @@ console.log ('afficher creneau:', creneaux);
   }
 
   isReserved(horaire: string): boolean {
-    return this.listeDeSlots.includes(horaire);
+
+    return this.listeDeSlots.some(slot => slot.time === horaire && slot.status === 'reserve');
   }
 
-
- selectCreneau(creneauString: string): void {
-    this.listeDeSlots.forEach(slot =>{
-      if(slot.time==creneauString){
-        if(slot.status=='disponible') {
-          slot.status= 'reserve';
-          slot.patient = this.patientId;
+  selectCreneau(creneauString: string): void {
+    this.listeDeSlots.forEach(slot => {
+      if (slot.time === creneauString) {
+        if (slot.status === 'disponible') {
+          slot.status = 'reserve';
+          slot.patientId = this.patientId;
           this.selectedSlot = slot;
-
         }
       }
-    })
+    });
 
-    this.listeDeSlots.forEach(slot =>{
-      if(slot.time!= this.selectedSlot.time){
-        slot.status= 'disponible';
-        slot.patient = '';
+    this.listeDeSlots.forEach(slot => {
+      if (slot.time !== this.selectedSlot.time) {
+        slot.status = 'disponible';
+        slot.patientId = '';
       }
-    })
+    });
   }
 
   retourMotif(): void {
@@ -135,15 +129,17 @@ console.log ('afficher creneau:', creneaux);
   }
 
   allerSuivant(): void {
-    if (!this.selectDate) {
+    if (!this.selectedSlot) {
       alert("Veuillez sélectionner un créneau horaire avant de continuer.");
       return;
     }
 
-
-    // Stocker uniquement la date et l'heure du créneau sélectionné
     this.recapService.setCreneau({
-      patientId: this.patientId, dateSelectionne: this.selectedDate, slot:this.selectedSlot, timeSlots:this.timeSlotGlobal, idCreneau: this.idCreneau
+      patientId: this.patientId,
+      dateSelectionne: this.selectedDate,
+      slot: this.selectedSlot,
+      timeSlots: this.timeSlotGlobal,
+      idCreneau: this.idCreneau
     });
 
     this.router.navigate(['/patient/recapitulatif']);
