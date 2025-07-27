@@ -22,7 +22,7 @@ export class CreneauComponent implements OnInit {
   medecinId!: string;
   patientId!: string;
   messageErreur: string = '';
-  idCreneau: string = '';
+  idcreneau: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -72,7 +72,7 @@ export class CreneauComponent implements OnInit {
         if (agenda?._id) {
           const creneaux = agenda.creneaux;
           this.timeSlotGlobal = creneaux[0].timeSlots;
-          this.idCreneau = creneaux[0]._id;
+          this.idcreneau = creneaux[0]._id;
 
           console.log('afficher creneau:', creneaux);
 
@@ -139,7 +139,7 @@ export class CreneauComponent implements OnInit {
       dateSelectionne: this.selectedDate,
       slot: this.selectedSlot,
       timeSlots: this.timeSlotGlobal,
-      idCreneau: this.idCreneau
+      idcreneau: this.idcreneau
     });
 
     this.router.navigate(['/patient/recapitulatif']);

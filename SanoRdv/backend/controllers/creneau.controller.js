@@ -307,5 +307,7 @@ export default {
   retrieveOrCreateCreneau,
   supprimerCreneau,
   getCreneauxParDate,
-  filtrerCreneauxParStatut
+  filtrerCreneauxParStatut,
+   modifierCreneau,
+  reserverCreneau
 };

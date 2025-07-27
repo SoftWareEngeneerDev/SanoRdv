@@ -1,8 +1,8 @@
-import { Patient } from './../../../../shared/models/patient.model';
 import { Component, OnInit } from '@angular/core';
-import { RecapService } from '../../services/recap.service';
 import { Router } from '@angular/router';
+import { RecapService } from '../../services/recap.service';
 import { MedecinService } from 'src/app/features/medecin/medecin.service';
+import { CreneauService } from '../../../patient/services/creneau.service';
 
 @Component({
   selector: 'app-recapitulatif',
@@ -14,60 +14,42 @@ export class RecapitulatifComponent implements OnInit {
   medecin: any;
   creneau: any;
 
-
   constructor(
     private recapService: RecapService,
     private router: Router,
     private medecinService: MedecinService,
-
+    private creneauService: CreneauService
   ) {}
+
+  ngOnInit(): void {
+    this.motif = this.recapService.getMotif();
+    this.medecin = this.recapService.getMedecin();
+    this.creneau = this.recapService.getCreneau();
+  }
 
   retour() {
     this.router.navigate(['/patient/creneau', this.medecin._id, this.creneau.patientId]);
   }
 
   confirmer() {
-    if (!this.creneau) {
+    if (!this.creneau || !this.creneau.slot) {
       alert('Veuillez sélectionner un créneau avant de confirmer.');
       return;
     }
-    this. saveTimeSlots();
-    // this.recapService.setRdv(this.medecin, this.creneau);
-  }
 
-  saveTimeSlots(): void {
-    this.creneau.timeSlots.forEach((element: any) => {
-      if (element.time==this.creneau.slot.time) {
-        element.status=this.creneau.slot.status;
-        element.patientId=this.creneau.slot.patientId;
-
-      }
-
-
-    });
-    const body = {
-      idcreneau: this.creneau.idCreneau,
-      timeSlots: this.creneau.timeSlots,
-    };
-
-    this.medecinService.modifierCreneau(body).subscribe({
-      next: (res: any) => {
-        // alert(res.message || 'Indisponibilités mises à jour');
-       this.router.navigate(['/patient/confirmation']);
+    this.creneauService.reserverCreneau(
+      this.creneau.idcreneau,
+      this.creneau.slot.time,
+      this.creneau.slot.patientId
+    ).subscribe({
+      next: () => {
+        console.log("Créneau réservé avec succès");
+        this.router.navigate(['/patient/confirmation']);
       },
       error: (err) => {
-        alert('Erreur serveur lors de la mise à jour du créneau');
-        console.error(err);
+        console.error("Erreur lors de la réservation", err);
+        alert("Une erreur est survenue lors de la réservation");
       }
     });
   }
-
-
-  ngOnInit(): void {
-    this.motif = this.recapService.getMotif();
-    this.medecin = this.recapService.getMedecin();
-    this.creneau = this.recapService.getCreneau();
-
-  }
 }
-// patientId: string; dateSelectionne: Date; slot: any ; timeSlots: any

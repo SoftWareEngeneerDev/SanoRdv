@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../../environment/environments';
+
 
 @Injectable({
   providedIn: 'root'
@@ -40,11 +42,8 @@ export class CreneauService {
   // }
 
   //  Modifier un créneau
- updateCreneau(idCreneau: string, timeSlots: any[]) {
-  return this.http.put<any>(`http://localhost:3000/api/creneaux/update`, {
-    idCreneau,
-    timeSlots
-  });
+ updateCreneau(idcreneau: string, timeSlots: any[]) {
+ return this.http.put<any>(`${this.apiUrl}/update`, { idcreneau, timeSlots });
 }
 
   //  Supprimer un créneau
@@ -53,9 +52,14 @@ export class CreneauService {
   }
 
   // Réserver un créneau
-  reserverCreneau(creneauId: string, reservationData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reserver/${creneauId}`, reservationData);
-  }
+
+reserverCreneau(idCreneau: string, time: string, idPatient: string) {
+  return this.http.post(`${environment.apiUrl}/creneaux/reserver`, {
+    idCreneau,
+    time,
+    idPatient
+  });
+}
 
 
  afficherAgenda(data: any): Observable<any> {
