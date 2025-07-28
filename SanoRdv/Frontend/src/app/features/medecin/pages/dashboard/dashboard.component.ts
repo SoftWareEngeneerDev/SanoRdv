@@ -11,9 +11,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(private medecinService: MedecinService, private router: Router) {}
 
-  totalAjouts = 32;
-  unreadCount: number = 6;
-
   monthName: string = '';
   dayNumber: number = 0;
 
@@ -41,11 +38,10 @@ export class DashboardComponent implements OnInit {
       }, (err: any) => {
         console.error('Erreur chargement rendez-vous:', err);
       });
-    } else {
+    } 
+    else {
       console.error('Médecin non connecté');
     }
   }
-   goToRendezVous(): void {
-    this.router.navigate(['/medecin/rendez-vous']);
-  }
+
 }
