@@ -24,7 +24,7 @@ export class RecapService {
     localStorage.setItem(this.patientKey, JSON.stringify(patient));
   }
 
- setCreneau(creneau: { patientId: string; dateSelectionne: Date; slot: any ; timeSlots: any []; idCreneau: string}): void {
+ setCreneau(creneau: { patientId: string; dateSelectionne: Date; slot: any ; timeSlots: any []; idcreneau: string}): void {
   localStorage.setItem(this.creneauKey, JSON.stringify(creneau));
 }
 

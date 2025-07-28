@@ -1,8 +1,16 @@
 .table th {
   font-weight: 600;
   background-color: #f8f9fa;
+  text-align: left;
+  padding: 10px;
 }
 
+.table td {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+/* Couleurs texte */
 .text-primary {
   color: #007bff !important;
 }
@@ -15,19 +23,25 @@
   color: green !important;
 }
 
+/* Alerte info */
 .alert-info {
   background-color: #e7f3fe;
   border-color: #bee5eb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
 }
 
+/* Badge */
 .badge {
   display: inline-block;
   padding: 5px 10px;
   border-radius: 12px;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: white;
   text-align: center;
+  min-width: 70px;
 }
 
 .badge-actif {
@@ -38,23 +52,88 @@
   background-color: #dc3545; /* Rouge */
 }
 
-
+/* Curseur */
 .cursor-pointer {
   cursor: pointer;
 }
 
-table td, table th {
-  vertical-align: middle;
-}
-
-
+/* Actions */
 .actions a {
   margin-right: 10px;
   text-decoration: none;
   font-weight: 500;
+  font-size: 0.9rem;
+  color: #007bff;
+}
+
+.actions a:hover {
+  text-decoration: underline;
 }
 
 .actions a:last-child {
   margin-right: 0;
 }
 
+/* ----- RESPONSIVITÉ ----- */
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.9rem;
+  }
+
+  .table thead {
+    display: none; /* Cacher les en-têtes sur petits écrans */
+  }
+
+  .table tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #495057;
+  }
+
+  .badge {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .actions a {
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .badge {
+    font-size: 0.75rem;
+    padding: 3px 6px;
+  }
+
+  .alert-info {
+    font-size: 0.85rem;
+  }
+
+  .actions a {
+    font-size: 0.8rem;
+  }
+}

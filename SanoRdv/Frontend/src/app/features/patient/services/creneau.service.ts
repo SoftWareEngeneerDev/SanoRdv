@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../../../environment/environments';
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,31 +22,29 @@ export class CreneauService {
     );
   }
 
-  //  Récupérer les créneaux disponibles pour un agenda donné
-  getCreneauxDispoByAgenda(agendaId: string, date: string): Observable<string[]> {
-    return this.http.get<any>(`${this.apiUrl}/filtrer/${agendaId}/${date}/disponible`)
-      .pipe(
-        map(response => response.data.timeSlots.map((slot: any) => slot.time))
-      );
-  }
+  // getCreneauxDispoByAgenda(agendaId: string, date: string): Observable<string[]> {
+  //   return this.http.get<any>(`${this.apiUrl}/filtrer/${agendaId}/${date}/disponible`)
+  //     .pipe(
+  //       map(response => response.data.timeSlots.map((slot: any) => slot.time))
+  //     );
+  // }
 
-  //  Récupérer les créneaux réservés pour un agenda donné
-  getCreneauxReservesByAgenda(agendaId: string, date: string): Observable<string[]> {
-    return this.http.get<any>(`${this.apiUrl}/filtrer/${agendaId}/${date}/reserve`)
-      .pipe(
-        map(response => response.data.timeSlots.map((slot: any) => slot.time))
-      );
-  }
 
-  //  Récupérer les créneaux disponibles en fonction du médecin
-  getCreneauxDisponibles(date: string, medecinId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/disponibles?date=${date}&medecinId=${medecinId}`);
-  }
+  // getCreneauxReservesByAgenda(agendaId: string, date: string): Observable<string[]> {
+  //   return this.http.get<any>(`${this.apiUrl}/filtrer/${agendaId}/${date}/reserve`)
+  //     .pipe(
+  //       map(response => response.data.timeSlots.map((slot: any) => slot.time))
+  //     );
+  // }
+
+  // getCreneauxDisponibles(date: string, medecinId: string): Observable<any> {
+  //   return this.http.get(`${this.apiUrl}/disponibles?date=${date}&medecinId=${medecinId}`);
+  // }
 
   //  Modifier un créneau
-  updateCreneau(creneauId: string, updateData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/modifier/${creneauId}`, updateData);
-  }
+ updateCreneau(idcreneau: string, timeSlots: any[]) {
+ return this.http.put<any>(`${this.apiUrl}/update`, { idcreneau, timeSlots });
+}
 
   //  Supprimer un créneau
   supprimerCreneau(creneauId: string): Observable<any> {
@@ -52,9 +52,14 @@ export class CreneauService {
   }
 
   // Réserver un créneau
-  reserverCreneau(creneauId: string, reservationData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reserver/${creneauId}`, reservationData);
-  }
+
+reserverCreneau(idCreneau: string, time: string, idPatient: string) {
+  return this.http.post(`${environment.apiUrl}/creneaux/reserver`, {
+    idCreneau,
+    time,
+    idPatient
+  });
+}
 
 
  afficherAgenda(data: any): Observable<any> {

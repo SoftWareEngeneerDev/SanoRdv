@@ -22,6 +22,9 @@ export class ConfirmationComponent implements OnInit {
   motif: string = '';
   rendezVousCree: any = null;
   erreur: string = '';
+  selectedDate: Date = new Date();
+  selectedSlot: any= null;
+creneau: any;
 
   constructor(
     private recapService: RecapService,
