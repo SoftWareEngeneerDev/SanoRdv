@@ -9,7 +9,27 @@
     <a routerLink="/medecin/notifications">
       <i class="bi bi-bell-fill fs-5" title="Notifications"></i>
     </a>
-    <a routerLink="/medecin/log-out">DECONNEXION</a>
+    <a class="btn-danger" data-bs-toggle="modal" data-bs-target="#modalConfirmationSuppression">DECONNEXION</a>
   </div>
 </header>
 
+
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="modalConfirmationSuppression" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <i class="bi bi-box-arrow-right icon" style="font-size: 2rem;"></i>
+        </div>
+        <h3 class="fw-bold mb-2">Déconnexion</h3>
+        <p>Êtes-vous sûr de vouloir vous déconnecter ?</p>
+        <div class="d-flex justify-content-center gap-2 mt-4">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button class="btn btn-danger" (click)="deconnecter()">Se déconnecter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
