@@ -36,7 +36,7 @@ const routes: Routes = [
            { path: 'profil', component: ProfilComponent},
            { path: 'specialites', component: SpecialitesComponent},
            { path: 'ajouter-specialites', component:   AjouterSpecialitesComponent},
-           { path: 'modifier-specialites', component: ModifierSpecialitesComponent},
+           { path: 'modifier-specialites/:id', component: ModifierSpecialitesComponent},
            { path: 'notifications', component: NotificationsComponent},
        ]
   }
