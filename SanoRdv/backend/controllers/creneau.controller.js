@@ -2,56 +2,84 @@
 import mongoose from 'mongoose';
 import Creneau from '../models/creneau.model.js';
 import Patient from '../models/patient.model.js';
-import { genererCreneauxParDate } from '../utils/genererCreneauxParDate.creneau.js';
+// import { retrieveTimeSlotsByDate } from '../utils/genererCreneauxParDate.creneau.js';
 
-import { modifierStatusParHeure } from '../utils/modifierStatusParHeure.creneau.js';
 
-export async function genererEtEnregistrerCreneau(agendaId, date, heuresIndisponibles = []) {
+export async function retrieveOrCreateCreneau(agendaId, date) {
     try {
-        // 1. Validation des entrées
-        if (!agendaId || !date) {
-            throw new Error("Les champs 'agendaId' et 'date' sont obligatoires");
-        }
 
         if (!mongoose.Types.ObjectId.isValid(agendaId)) {
             throw new Error("Identifiant 'agendaId' invalide");
         }
 
-        // 2. Génération des créneaux de base
-        const timeSlots = await genererCreneauxParDate(date);
-        console.log("Voici les timeSlots des creneaux:", timeSlots);
+        // 2. Récupérer les timeSlots du creneau à la date indiquée
+        // const timeSlots = await retrieveTimeSlotsByDate(date);
+ 
+            // 2. Recherche dans la base de données
+            const dateOnly = new Date(date);
+          dateOnly.setHours(0, 0, 0, 0);
 
-        // 3. Marquage des créneaux indisponibles
-        //const updatedTimeSlots = modifierStatusParHeure(timeSlots, heuresIndisponibles);
+          let isNewInstance=false; 
+          let creneauToRetrieve = null;
+          const creneauExistant = await Creneau.findOne({ agenda: agendaId });
+          console.log('Voici le creneau que j\'ai trouvé:', creneauExistant, agendaId);               
+          // 3. Si aucun creneau à cette date alors créons le
+          if (creneauExistant) {
+              console.log('Creneau déjà existant pour cet agenda:', creneauExistant);
+              creneauToRetrieve = creneauExistant;
+              isNewInstance = false;
+          }else{  
+              console.log('Creneau non existant pour cet agenda:', creneauExistant);
+              isNewInstance = true;
 
-        // 4. Vérification de l'existence d'un créneau pour cette date/agenda
-        const existingCreneau = await Creneau.findOne({
-            agenda: agendaId,
-            date: new Date(date)
-        });
+              // Génération des créneaux par défaut (8h-17h30, toutes les 30 minutes)
+              const timeSlots = [];
+              const startTime = 8;   // Heure de début configurable
+              const endTime = 17.5;   // Heure de fin configurable
+              const interval = 0.5;   // Intervalle configurable (30 minutes)
+      
+              for (let time = startTime; time <= endTime; time += interval) {
+                  const hours = Math.floor(time);
+                  const minutes = (time % 1 === 0.5) ? '30' : '00';
+                  const timeString = `${hours}:${minutes}`;
+                  
+                  timeSlots.push({
+                      time: timeString,
+                      status: 'disponible', // Statut par défaut
+                      // Ajoutez d'autres champs requis par votre modèle si nécessaire
+                  });
+              }
 
-        // 5. Mise à jour ou création
-        let operationType = 'update';
-        let creneau;
+              creneauToRetrieve = new Creneau({
+              date: new Date(date),
+              timeSlots: timeSlots,
+              agenda: agendaId
+          });
+          await creneauToRetrieve.save();
 
-        if (existingCreneau) {
-            existingCreneau.timeSlots = timeSlots;
-            creneau = await existingCreneau.save();
-        } else {
-            operationType = 'create';
-            creneau = new Creneau({
-                date: new Date(date),
-                timeSlots: timeSlots,
-                agenda: agendaId
-            });
-            await creneau.save();
-        }
+          }
+        // // 5. Mise à jour ou création
+        // let operationType = 'update';
+        // let creneau;
+
+        // if (existingCreneau) {
+        //     existingCreneau.timeSlots = timeSlots;
+        //     creneau = await existingCreneau.save();
+        // } else {
+        //     operationType = 'create';
+        //     creneau = new Creneau({
+        //         date: new Date(date),
+        //         timeSlots: timeSlots,
+        //         agenda: agendaId
+        //     });
+        //     await creneau.save();
+        // }
 
         // 6. Retour du résultat
         return {
-            success: true,
-            operation: operationType,
-            data: creneau
+            isNewCreation: isNewInstance,
+            success: true,            
+            data: creneauToRetrieve
         };
 
     } catch (error) {
@@ -273,7 +301,7 @@ export async function filtrerCreneauxParStatut(agendaId, date, statut) {
 
 //  Export final
 export default {
-  genererEtEnregistrerCreneau,
+  retrieveOrCreateCreneau,
   supprimerCreneau,
   getCreneauxParDate,
   filtrerCreneauxParStatut

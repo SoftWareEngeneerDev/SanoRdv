@@ -36,16 +36,18 @@ const templates = {
     }),
     Rappel: (rdv) => ({
       subject: `Rappel: Rendez-vous demain à ${formatTime(rdv.date)}`,
-      text: `Rappel: Vous avez un rendez-vous avec le Dr ${rdv.medecin.nom} demain à ${formatTime(rdv.date)}.`,
+      text: `Rappel: Vous avez un rendez-vous avec le Dr ${rdv.medecin.nom} ${rdv.medecin.prenom} demain à ${formatTime(rdv.date)}.`,
       html: modelPatientEmail(rdv, 'rappel')
     })
   },
   medecin: {
     Confirmation: (rdv) => ({
       subject: `Nouveau rendez-vous avec ${rdv.patient.nom}`,
-      text: `Vous avez un nouveau rendez-vous avec ${rdv.patient.nom} le ${formatDate(rdv.date)} à ${formatTime(rdv.time)}.`,
-      html: modelMedecinEmail(rdv, 'nouveau')
+      text: `Vous avez un nouveau rendez-vous avec ${rdv.patient.nom} ${rdv.patient.prenom}  le ${formatDate(rdv.date)} à ${formatTime(rdv.time)}.`,
+      html: modelMedecinEmail(rdv, 'nouveau'),
+
     }),
+    
     Annulation: (rdv) => ({
       subject: `Annulation de rendez-vous avec ${rdv.patient.nom}`,
       text: `Le rendez-vous avec ${rdv.patient.nom} prévu le ${formatDate(rdv.date)} a été annulé.`,
