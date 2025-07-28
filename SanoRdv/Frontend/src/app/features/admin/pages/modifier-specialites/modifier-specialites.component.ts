@@ -27,6 +27,7 @@ export class ModifierSpecialitesComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.chargerSpecialite(id);
+      console.log('Modifier spécialité avec id :', id);
     }
   }
 

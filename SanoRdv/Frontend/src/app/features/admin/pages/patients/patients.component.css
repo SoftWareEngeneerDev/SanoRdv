@@ -2,6 +2,8 @@
 .card {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 .card-title {
@@ -23,14 +25,46 @@
 .btn-info {
   background-color: #17a2b8;
   border-color: #17a2b8;
+  color: white;
 }
 
 .btn-danger {
   background-color: #dc3545;
   border-color: #dc3545;
+  color: white;
 }
 
 /* Espacement entre les boutons */
 .btn + .btn {
   margin-left: 0.5rem;
+}
+
+/* ------------------ RESPONSIVE ------------------ */
+@media screen and (max-width: 768px) {
+  .card-title {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .btn-sm {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .btn + .btn {
+    margin-left: 0;
+  }
+
+  .table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table th,
+  .table td {
+    white-space: nowrap;
+  }
 }

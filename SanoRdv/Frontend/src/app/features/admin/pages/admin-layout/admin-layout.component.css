@@ -5,11 +5,14 @@
   background-color: #f8f9fa;
   min-height: 100vh;
   overflow-x: hidden;
+  width: 80%;
+  margin-top: 50px;
 }
 
 /* Sidebar réduit (80px) */
 .margin-collapsed {
-  margin-left: 80px;
+  margin-left: 150px;
+  
 }
 
 /* Sidebar normal (250px) */

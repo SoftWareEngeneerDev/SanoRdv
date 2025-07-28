@@ -13,7 +13,7 @@ export class AdminHeaderComponent {
   constructor(private router: Router, private authService: AuthService) {}
   
   AccueilPage() {
-    this.router.navigate(['/admin/dashboard']); // adapte si ta route est différente
+    this.router.navigate(['/admin/accueil']); // adapte si ta route est différente
   }
 
   AProposPage() {

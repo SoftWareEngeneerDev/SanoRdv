@@ -19,25 +19,24 @@ export class DetailPatientComponent implements OnInit {
     private patientService: PatientService
   ) {}
 
- ngOnInit(): void {
-  const id = this.route.snapshot.paramMap.get('id');
-  if (id) {
-    this.loadPatient(id);
-  }
-}
-
-loadPatient(id: string): void {
-  this.isLoading = true;
-  this.patientService.getPatientById(id).subscribe({
-    next: (data: Patient) => {
-      this.patient = data;
-      this.isLoading = false;
-    },
-    error: () => {
-      this.errorMessage = 'Erreur lors du chargement du patient.';
-      this.isLoading = false;
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadPatient(id);
     }
-  });
-}
+  }
 
+  loadPatient(id: string): void {
+    this.isLoading = true;
+    this.patientService.getPatientById(id).subscribe({
+      next: (data: Patient) => {
+        this.patient = data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Erreur lors du chargement du patient.';
+        this.isLoading = false;
+      }
+    });
+  }
 }
