@@ -88,7 +88,6 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
     }
 }
 
-
 // --------- Fonction pour modifier Creneau --------------------------- //
 export async function modifierCreneau(req, res) {
     try {
@@ -309,5 +308,7 @@ export default {
   retrieveOrCreateCreneau,
   supprimerCreneau,
   getCreneauxParDate,
-  filtrerCreneauxParStatut
+  filtrerCreneauxParStatut,
+   modifierCreneau,
+  reserverCreneau
 };

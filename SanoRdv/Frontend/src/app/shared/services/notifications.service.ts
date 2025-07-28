@@ -51,7 +51,7 @@ export class NotificationsService {
     );
   }
 
-  //  Crée une nouvelle notification 
+  //  Crée une nouvelle notification
   creerNotification(notification: Notification): Observable<Notification> {
     return this.http.post<Notification>(this.apiUrl, notification).pipe(
       tap((createdNotif) => {

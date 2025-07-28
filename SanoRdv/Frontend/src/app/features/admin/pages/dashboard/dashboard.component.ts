@@ -10,7 +10,7 @@ import { AdminService } from '../../admin.service';
 })
 export class DashboardComponent implements OnInit {
 
-  totalPatients: number = 12;
+  totalPatients: number = 0;
   medecinsActifs: number = 0;
   totalRendezVous: number = 0;
 

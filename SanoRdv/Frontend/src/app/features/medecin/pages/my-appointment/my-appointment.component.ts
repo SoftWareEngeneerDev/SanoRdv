@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MedecinService } from '../../medecin.service';
 
+declare var bootstrap: any;
+
 interface Appointment {
-date: any;
+  date: any;
   _id: string;
   time: string;
   motif: string;
@@ -31,6 +33,12 @@ export class MyAppointmentComponent implements OnInit {
   selectedAppointment: Appointment | null = null;
   recherche: string = '';
 
+  motifSelectionne:string = '';
+  motifs: string[] = ['Patient indisponible', 'Médecin absent', 'Problème technique', 'Autre'];
+  autreMotif: string = '';
+  rendezVousAAnnulerId: string = '';
+  private modalInstance: bootstrap.Modal | null = null;
+
   constructor(private medecinService: MedecinService) {}
 
   ngOnInit(): void {
@@ -42,18 +50,28 @@ export class MyAppointmentComponent implements OnInit {
     } else {
       console.error("Identifiant médecin non trouvé !");
     }
+
+     // Initialisation du modal Bootstrap
+    const modalElement = document.getElementById('annulationModal');
+    if (modalElement) {
+      this.modalInstance = new bootstrap.Modal(modalElement);
+    }
+  }
+
+  getMotifFinal(): string {
+    return this.motifSelectionne.toLowerCase() === 'autre' ? this.autreMotif.trim() : this.motifSelectionne;
   }
 
   filtrer(): void {
-  const terme = this.recherche.toLowerCase().trim();
+    const terme = this.recherche.toLowerCase().trim();
 
-  this.filteredAppointments = this.appointments.filter(appointment =>
-    appointment.patient.nom.toLowerCase().includes(terme) ||
-    appointment.patient.prenom.toLowerCase().includes(terme) ||
-    appointment.statut.toLowerCase().includes(terme) ||
-    appointment.patient._id.toLowerCase().includes(terme)
-  );
-}
+    this.filteredAppointments = this.appointments.filter(appointment =>
+      appointment.patient.nom.toLowerCase().includes(terme) ||
+      appointment.patient.prenom.toLowerCase().includes(terme) ||
+      appointment.statut.toLowerCase().includes(terme) ||
+      appointment.patient._id.toLowerCase().includes(terme)
+    );
+  }
 
 
  loadAppointments(medecinId: string): void {
@@ -69,12 +87,12 @@ export class MyAppointmentComponent implements OnInit {
   }
 
   viewAppointmentDetails(appointment: Appointment): void {
-     console.log('Rendez-vous sélectionné :', appointment);
-      this.selectedAppointment = { ...appointment };
+    console.log('Rendez-vous sélectionné :', appointment);
+    this.selectedAppointment = { ...appointment };
   }
 
   closeModal(): void {
-      this.selectedAppointment = null;
+    this.selectedAppointment = null;
   }
 
   formatDate(dateInput: any): string {
@@ -105,63 +123,42 @@ export class MyAppointmentComponent implements OnInit {
     }[status] || status;
   }
 
-  annulerRendezVous(appointment: Appointment): void {
-   if (!appointment._id) return;
+ouvrirAnnulationModal(rdvId: string): void {
+  console.log('Ouverture modal pour RDV ID:', rdvId);
 
-    this.medecinService.annulerRendezVous(appointment._id).subscribe({
-        next: () => {
-          // Met à jour le statut dans l'objet concerné
-          appointment.statut = 'annulé';
-          // Met à jour la modale si elle est ouverte
-          if (this.selectedAppointment && this.selectedAppointment._id === appointment._id) {
-            this.selectedAppointment.statut = 'annulé';
-          }
-          // 💥 Force Angular à détecter le changement dans le tableau
-          this.filteredAppointments = [...this.filteredAppointments];
-        },
-        error: err => {
-          console.error('Erreur annulation :', err);
-        }
-    });
+  // Ferme le modal des détails
+  // this.closeModal();
+
+  // Préparer les données
+  this.rendezVousAAnnulerId = rdvId;
+  this.motifSelectionne = '';
+  this.autreMotif = '';
+
+  //Ouvrir le modal Bootstrap d’annulation
+  if (this.modalInstance) {
+    this.modalInstance.show();
+  }
+}
+
+confirmerAnnulation(): void {
+  const motifFinal = this.getMotifFinal();
+  if (!motifFinal) {
+    alert('Veuillez sélectionner ou préciser un motif.');
+    return;
   }
 
-  confirmerRendezVous(appointment: Appointment): void {
-   if (!appointment._id) return;
+  this.medecinService.annulerRendezVous(this.rendezVousAAnnulerId).subscribe({
+    next: () => {
+      const rdv = this.appointments.find(a => a._id === this.rendezVousAAnnulerId);
+      if (rdv) {
+        rdv.statut = 'annulé';
+      }
+      this.filteredAppointments = [...this.appointments];
+      this.modalInstance?.hide();
+    },
+    error: err => console.error('Erreur lors de l’annulation :', err)
+  });
+}
 
-    this.medecinService.confirmerRendezVous(appointment._id).subscribe({
-        next: () => {
-          // Met à jour le statut dans l'objet concerné
-          appointment.statut = 'confirmé';
-          // Met à jour la modale si elle est ouverte
-          if (this.selectedAppointment && this.selectedAppointment._id === appointment._id) {
-            this.selectedAppointment.statut = 'confirmé';
-          }
-          // 💥 Force Angular à détecter le changement dans le tableau
-          this.filteredAppointments = [...this.filteredAppointments];
-        },
-        error: err => {
-          console.error('Erreur annulation :', err);
-        }
-    });
-  }
 
-  modifierRendezVous(appointment: Appointment): void {
-    if (!appointment._id) return;
-
-    const nouveauMotif = prompt("Entrez le nouveau motif du rendez-vous :", appointment.motif);
-
-    if (nouveauMotif && nouveauMotif.trim() !== '' && nouveauMotif !== appointment.motif) {
-      this.medecinService.modifierRendezVous(appointment._id, { motif: nouveauMotif }).subscribe({
-        next: () => {
-          appointment.motif = nouveauMotif;
-          alert("Rendez-vous modifié avec succès.");
-          this.closeModal();
-        },
-        error: (err) => {
-          console.error("Erreur lors de la modification :", err);
-          alert("Échec de la modification du rendez-vous.");
-        }
-      });
-    }
-  }
 }

@@ -188,7 +188,7 @@ table {
 
 /* Tablettes (≤1024px) */
 @media (max-width: 1024px) {
-  .container {
+  /* .container {
     width: 90%;
     left: 5%;
     top: 80px;
@@ -210,7 +210,7 @@ table {
   table th, table td {
     font-size: 14px;
     padding: 10px;
-  }
+  } */
 }
 /* Si la sidebar est réduite à 100px */
 .layout-collapsed .container {
@@ -218,27 +218,71 @@ table {
   max-width: calc(100% - 120px);
 }
 
-/* Tablettes */
-@media (max-width: 1024px) {
-  .container,
-  .layout-collapsed .container {
-    margin-left: 0px;
-    margin-right: 0;
-    /* width: 95%; */
-    max-width: 100%;
-    margin-top: 80px;
+
+
+
+
+@media (min-width: 550px) and (max-width: 768px) {
+
+  .dashboard-container {
+    left: 35%;
+    top: 12%;
+  }
+
+  .stats-grid {
+    flex-direction: column;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .dashboard-title {
+    font-size: 24px;
+  }
+
+  .section-title {
+    font-size: 20px;
   }
 }
 
-/* Mobiles */
-@media (max-width: 480px) {
-  .container,
-  .layout-collapsed .container {
-    width: 100%;
-    padding: 15px;
-    margin-left: 90px;
-    margin-right: 0;
-    margin-top: 70px;
+/* Pour les tablettes */
+@media (min-width: 769px) and (max-width: 1024px) {
 
+  .dashboard-container {
+    left: 25%;
+    top: 12%;
+    /* max-width: 700px; */
   }
+  .stats-grid {
+  display: flex; 
+   flex-direction: row;
+   flex-wrap: wrap;
+}
+
+}
+
+/* Pour les grands ecrans */
+@media (min-width: 1025px) and (max-width: 1279px) {
+
+  /* .dashboard-container {
+    left: 35%;
+    top: 12%;
+  }
+
+  .stats-grid {
+    flex-direction: column;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .dashboard-title {
+    font-size: 24px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  } */
 }

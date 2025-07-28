@@ -1,9 +1,10 @@
 <div class="dashboard-container">
-  <h1 class="dashboard-title">TABLEAU DE BORD</h1>
+  <h1 class="dashboard-title"> TABLEAU DE BORD  </h1>
 
   <!-- RENDEZ-VOUS Card -->
   <div class="stats-grid">
-      <div class="stat-card rendez-vous" (click)="goToRendezVous()" style="cursor: pointer;">
+    <a routerLink="/medecin/rendez-vous">
+      <div class="stat-card rendez-vous" style="cursor: pointer;">
         <div class="stat-icon">
           <div class="calendar-icon">
             <div class="calendar-header">{{ monthName }}</div>
@@ -17,6 +18,7 @@
           <div>❌ Annulés : {{ cancelledCount }}</div>
         </div>
       </div>
+      </a>
 
     <!-- Statistiques Card -->
     <div class="stat-card statistiques">
@@ -33,7 +35,7 @@
     </div>
 
     <!-- Visites Card -->
-    <!-- <div class="stat-card visites">
+    <div class="stat-card visites">
       <div class="stat-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -45,7 +47,7 @@
         <h3>VISITES</h3>
         <div class="stat-number">6</div>
       </div>
-    </div> -->
+    </div>
   </div>
 
   <!-- Rappels Section -->

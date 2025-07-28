@@ -14,19 +14,23 @@
   <hr class="text-white">
 
   <!-- PROFIL (étendu : photo à gauche + nom à droite) -->
-  <div class="d-flex align-items-center gap-2 mb-3" *ngIf="!isCollapsed">
+  <div class="d-flex align-items-center gap-3 mb-3" *ngIf="!isCollapsed">
     <div class="position-relative">
       <img
         [src]="user.photo && user.photo.length > 0 ? user.photo : 'assets/default-avatar.png'"
         alt="patient"
         class="patient-avatar"
-        title="Modifier le profil" />
-      <i class="bi bi-pencil-fill edit-icon"
-         title="Modifier le profil"></i>
+        title="Modifier le profil" 
+      />
+      <a routerLink="/medecin/profil-view">
+        <i class="bi bi-pencil-fill edit-icon"
+          title="Modifier le profil"> 
+        </i>
+      </a>
     </div>
 
     <div>
-      <h5 class="mb-0 fw-bold">{{ user.nom }} {{ user.prenom }}</h5>
+      <h1 class="mb-0 fw-bold">{{ user.nom }} {{ user.prenom }}</h1>
     </div>
   </div>
 
