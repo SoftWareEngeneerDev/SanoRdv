@@ -88,6 +88,7 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
     }
 }
 
+
 // --------- Fonction pour modifier Creneau --------------------------- //
 export async function modifierCreneau(req, res) {
     try {
@@ -127,22 +128,23 @@ export async function modifierCreneau(req, res) {
         });
     }
 }
+
 //-----------------------ReserverCreneau----------------------------
 // POST /api/creneaux/reserver
 export async function reserverCreneau(req, res) {
     try {
-        const { idCreneau, time, idPatient } = req.body;
+        const { idcreneau, time, idPatient } = req.body;
 
         /* ---------- 1.  Vérification minimale ---------- */
-        if (!idCreneau || !time || !idPatient) {
+        if (!idcreneau || !time || !idPatient) {
             return res.status(400).json({
                 success: false,
-                message: "idCreneau, time et idPatient sont requis"
+                message: "idcreneau, time et idPatient sont requis"
             });
         }
 
         /* ---------- 2.  Récupération du créneau ---------- */
-        const creneau = await Creneau.findById(idCreneau);
+        const creneau = await Creneau.findById(idcreneau);
         if (!creneau) {
             return res.status(404).json({
                 success: false,
@@ -199,6 +201,9 @@ export async function reserverCreneau(req, res) {
     }
 }
 //------------------------------------------------------------------
+
+
+
 
 //  Supprimer créneau
 export async function supprimerCreneau(agendaId, date) {

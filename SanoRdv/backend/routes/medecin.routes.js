@@ -14,7 +14,7 @@ const profileUpdateValidation = [
     .optional()
     .isLength({ min: 8 })
     .withMessage('Mot de passe trop court (min 8 caractères)'),
-  // Ajoute d’autres validations au besoin
+    // Ajoute d’autres validations au besoin
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -23,6 +23,7 @@ const profileUpdateValidation = [
     next();
   },
 ];
+
 router.put('/:id', profileUpdateValidation, modifierMedecin);
 router.get('/:id', getMedecinById);
 
