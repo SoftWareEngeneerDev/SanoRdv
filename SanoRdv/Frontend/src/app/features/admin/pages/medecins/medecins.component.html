@@ -37,16 +37,16 @@
       </thead>
       <tbody *ngIf="medecinsFiltres.length > 0; else aucunMedecin">
         <tr *ngFor="let medecin of medecinsFiltres">
-          <td>Dr. {{ medecin.nom }} {{ medecin.prenom }}</td>
-          <td>{{ medecin.specialite }}</td>
-          <td>
+          <td data-label="Nom">Dr. {{ medecin.nom }} {{ medecin.prenom }}</td>
+          <td data-label="Spécialité">{{ medecin.specialite }}</td>
+          <td >
               <span class="badge" [ngClass]="{'badge-actif': medecin.isActive, 'badge-inactif': !medecin.isActive}">
   {{ medecin.isActive ? 'Actif' : 'Inactif' }}
 </span>
 
           </td>
           <td>{{ medecin.email }}</td>
-          <td class="actions">
+          <td data-label="Actions" class="actions">
              <ng-container *ngIf="medecin.etat === 'Inactif'; else actifActions">
                 <a *ngIf="medecin.etat?.toLowerCase() === 'actif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:orange"> Désactiver</a>
                 <a *ngIf="medecin.etat?.toLowerCase() === 'inactif'" (click)="toggleEtat(medecin)" style="cursor:pointer; color:green"> Activer</a>

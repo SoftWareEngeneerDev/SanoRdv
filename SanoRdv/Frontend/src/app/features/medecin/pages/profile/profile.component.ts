@@ -31,19 +31,6 @@ export class ProfileComponent {
     }
   }
 
-  // onSave() {
-  //   const medecinId = this.profile._id;
-  //   this.medecinService.updateMedecin(medecinId, this.profile).subscribe({
-  //     next: () => {
-  //       alert("Profil mis à jour avec succès !");
-  //       this.router.navigate(['/medecin/profil-view']);
-  //     },
-  //     error: (err) => {
-  //       console.error('Erreur mise à jour profil :', err);
-  //       alert("Erreur lors de la sauvegarde du profil.");
-  //     }
-  //   });
-  // }
   onSave() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const medecinId = user._id;
@@ -61,7 +48,6 @@ export class ProfileComponent {
     });
   }
 }
-
 
   onCancel() {
     this.router.navigate(['/medecin/profil-view']);

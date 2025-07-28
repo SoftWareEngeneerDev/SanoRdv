@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SpecialiteService } from '../../services/specialite.service';
 import { Specialite } from '../../models/specialites.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-specialites',
@@ -20,7 +21,7 @@ export class SpecialitesComponent implements OnInit {
   specialiteASupprimer: any = null;
   filteredSpecialites: Specialite[] = [];
 
-  constructor(private specialiteService: SpecialiteService) {}
+  constructor(private specialiteService: SpecialiteService, private router: Router) {}
 
   ngOnInit(): void {
     this.chargerSpecialites();
@@ -33,8 +34,12 @@ export class SpecialitesComponent implements OnInit {
     });
   }
 
-  commencerEdition(specialite: Specialite): void {
-    this.specialiteEnEdition = { ...specialite };
+  commencerEdition(specialite: any): void {
+   if (specialite && specialite._id) {
+    this.router.navigate(['admin/modifier-specialites', specialite._id]);
+  } else {
+    console.error("L'ID de la spécialité est introuvable", specialite);
+  }
   }
 
   annulerEdition(): void {
@@ -76,6 +81,7 @@ export class SpecialitesComponent implements OnInit {
   if (this.specialiteASupprimer && this.specialiteASupprimer._id) {
     this.specialiteService.supprimerSpecialite(this.specialiteASupprimer._id).subscribe({
       next: () => {
+        console.log("Spécialité à supprimer :", this.chargerSpecialites);
         this.chargerSpecialites(); // Recharge la liste
         this.specialiteASupprimer = null;
       },
