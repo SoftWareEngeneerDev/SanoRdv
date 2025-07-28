@@ -73,34 +73,6 @@ creneau: any;
 
     console.log(" Données RDV envoyées au backend :", rdvData);
 
-    this.rendezVousService.creerRendezVous(rdvData).subscribe({
-      next: (rdv: any) => {
-        console.log(" Rendez-vous confirmé :", rdv);
-        this.rendezVousCree = rdv;
-
-        const notification: Notification = {
-          id: '',
-          message: `Rendez-vous avec Dr. ${this.medecin.nom} le ${this.dateAffichee} à ${this.heure}.`,
-          dateNotification: new Date().toISOString(),
-          type: 'rappel',
-          medecin: `Dr. ${this.medecin.nom}`,
-          read: false
-        };
-
-        this.notificationsService.creerNotification(notification).subscribe({
-          next: () => {
-            console.log('Notification créée avec succès');
-          },
-          error: (err) => {
-            console.error('Erreur création notification :', err);
-          }
-        });
-      },
-      error: (err: any) => {
-        console.error('Erreur création RDV :', err);
-        this.erreur = err.error?.message || "Erreur serveur lors de la prise du rendez-vous.";
-      }
-    });
   }
 
   goToAccueil() {

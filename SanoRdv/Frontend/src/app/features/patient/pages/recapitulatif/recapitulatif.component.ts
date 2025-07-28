@@ -51,5 +51,10 @@ export class RecapitulatifComponent implements OnInit {
         alert("Une erreur est survenue lors de la réservation");
       }
     });
+
+
+
+
+
   }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RendezVous } from '../../shared/models/rdv-model';
-
+import { environment } from '../../../environment/environments';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,11 +10,10 @@ export class RendezVousService {
   private nouveauxRdvSubject = new BehaviorSubject<number>(0);
   nouveauxRdv$ = this.nouveauxRdvSubject.asObservable();
 
-  private apiUrl = 'http://localhost:3000/api/rendezvous';
+  private apiUrl = `${environment.apiUrl}/rendezvous`; 
 
   constructor(private http: HttpClient) {}
 
-  // Méthode privée pour ajouter le token dans les headers
   private getHeaders(): { headers: HttpHeaders } {
     const token = localStorage.getItem('token') || '';
     return {
@@ -48,12 +47,10 @@ export class RendezVousService {
   }
 
   annulerRendezVous(id: string, motif: string): Observable<any> {
-    // Appelle la route PUT /:id/annuler avec motif dans le body et headers avec token
     return this.http.put(`${this.apiUrl}/${id}/annuler`, { motif }, this.getHeaders());
   }
 
   modifierRendezVous(id: string, data: Partial<RendezVous>): Observable<any> {
-    // Appelle la route PUT /:id/modifier
     return this.http.put(`${this.apiUrl}/${id}/modifier`, data, this.getHeaders());
   }
 

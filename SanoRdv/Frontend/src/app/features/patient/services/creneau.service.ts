@@ -52,7 +52,6 @@ export class CreneauService {
   }
 
   // Réserver un créneau
-
 reserverCreneau(idCreneau: string, time: string, idPatient: string) {
   return this.http.post(`${environment.apiUrl}/creneaux/reserver`, {
     idCreneau,
