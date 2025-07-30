@@ -21,7 +21,8 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
 
           let isNewInstance=false; 
           let creneauToRetrieve = null;
-          const creneauExistant = await Creneau.findOne({ agenda: agendaId });
+          const creneauExistant = await Creneau.findOne({ agenda: agendaId,
+          date: dateOnly, });
           console.log('Voici le creneau que j\'ai trouvé:', creneauExistant, agendaId);               
           // 3. Si aucun creneau à cette date alors créons le
           if (creneauExistant) {
@@ -44,6 +45,7 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
                   const timeString = `${hours}:${minutes}`;
                   
                   timeSlots.push({
+                      _id: new Types.ObjectId(),
                       time: timeString,
                       status: 'disponible', // Statut par défaut
                       // Ajoutez d'autres champs requis par votre modèle si nécessaire
@@ -131,10 +133,10 @@ export async function modifierCreneau(req, res) {
 // POST /api/creneaux/reserver
 export async function reserverCreneau(req, res) {
     try {
-        const { idCreneau, time, idPatient } = req.body;
+        const { creneauId, time, idPatient } = req.body;
 
         /* ---------- 1.  Vérification minimale ---------- */
-        if (!idCreneau || !time || !idPatient) {
+        if (!creneauId || !time || !idPatient) {
             return res.status(400).json({
                 success: false,
                 message: "idCreneau, time et idPatient sont requis"
@@ -142,7 +144,7 @@ export async function reserverCreneau(req, res) {
         }
 
         /* ---------- 2.  Récupération du créneau ---------- */
-        const creneau = await Creneau.findById(idCreneau);
+        const creneau = await Creneau.findById(creneauId);
         if (!creneau) {
             return res.status(404).json({
                 success: false,
