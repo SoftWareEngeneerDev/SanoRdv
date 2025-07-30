@@ -41,26 +41,27 @@ export const prendreRendezVous = async (req, res) => {
       return res.status(400).json({ message: 'Ce créneau est déjà réservé ou indisponible' });
     }
 
-    timeSlot.status = 'reserve';
-    timeSlot.patientId = patientId;
-    timeSlot.dateReservation = new Date();
-    timeSlot.motifRendezVous = motifRendezVous;
-
+    // Réservation
+    Object.assign(timeSlot, {
+      status: 'reserve',
+      patientId,
+      dateReservation: new Date(),
+      motifRendezVous
+    });
 
     await creneau.save();
 
-    const creneauAvecISO = ajouterDateHeureISO(creneau);
+    // Notifications
+    await Promise.all([
+      notifPatientConfirmation(creneauId, timeSlotId),
+      notifMedecinConfirmation(creneauId, timeSlotId)
+    ]);
 
-            // Notification
-    await notifPatientConfirmation(creneauId, timeSlotId);
-    console.log('✅ Notification patient en cours');
-    await notifMedecinConfirmation(creneauId, timeSlotId);
-    console.log('✅ Notification medecin en cours');
-
-
-
-    return res.status(200).json({ message: 'Rendez-vous pris avec succès',
-                                     data: creneauAvecISO });
+    // Réponse
+    return res.status(200).json({
+      message: 'Rendez-vous pris avec succès',
+      data: ajouterDateHeureISO(creneau)
+    });
 
   } catch (err) {
     return res.status(500).json({ message: 'Erreur serveur', error: err.message });
@@ -68,13 +69,12 @@ export const prendreRendezVous = async (req, res) => {
 };
 
 
-
 //   Annulation de rendez-vous
 export const annulerRendezVous = async (req, res) => {
   const { creneauId, timeSlotId, userId, userType, motifAnnulation } = req.body;
 
   try {
-    const creneau = await Creneau.findById(creneauId);
+    const creneau = await Creneau.findById(creneauId).populate('agenda.medecin');
     if (!creneau) return res.status(404).json({ message: 'Créneau introuvable' });
 
     const timeSlot = creneau.timeSlots.id(timeSlotId);
@@ -84,21 +84,37 @@ export const annulerRendezVous = async (req, res) => {
       return res.status(400).json({ message: 'Ce créneau n’est pas réservé' });
     }
 
+    // Vérification de permission
+    if (userType === 'patient' && timeSlot.patientId.toString() !== userId) {
+      return res.status(403).json({ message: "Non autorisé à annuler ce rendez-vous" });
+    }
+
+    // Mise à jour
     timeSlot.status = 'disponible';
     timeSlot.patientId = null;
     timeSlot.dateAnnulation = new Date();
     timeSlot.motifAnnulation = motifAnnulation || 'Non précisé';
     timeSlot.annulePar = {
       id: userId,
-      type: userType // 'Patient' ou 'Medecin'
+      type: userType
     };
 
     await creneau.save();
 
-              // Notification
-  await notifPatientAnnulation(creneauId, timeSlotId);
-  await notifMedecinAnnulation(creneauId, timeSlotId);
+    // Notifications automatiques
+    await notifPatientAnnulation(creneauId, timeSlotId);
+    await notifMedecinAnnulation(creneauId, timeSlotId);
 
+    // Notification stockée en base
+    await Notification.create({
+      contenu: `Le rendez-vous du ${creneau.date.toLocaleDateString()} à ${timeSlot.time} a été annulé. Motif : ${motifAnnulation}`,
+      canal: 'Système',
+      destinataire: userType === 'patient' ? userId : creneau.agenda.medecin?._id,
+      rendezVous: creneau._id,
+      statut: 'Envoyé',
+      type: 'Annulation',
+      destinataireModel: userType
+    });
 
     return res.status(200).json({ message: 'Rendez-vous annulé avec succès' });
 
@@ -106,8 +122,6 @@ export const annulerRendezVous = async (req, res) => {
     return res.status(500).json({ message: 'Erreur serveur', error: err.message });
   }
 };
-
-
 
 
 export const getRendezVousParMedecin = async (req, res) => {

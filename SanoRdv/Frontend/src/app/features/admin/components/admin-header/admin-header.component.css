@@ -19,8 +19,8 @@
 
 /* ----------HEADER COLLAPSÉ & EXPANDÉ--------------- */
 .patient-header.header-collapsed {
-  margin-left: 100px;
-  width: calc(100% - 100px);
+  margin-left: 150px;
+  width: 92%;
 }
 .patient-header.header-expanded {
   margin-left: 250px;
