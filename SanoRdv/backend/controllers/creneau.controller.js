@@ -21,7 +21,8 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
 
           let isNewInstance=false; 
           let creneauToRetrieve = null;
-          const creneauExistant = await Creneau.findOne({ agenda: agendaId });
+          const creneauExistant = await Creneau.findOne({ agenda: agendaId,
+          date: dateOnly, });
           console.log('Voici le creneau que j\'ai trouvé:', creneauExistant, agendaId);               
           // 3. Si aucun creneau à cette date alors créons le
           if (creneauExistant) {
@@ -44,6 +45,7 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
                   const timeString = `${hours}:${minutes}`;
                   
                   timeSlots.push({
+                      _id: new Types.ObjectId(),
                       time: timeString,
                       status: 'disponible', // Statut par défaut
                       // Ajoutez d'autres champs requis par votre modèle si nécessaire
