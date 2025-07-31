@@ -150,18 +150,18 @@ export const annulerRendezVous = async (req, res) => {
 
     await creneau.save();
 
-    // await notifPatientAnnulation(creneauId, timeSlotId);
-    // await notifMedecinAnnulation(creneauId, timeSlotId);
+    await notifPatientAnnulation(creneauId, timeSlotId);
+    await notifMedecinAnnulation(creneauId, timeSlotId);
 
-    // await Notification.create({
-    //   contenu: `Le rendez-vous du ${creneau.date.toLocaleDateString()} à ${timeSlot.time} a été annulé. Motif : ${motifAnnulation}`,
-    //   canal: 'Système',
-    //   destinataire: userType === 'patient' ? userId : creneau.agenda.medecin?._id,
-    //   rendezVous: creneau._id,
-    //   statut: 'Envoyé',
-    //   type: 'Annulation',
-    //   destinataireModel: userType
-    // });
+    await Notification.create({
+      contenu: `Le rendez-vous du ${creneau.date.toLocaleDateString()} à ${timeSlot.time} a été annulé. Motif : ${motifAnnulation}`,
+      canal: 'Système',
+      destinataire: userType === 'patient' ? userId : creneau.agenda.medecin?._id,
+      rendezVous: creneau._id,
+      statut: 'Envoyé',
+      type: 'Annulation',
+      destinataireModel: userType
+    });
 
     return res.status(200).json({
       message: 'Rendez-vous annulé avec succès',

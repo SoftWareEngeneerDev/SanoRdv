@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Creneau from '../models/creneau.model.js';
-import Patient from '../models/patient.model.js';
+// import Patient from '../models/patient.model.js';
 const Types = mongoose.Types;
 // import { retrieveTimeSlotsByDate } from '../utils/genererCreneauxParDate.creneau.js';
 
@@ -16,7 +16,7 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
         // const timeSlots = await retrieveTimeSlotsByDate(date);
  
             // 2. Recherche dans la base de données
-            const dateOnly = new Date(date);
+          const dateOnly = new Date(date);
           dateOnly.setHours(0, 0, 0, 0);
 
           let isNewInstance=false; 
@@ -60,7 +60,7 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
           await creneauToRetrieve.save();
 
           }
-          
+
         return {
             isNewCreation: isNewInstance,
             success: true,            
