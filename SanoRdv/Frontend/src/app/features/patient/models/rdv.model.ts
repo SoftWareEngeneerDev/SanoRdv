@@ -1,18 +1,22 @@
+export interface Medecin {
+  nom: string;
+  prenom: string;
+  specialite: string;
+}
+
+export interface Agenda {
+  medecin: Medecin;
+}
+
 export interface RendezVous {
+  _id: string;
   patientId: string;
   medecinId: string;
   creneauId: string;
   creneau: string;
   time: string;
   motif: string;
-   _id: string;
   date: string;
-  agenda?: {
-    medecin?: {
-      nom: string;
-      prenom: string;
-      specialite: string;
-    }
-  };
+  agenda?: Agenda;
   timeSlotId?: string;
 }
