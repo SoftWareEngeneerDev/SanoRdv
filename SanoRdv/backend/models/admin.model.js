@@ -61,6 +61,11 @@ const adminSchema = new mongoose.Schema({
     required: false,
   },
 
+  resetCodeExpire: {
+    type: Date,
+    required: false,
+  },
+
   // Sécurité et verrouillage
   loginAttempts: {
     type: Number,

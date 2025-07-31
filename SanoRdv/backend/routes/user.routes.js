@@ -149,7 +149,7 @@ router.post(
       .isLength({ min: 4, max: 10 })
       .withMessage('Le code doit contenir entre 4 et 10 caractères')
       .trim(),
-    
+
     body('email')
       .optional()
       .isEmail()
@@ -157,6 +157,8 @@ router.post(
       .normalizeEmail()
   ],
   (req, res, next) => {
+    console.log('📥 Body reçu :', req.body);
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('❌ Erreurs validation verify-reset-code:', errors.array());
@@ -166,6 +168,8 @@ router.post(
         error: 'VALIDATION_ERROR'
       });
     }
+
+    console.log('✅ Validation passée');
     next();
   },
   verifyResetCode

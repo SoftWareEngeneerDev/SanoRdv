@@ -2,43 +2,49 @@
 <div class="container-fluid py-3">
   <h2 class="fw-bold">Vue d’ensemble</h2>
 
-  <div class="row g-4 mb-4">
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading" class="row g-4 mb-4">
     <!-- Carte Patients -->
     <div class="col-lg-4 col-md-6">
       <a [routerLink]="'/admin/patients'" class="text-decoration-none">
-      <div class="card shadow-sm text-white  border-0 p-4 stat-card h-100" style="background-color: #5a5a5a; border-radius: 10px;">
-        <div class="card-body text-center">
-          <i class="bi bi-people-fill fs-1"></i>
-          <h4 class="card-title mt-2">PATIENTS INSCRITS</h4>
-          <div class="card-number fs-3 fw-bold">{{ totalPatients }}</div>
+        <div class="card shadow-sm text-white border-0 p-4 stat-card h-100" style="background-color: #5a5a5a; border-radius: 10px;">
+          <div class="card-body text-center">
+            <i class="bi bi-people-fill fs-1"></i>
+            <h4 class="card-title mt-2">PATIENTS INSCRITS</h4>
+            <div class="card-number fs-3 fw-bold">{{ totalPatients }}</div>
+          </div>
         </div>
-      </div>
-    </a>
+      </a>
     </div>
 
     <!-- Carte Medecins -->
     <div class="col-lg-4 col-md-6">
       <a [routerLink]="'/admin/medecins'" class="text-decoration-none">
-      <div class="card shadow-sm text-white  border-0 p-4 stat-card h-100" style="background: linear-gradient(to bottom, #0080ff, #002266); border-radius: 10px;">
-        <div class="card-body text-center">
-          <i class="bi bi-person-plus-fill fs-1"></i>
-          <h4 class="card-title mt-2">MEDECINS ACTIFS</h4>
-          <div class="card-number fs-3 fw-bold">{{ medecinsActifs }}</div>
+        <div class="card shadow-sm text-white border-0 p-4 stat-card h-100" style="background: linear-gradient(to bottom, #0080ff, #002266); border-radius: 10px;">
+          <div class="card-body text-center">
+            <i class="bi bi-person-plus-fill fs-1"></i>
+            <h4 class="card-title mt-2">MEDECINS ACTIFS</h4>
+            <div class="card-number fs-3 fw-bold">{{ medecinsActifs }}</div>
+          </div>
         </div>
-      </div>
       </a>
     </div>
 
     <!-- Carte Rendez-vous -->
     <div class="col-lg-4 col-md-6">
       <a [routerLink]="'/admin/rendez-vous'" class="text-decoration-none">
-      <div class="card shadow-sm text-white border-0 p-4 stat-card h-100" style="background: linear-gradient(to bottom, #2ecc71, #27ae60); border-radius: 10px;">
-        <div class="card-body text-center">
-          <i class="bi bi-calendar-check-fill fs-1"></i>
-          <h4 class="card-title mt-2">RENDEZ-VOUS</h4>
-          <div class="card-number fs-3 fw-bold">{{ totalRendezVous }}</div>
+        <div class="card shadow-sm text-white border-0 p-4 stat-card h-100" style="background: linear-gradient(to bottom, #2ecc71, #27ae60); border-radius: 10px;">
+          <div class="card-body text-center">
+            <i class="bi bi-calendar-check-fill fs-1"></i>
+            <h4 class="card-title mt-2">RENDEZ-VOUS</h4>
+            <div class="card-number fs-3 fw-bold">{{ totalRendezVous }}</div>
+          </div>
         </div>
-      </div>
       </a>
     </div>
   </div>

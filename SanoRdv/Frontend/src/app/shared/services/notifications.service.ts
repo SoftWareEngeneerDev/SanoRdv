@@ -1,48 +1,45 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Notification } from '../../shared/models/notifications.model';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { Notification } from '../../shared/models/notifications.model';
 import { environment } from 'src/environment/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
-  private apiUrl = 'https://sanordv.onrender.com/api/rendezvous';
+  private apiUrl = `${environment.apiUrl}/notifications`;
 
   private notifications: Notification[] = [];
-
-  // Compteur des notifications non lues
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  // Récupère les notifications du patient connecté
   fetchNotifications(): Observable<Notification[]> {
     const patientId = localStorage.getItem('IDpatient');
     if (!patientId) {
-      throw new Error('Patient non connecté');
+      console.warn('Patient non connecté');
+      return of([]);
     }
     return this.http.get<Notification[]>(`${this.apiUrl}/patient/${patientId}`).pipe(
       tap(notifs => {
-        this.notifications = this.cleanOldNotifications(notifs);
+        this.notifications = this.cleanOldNotifications(notifs)
+          .sort((a, b) => new Date(b.dateNotification).getTime() - new Date(a.dateNotification).getTime());
         this.updateUnreadCount();
       })
     );
   }
 
-  //  Retourne la liste actuelle des notifications en cache
   getNotifications(): Notification[] {
     return this.notifications;
   }
 
-  //  Marque une notification comme lue
   markAsRead(id: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/mark-as-read`, {}).pipe(
       tap(() => {
-        const notif = this.notifications.find(n => n.id === id || (n as any)._id === id);
+        const notif = this.notifications.find(n => (n as any)._id === id);
         if (notif && !notif.read) {
           notif.read = true;
           this.updateUnreadCount();
@@ -51,7 +48,6 @@ export class NotificationsService {
     );
   }
 
-  //  Crée une nouvelle notification
   creerNotification(notification: Notification): Observable<Notification> {
     return this.http.post<Notification>(this.apiUrl, notification).pipe(
       tap((createdNotif) => {
@@ -61,19 +57,14 @@ export class NotificationsService {
     );
   }
 
-  //  Incrémente le compteur
   incrementUnreadCount(): void {
     this.unreadCountSubject.next(this.unreadCountSubject.value + 1);
   }
 
-
-  // Réinitialise le compteur
   resetUnreadCount(): void {
     this.unreadCountSubject.next(0);
   }
 
-
-  //  Nettoie les notifications plus anciennes que 30 jours
   private cleanOldNotifications(notifs: Notification[]): Notification[] {
     const now = new Date();
     return notifs.filter(n => {
@@ -82,13 +73,11 @@ export class NotificationsService {
     });
   }
 
-  //  Met à jour le compteur en fonction des notifications non lues
   private updateUnreadCount() {
     const count = this.notifications.filter(n => !n.read).length;
     this.unreadCountSubject.next(count);
   }
 
-   //  Envoi notification au médecin
   envoyerNotificationAnnulationPatient(rdvId: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/notification/patient/annulation/${rdvId}`, {});
   }
@@ -97,4 +86,3 @@ export class NotificationsService {
     return this.http.post(`${this.apiUrl}/notification/medecin/annulation/${rdvId}`, {});
   }
 }
-

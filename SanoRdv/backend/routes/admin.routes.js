@@ -17,23 +17,45 @@ import {
   desactiverPatient,
   activerPatient,
   activerMedecin,
-  modifierProfilAdmin // <-- Import de ta nouvelle fonction contrôleur
+  modifierProfilAdmin
 } from '../controllers/admin.controller.js';
 
 dotenv.config();
 
 const router = express.Router();
-
-// Middleware JSON personnalisé avec limite augmentée (10 Mo)
 const jsonBodyParser10mb = express.json({ limit: '10mb' });
 
 /* -------------------------------------------------------------------------- */
-/*                              ADMIN  –  ROUTES                              */
+/*                            ADMIN – ROUTES                                  */
 /* -------------------------------------------------------------------------- */
 
-// Créer l’admin “par défaut” (une seule fois)
-router.post('/init', createDefaultAdmin);
+// 🔐 Route protégée pour créer un super admin depuis Postman
+router.post('/create-super-admin', async (req, res) => {
+  const { email, motDePasse, prenom, nom, photo, secret } = req.body;
 
+  if (secret !== process.env.ADMIN_CREATION_SECRET) {
+    return res.status(403).json({ success: false, message: 'Clé secrète invalide' });
+  }
+
+  try {
+    const result = await createDefaultAdmin(email, motDePasse, { prenom, nom, photo });
+
+    if (result.success) {
+      return res.status(201).json({
+        message: 'Super administrateur créé avec succès',
+        admin: result.admin,
+        emailSent: result.emailSent
+      });
+    } else {
+      return res.status(400).json({ success: false, message: result.message });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la création du super admin :', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// Création d’un admin générique (classique)
 router.post('/create-admin', async (req, res) => {
   try {
     if (req.headers['x-admin-secret'] !== process.env.ADMIN_CREATION_SECRET) {
@@ -63,17 +85,18 @@ router.post('/create-admin', async (req, res) => {
   }
 });
 
+// Init admin (usage unique)
+router.post('/init', createDefaultAdmin);
+
 // Modifier le profil admin (avec limite 10mb)
 router.put('/:id', jsonBodyParser10mb, modifierProfilAdmin);
 
 /* -------------------------------------------------------------------------- */
-/*                              MÉDECINS – CRUD                               */
+/*                            MÉDECINS – CRUD                                 */
 /* -------------------------------------------------------------------------- */
 
-// Ajouter un médecin
 router.post('/ajouter', ajouterMedecin);
 
-// Liste de tous les médecins + total
 router.get('/medecins', async (req, res) => {
   try {
     const medecins = await Medecin.find().select('-motDePasse -__v');
@@ -85,7 +108,6 @@ router.get('/medecins', async (req, res) => {
   }
 });
 
-// Récupérer un médecin par ID
 router.get('/medecins/:id', async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -103,17 +125,15 @@ router.get('/medecins/:id', async (req, res) => {
   }
 });
 
-// Modifier, supprimer, (dés)activer médecins
 router.put('/medecins/:id', modifierMedecin);
 router.delete('/medecins/:id', supprimerMedecin);
 router.patch('/medecins/:id/desactivation', desactiverMedecin);
 router.patch('/medecins/:id/activation', activerMedecin);
 
 /* -------------------------------------------------------------------------- */
-/*                               PATIENTS – CRUD                              */
+/*                             PATIENTS – CRUD                                */
 /* -------------------------------------------------------------------------- */
 
-// Liste des patients
 router.get('/patients', async (req, res) => {
   try {
     const patients = await Patient.find().select('-motDePasse -__v');
@@ -124,7 +144,6 @@ router.get('/patients', async (req, res) => {
   }
 });
 
-// Modifier, supprimer, (dés)activer patients
 router.put('/patients/:id', modifierPatient);
 router.delete('/patients/:id', supprimerPatient);
 router.patch('/patients/:id/desactivation', desactiverPatient);

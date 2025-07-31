@@ -479,8 +479,10 @@ export const forgotPassword = async (req, res) => {
 export const verifyResetCode = async (req, res) => {
   try {
     const { resetCode } = req.body;
+    console.log('🔔 verifyResetCode called with resetCode:', resetCode);
 
     if (!resetCode || typeof resetCode !== 'string') {
+      console.log('❌ Le code est requis ou non valide');
       return res.status(400).json({ 
         message: 'Le code est requis.',
         error: 'MISSING_CODE'
@@ -488,8 +490,9 @@ export const verifyResetCode = async (req, res) => {
     }
 
     const normalizedCode = resetCode.trim();
+    console.log('Normalized code:', normalizedCode);
 
-    // 🔍 Recherche de la clé dans le cache
+    // Recherche dans le cache
     let cacheKey = null;
     for (const key of codeCache.keys()) {
       if (key.startsWith(`${normalizedCode}_`)) {
@@ -499,44 +502,53 @@ export const verifyResetCode = async (req, res) => {
     }
 
     if (!cacheKey) {
+      console.log('❌ Code invalide ou expiré (cacheKey non trouvé)');
       return res.status(400).json({
         message: 'Code invalide ou expiré.',
         error: 'INVALID_OR_EXPIRED'
       });
     }
+    console.log('Cache key trouvée:', cacheKey);
 
     const cacheData = codeCache.get(cacheKey);
     if (!cacheData) {
+      console.log('❌ Données cache introuvables pour la clé:', cacheKey);
       return res.status(400).json({
         message: 'Données de réinitialisation introuvables.',
         error: 'CACHE_MISSING'
       });
     }
+    console.log('Données cache:', cacheData);
 
     const { userId, role } = cacheData;
-
     if (!userId || !role) {
+      console.log('❌ Utilisateur ou rôle manquant dans cacheData:', cacheData);
       return res.status(400).json({
         message: 'Utilisateur ou rôle manquant.',
         error: 'INVALID_CACHE_DATA'
       });
     }
+    console.log(`UserId: ${userId}, role: ${role}`);
 
-    // 🔍 Charger le modèle selon le rôle
+    // Charger modèle
     const Model = { admin: Admin, medecin: Medecin, patient: Patient }[role];
     if (!Model) {
+      console.log('❌ Rôle invalide:', role);
       return res.status(400).json({ message: 'Rôle invalide.', error: 'INVALID_ROLE' });
     }
 
     const user = await Model.findById(userId);
     if (!user || !user.resetCode || !user.resetCodeExpire) {
+      console.log('❌ Utilisateur non trouvé ou état resetCode invalide', user);
       return res.status(400).json({ 
         message: 'Code invalide ou expiré.',
         error: 'INVALID_USER_STATE'
       });
     }
+    console.log('Utilisateur trouvé:', user.email);
 
     if (Date.now() > user.resetCodeExpire) {
+      console.log('❌ Code expiré pour utilisateur:', user.email);
       return res.status(400).json({ 
         message: 'Code expiré.',
         error: 'EXPIRED_CODE' 
@@ -545,14 +557,17 @@ export const verifyResetCode = async (req, res) => {
 
     const isMatch = await bcrypt.compare(normalizedCode, user.resetCode);
     if (!isMatch) {
+      console.log('❌ Code incorrect pour utilisateur:', user.email);
       return res.status(400).json({ 
         message: 'Code incorrect.', 
         error: 'WRONG_CODE' 
       });
     }
+    console.log('✅ Code correct pour utilisateur:', user.email);
 
-    // ✅ Générer le token temporaire
+    // Générer token
     const token = jwt.sign({ userId, role }, JWT_RESET_SECRET, { expiresIn: '15m' });
+    console.log('✅ Token généré:', token);
 
     return res.status(200).json({
       success: true,

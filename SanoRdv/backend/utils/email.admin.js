@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || 'Application de gestion de rdv médical';
-const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:4200/login';
+const ADMIN_URL = 'https://sanordv-wu78.onrender.com/auth/login';
 
 /**
  * Crée un transporteur nodemailer selon les variables d'environnement (Gmail, SMTP ou Ethereal)

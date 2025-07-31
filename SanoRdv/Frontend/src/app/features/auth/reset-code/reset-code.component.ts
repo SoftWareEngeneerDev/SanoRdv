@@ -37,6 +37,7 @@ export class ResetCodeComponent implements OnInit {
       this.errorMessage = '';
 
       const { code } = this.codeForm.value;
+      console.log('Code envoyé au backend :', code);
 
       this.authService.verifyResetCode(code).subscribe({
         next: (res) => {
