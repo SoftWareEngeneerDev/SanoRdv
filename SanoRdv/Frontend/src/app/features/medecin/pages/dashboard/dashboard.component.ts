@@ -33,8 +33,9 @@ export class DashboardComponent implements OnInit {
         console.log("Utilisateur depuis localStorage :", user);
 
         this.appointmentCount = rdv.length;
-        this.confirmedCount = rdv.filter((a: any) => a.statut === 'confirmé').length;
+        this.confirmedCount = rdv.filter((a: any) => a.statut === 'reserve').length;
         this.cancelledCount = rdv.filter((a: any) => a.statut === 'annulé').length;
+
       }, (err: any) => {
         console.error('Erreur chargement rendez-vous:', err);
       });

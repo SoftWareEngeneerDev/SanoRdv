@@ -13,6 +13,9 @@ import { Patient } from '../../../../shared/models/patient.model';
 export class ProfilComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
+  // Chemin vers l'avatar par défaut
+  defaultAvatar = 'assets/images/default-avatar.png';
+
   profile: any = {
     nom: '',
     prenom: '',
@@ -101,7 +104,10 @@ export class ProfilComponent implements OnInit {
       photo: patient.photo || null,
     };
 
-    this.previewUrl = this.profile.photo || 'assets/images/default-avatar.png';
+    // Ajout d’un timestamp pour casser le cache navigateur
+    this.previewUrl = this.profile.photo
+      ? `${this.profile.photo}?t=${new Date().getTime()}`
+      : this.defaultAvatar;
   }
 
   triggerFileInput(): void {
@@ -130,6 +136,12 @@ export class ProfilComponent implements OnInit {
       this.previewUrl = reader.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  removePhoto(): void {
+    this.selectedFile = null;
+    this.profile.photo = null;
+    this.previewUrl = this.defaultAvatar;
   }
 
   private isValidImageFile(file: File): boolean {
@@ -189,6 +201,11 @@ export class ProfilComponent implements OnInit {
           photo: this.previewUrl,
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        // Actualisation de la photo
+        this.patientService.getMonProfil().subscribe({
+          next: (patient) => this.fillProfile(patient),
+        });
 
         setTimeout(() => {
           this.showAlert = false;
