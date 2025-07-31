@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { RecapService } from '../../services/recap.service';
 import { MedecinService } from 'src/app/features/medecin/medecin.service';
 import { CreneauService } from '../../../patient/services/creneau.service';
+import { RendezVousService } from '../../../../shared/services/rendez-vous.service';
 
 @Component({
   selector: 'app-recapitulatif',
@@ -18,7 +19,9 @@ export class RecapitulatifComponent implements OnInit {
     private recapService: RecapService,
     private router: Router,
     private medecinService: MedecinService,
-    private creneauService: CreneauService
+    private creneauService: CreneauService,
+    private rendezVousService: RendezVousService,
+
   ) {}
 
   ngOnInit(): void {
@@ -37,19 +40,24 @@ export class RecapitulatifComponent implements OnInit {
       return;
     }
 
-    this.creneauService.reserverCreneau(
-      this.creneau.idcreneau,
-      this.creneau.slot.time,
-      this.creneau.slot.patientId
-    ).subscribe({
-      next: () => {
-        console.log("Créneau réservé avec succès");
-        this.router.navigate(['/patient/confirmation']);
-      },
-      error: (err) => {
-        console.error("Erreur lors de la réservation", err);
-        alert("Une erreur est survenue lors de la réservation");
-      }
-    });
+
+const data = {
+    creneauId: this.creneau.idcreneau,
+    timeSlotId: this.creneau.slot._id,
+    patientId: this.creneau.slot.patientId,
+    motifRendezVous: this.motif
+  };
+
+  this.rendezVousService.prendreRendezVous(data).subscribe({
+    next: () => {
+      console.log("Rendez-vous pris avec succès");
+      this.router.navigate(['/patient/confirmation']);
+    },
+    error: (err) => {
+      console.error("Erreur lors de la prise de rendez-vous", err);
+      alert("Une erreur est survenue lors de la prise de rendez vous");
+    }
+  });
+
   }
 }
