@@ -15,7 +15,7 @@
           Rendez-vous à venir
         </a>
         <a
-          class="nav-item nav-link" id="pass"
+          class="nav-item nav-link"
           href="#"
           [class.active]="ongletActif === 'passes'"
           (click)="selectOnglet($event, 'passes')"
@@ -45,13 +45,24 @@
             <tr *ngFor="let rdv of rendezvousAVenir">
               <td>{{ formatDate(rdv.date) }}</td>
               <td>
-                {{ rdv.medecin.nom }}<br>
-                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
+                {{ rdv.agenda?.medecin?.nom }} {{ rdv.agenda?.medecin?.prenom }}<br />
+                <small class="text-muted">{{ rdv.agenda?.medecin?.specialite }}</small>
               </td>
               <td>
-                <!-- Conversion explicite en string avec toString() -->
-                <button class="btn btn-warning btn-sm me-2" (click)="modifierRdv(rdv.id.toString())">Modifier</button>
-                <button class="btn btn-danger btn-sm" (click)="annulerRdv(rdv.id.toString())">Annuler</button>
+
+                <!------------ Boutons -------------- -->
+
+               <button
+  class="btn btn-warning btn-sm me-2"
+  (click)="modifierRdv(rdv)"
+>
+  Modifier
+</button>
+
+  <button class="btn btn-danger btn-sm" (click)="annulerRdv(rdv)">Annuler</button>
+
+
+
               </td>
             </tr>
           </tbody>
@@ -78,8 +89,8 @@
             <tr *ngFor="let rdv of rendezvousPasses">
               <td>{{ formatDate(rdv.date) }}</td>
               <td>
-                {{ rdv.medecin.nom }}<br>
-                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
+                {{ rdv.agenda?.medecin?.nom }} {{ rdv.agenda?.medecin?.prenom }}<br />
+                <small class="text-muted">{{ rdv.agenda?.medecin?.specialite }}</small>
               </td>
             </tr>
           </tbody>
@@ -94,7 +105,7 @@
 
   </div> <!-- fin onglets-container -->
 
-</div> <!-- fin rendezvous-container -->
+</div> <!-- fin form-container -->
 
 
 <!-- Modal d'annulation -->
@@ -121,7 +132,7 @@
         </div>
 
         <div *ngIf="motifSelectionne === 'autre'" class="mb-3">
-          <input type="text" class="form-control" [(ngModel)]="autreMotif" placeholder="Précisez le motif">
+          <input type="text" class="form-control" [(ngModel)]="autreMotif" placeholder="Précisez le motif" />
         </div>
       </div>
       <div class="modal-footer">
