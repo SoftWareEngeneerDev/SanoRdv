@@ -216,7 +216,7 @@ export const scheduleRappels = async () => {
 // Controller pour récupérer les notifications d'un patient ou d'un médecin
 export const getNotifications = async (req, res) => {
   try {
-    const { type, id } = req.params;  // Type et ID du destinataire (patient ou medecin)
+    const { type, id } = req.params;
 
     if (!['patient', 'medecin'].includes(type)) {
       return res.status(400).json({
@@ -225,24 +225,40 @@ export const getNotifications = async (req, res) => {
       });
     }
 
-    // Trouver les notifications pour un patient ou un médecin
     const notifications = await Notification.find({
       destinataireModel: type,
       destinataire: id
     })
-      .populate('rendezVous')
+      .populate({
+        path: 'rendezVous',
+        populate: [
+          {
+            path: 'agenda',
+            populate: {
+              path: 'medecin',
+              select: 'nom prenom email'
+            }
+          },
+          {
+            path: 'timeSlots.patientId',
+            select: 'nom prenom email telephone'
+          }
+        ]
+      })
       .sort({ createdAt: -1 });
 
-    if (!notifications.length) {
-      return res.status(404).json({
-        success: false,
-        message: `Aucune notification trouvée pour ce ${type}.`
-      });
-    }
-
+    // Optionnel : filtrer les timeSlots pour ne garder que ceux du patient concerné
+    notifications.forEach(n => {
+      if (n.rendezVous && n.rendezVous.timeSlots) {
+        n.rendezVous.timeSlots = n.rendezVous.timeSlots.filter(
+          ts => ts.patientId && ts.patientId._id.toString() === id
+        );
+      }
+    });
 
     return res.status(200).json({
       success: true,
+      count: notifications.length,
       notifications
     });
   } catch (error) {
