@@ -39,7 +39,7 @@ import mongoose from 'mongoose';
 const timeSlotSchema = new mongoose.Schema({
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'patient'
+    ref: 'Patient'
   },
   time: {
     type: String,
