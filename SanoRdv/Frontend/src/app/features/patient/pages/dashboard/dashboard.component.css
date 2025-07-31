@@ -1,4 +1,4 @@
-/* ======= Global ======= */
+/*---------------- Global --------------- */
 body, html {
   margin: 0;
   padding: 0;
@@ -6,7 +6,7 @@ body, html {
   overflow-x: hidden;
 }
 
-/* ======= HEADER ======= */
+/* -------------- HEADER ---------------- */
 app-header {
   position: fixed;
   top: 0;
@@ -16,7 +16,7 @@ app-header {
   z-index: 1000;
 }
 
-/* ======= SIDEBAR ======= */
+/* -------------- SIDEBAR -------------------- */
 aside.col-auto {
   position: fixed;
   top: 95px;
@@ -31,7 +31,7 @@ aside.col-auto {
   transition: transform 0.3s ease-in-out;
 }
 
-/* ======= CONTENU PRINCIPAL ======= */
+/* ----------------- CONTENU PRINCIPAL ------------------ */
 main.col {
   margin-left: 30px;
   margin-top: -50px;
@@ -42,21 +42,7 @@ main.col {
   min-height: calc(100vh - 95px);
 }
 
-/* .form-container {
-  margin-left: 70px;
-  margin-top: -50px;
-  padding-top: 95px;
-  min-height: 100vh;
-  width: 100%;
-  max-width: 720px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
-  padding: 2rem;
-  margin: 0 auto;
-} */
-
-/* ======= TITRE ======= */
+/*--------------- TITRE -------------- */
 .tableau {
   font-size: 2.5rem;
   font-weight: bold;
@@ -70,17 +56,18 @@ main.col {
   justify-content: center;
 }
 
-/* ======= WIDGETS GRID ======= */
+/* ------------ WIDGETS GRID -------------- */
 .widgets-grid {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 5px;
-  justify-content: flex-start;
+  flex-wrap: nowrap;       /* Aligne les cartes sur une seule ligne sur grands écrans */
+  justify-content: center; /* Centre les cartes horizontalement */
+  gap: 20px;
   margin-bottom: 60px;
   padding-right: 0;
   margin-left: -15px;
 }
 
+/* ------------Largeur fixe pour chaque widget ----------*/
 .widgets-grid app-rdv-stats,
 .widgets-grid app-dossier-medical-stats,
 .widgets-grid app-notification-stats {
@@ -88,13 +75,14 @@ main.col {
   max-width: 300px;
 }
 
+/* ------------Ombre décalée---------- */
 .shadowed-box {
   position: relative;
   margin-left: 20px;
   top: -10px;
 }
 
-/* ===== RESPONSIVITÉ ===== */
+/* --------------- RESPONSIVITÉ -------------------- */
 
 /* === 0 à 480px === */
 @media (max-width: 480px) {
@@ -112,9 +100,20 @@ main.col {
     padding: 10px;
   }
 
-  .widgets-grid .col-md-4 {
-    flex: 0 0 100%;
-    max-width: 100%;
+  /* ------------Passage en colonne sur petits écrans */
+  .widgets-grid {
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 15px;
+    margin-left: 0;
+  }
+
+  .widgets-grid app-rdv-stats,
+  .widgets-grid app-dossier-medical-stats,
+  .widgets-grid app-notification-stats {
+    flex: 1 1 90%;
+    max-width: 90%;
   }
 
   .font-responsive {
@@ -126,7 +125,6 @@ main.col {
     margin-top: 20px;
   }
 }
-
 
 /* === 481px à 768px === */
 @media (min-width: 481px) and (max-width: 768px) {
@@ -144,16 +142,23 @@ main.col {
     padding: 14px;
   }
 
-  .widgets-grid .col-md-4 {
-    flex: 0 0 50%;
-    max-width: 50%;
+  /* Autoriser retour à la ligne, 2 cartes par ligne */
+  .widgets-grid {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .widgets-grid app-rdv-stats,
+  .widgets-grid app-dossier-medical-stats,
+  .widgets-grid app-notification-stats {
+    flex: 1 1 45%;
+    max-width: 45%;
   }
 
   .font-responsive {
     font-size: 14px;
   }
 }
-
 
 /* === 769px à 1024px === */
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -165,11 +170,33 @@ main.col {
     font-size: 15px;
   }
 
-  .widgets-grid .col-md-4 {
-    flex: 0 0 32%;
-    max-width: 32%;
-    margin: 0 auto;
+  /* 3 cartes sur une ligne avec marge auto */
+  .widgets-grid {
+    flex-wrap: nowrap;
+    justify-content: center;
   }
 
+  .widgets-grid app-rdv-stats,
+  .widgets-grid app-dossier-medical-stats,
+  .widgets-grid app-notification-stats {
+    flex: 0 0 300px;
+    max-width: 300px;
+    margin: 0 10px;
+  }
+}
 
+/* === Plus grand que 1024px === */
+@media (min-width: 1025px) {
+  .widgets-grid {
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  .widgets-grid app-rdv-stats,
+  .widgets-grid app-dossier-medical-stats,
+  .widgets-grid app-notification-stats {
+    flex: 0 0 300px;
+    max-width: 300px;
+    margin: 0 15px;
+  }
 }

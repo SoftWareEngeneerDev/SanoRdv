@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+
 <div
   class="page-container"
 >
@@ -5,36 +12,51 @@
     <div class="container">
       <div class="form-container">
         <div class="profile-card">
-          <!-- Photo de profil -->
-          <div class="photo-container">
-            <div class="photo-wrapper">
-              <img
-                *ngIf="previewUrl"
-                [src]="previewUrl"
-                alt="Photo de profil"
-                class="profile-photo"
-              />
-              <div *ngIf="!previewUrl" class="photo-placeholder">
-                <i class="bi bi-person-circle"></i>
-              </div>
-              <div class="photo-overlay">
-                <i class="bi bi-camera"></i>
-              </div>
-            </div>
+         <!-- Photo de profil -->
+<div class="photo-container">
+  <div class="photo-wrapper">
+    <img
+      *ngIf="previewUrl"
+      [src]="previewUrl"
+      alt="Photo de profil"
+      class="profile-photo"
+    />
 
-            <button class="btn-change-photo" (click)="triggerFileInput()">
-              Changer la photo
-            </button>
+    <!-- Icône par défaut si pas de photo -->
+    <div *ngIf="!previewUrl" class="photo-placeholder">
+      <i class="bi bi-person-circle"></i>
+    </div>
 
-          
-            <input
-              type="file"
-              #fileInput
-              (change)="onFileSelected($event)"
-              accept="image/*"
-              hidden
-            />
-          </div>
+    <div class="photo-overlay">
+      <i class="bi bi-camera"></i>
+    </div>
+  </div>
+
+  <!-- Conteneur boutons côte à côte -->
+  <div class="photo-buttons">
+    <button class="btn-change-photo" (click)="triggerFileInput()">
+      Changer la photo
+    </button>
+
+    <button
+      *ngIf="previewUrl"
+      type="button"
+      class="btn-remove-photo"
+      (click)="removePhoto()"
+    >
+      Supprimer la photo
+    </button>
+  </div>
+
+  <input
+    type="file"
+    #fileInput
+    (change)="onFileSelected($event)"
+    accept="image/*"
+    hidden
+  />
+</div>
+
 
           <!-- Formulaire principal -->
           <form #profileForm="ngForm" (ngSubmit)="onSubmit(profileForm)">

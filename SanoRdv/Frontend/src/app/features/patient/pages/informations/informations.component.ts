@@ -20,7 +20,8 @@ export class ProfilMedecinComponent implements OnInit {
     telephone: '',
     email: '',
     localite: '',
-    adresse: ''
+    adresse: '',
+    parcours: ''
   };
   loading = true;
   errorMessage: string | null = null;
@@ -87,7 +88,7 @@ prendreRDV(): void {
 
   if (this.medecin && this.medecin._id && patientId) {
     this.recapService.setMedecin(this.medecin);
-    this.recapService.setPatient({ _id: patientId }); 
+    this.recapService.setPatient({ _id: patientId });
 
     this.router.navigate(['/patient/motif', this.medecin._id, patientId]);
   } else {
