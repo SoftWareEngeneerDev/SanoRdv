@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Notification } from '../../shared/models/notifications.model';
@@ -17,13 +17,23 @@ export class NotificationsService {
 
   constructor(private http: HttpClient) {}
 
+  private getHeaders() {
+    const token = localStorage.getItem('token') || '';
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }),
+    };
+  }
+
   fetchNotifications(): Observable<Notification[]> {
     const patientId = localStorage.getItem('IDpatient');
     if (!patientId) {
       console.warn('Patient non connecté');
       return of([]);
     }
-    return this.http.get<Notification[]>(`${this.apiUrl}/patient/${patientId}`).pipe(
+    return this.http.get<Notification[]>(`${this.apiUrl}/patient/${patientId}`, this.getHeaders()).pipe(
       tap(notifs => {
         this.notifications = this.cleanOldNotifications(notifs)
           .sort((a, b) => new Date(b.dateNotification).getTime() - new Date(a.dateNotification).getTime());
@@ -37,7 +47,7 @@ export class NotificationsService {
   }
 
   markAsRead(id: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/mark-as-read`, {}).pipe(
+    return this.http.put(`${this.apiUrl}/${id}/mark-as-read`, {}, this.getHeaders()).pipe(
       tap(() => {
         const notif = this.notifications.find(n => (n as any)._id === id);
         if (notif && !notif.read) {
@@ -49,7 +59,7 @@ export class NotificationsService {
   }
 
   creerNotification(notification: Notification): Observable<Notification> {
-    return this.http.post<Notification>(this.apiUrl, notification).pipe(
+    return this.http.post<Notification>(this.apiUrl, notification, this.getHeaders()).pipe(
       tap((createdNotif) => {
         this.notifications.push(createdNotif);
         this.updateUnreadCount();
@@ -79,10 +89,20 @@ export class NotificationsService {
   }
 
   envoyerNotificationAnnulationPatient(rdvId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/notification/patient/annulation/${rdvId}`, {});
+    // Suppression du segment /notification dans l'URL (car déjà présent dans this.apiUrl)
+    return this.http.post(`${this.apiUrl}/patient/annulation`, { rdvId }, this.getHeaders());
   }
 
   envoyerNotificationAnnulationMedecin(rdvId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/notification/medecin/annulation/${rdvId}`, {});
+    return this.http.post(`${this.apiUrl}/medecin/annulation`, { rdvId }, this.getHeaders());
   }
+
+  // Envoi de notification de confirmation de prise de rendez-vous au patient
+envoyerNotificationPriseRdvPatient(data: { creneauId: string; timeSlotId?: string }): Observable<any> {
+  return this.http.post(
+    `${environment.apiUrl}/notifications/notification/patient/confirmation`,
+    data,
+    this.getHeaders()
+  );
+}
 }
