@@ -20,6 +20,7 @@ export class RendezVousService {
     return {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }),
     };
   }
@@ -43,23 +44,43 @@ export class RendezVousService {
     return this.http.get<RendezVous[]>(this.apiUrl, this.getHeaders());
   }
 
-  getRendezVousParPatient(patientId: string): Observable<RendezVous[]> {
-    return this.http.get<RendezVous[]>(`${this.apiUrl}/patient/${patientId}`, this.getHeaders());
+  getRendezVousByPatient(patientId: string): Observable<RendezVous[]> {
+    return this.http.get<RendezVous[]>(
+      `${this.apiUrl}/patient/${patientId}`,
+      this.getHeaders()
+    );
   }
 
-  annulerRendezVous(id: string, motif: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/annuler`, { motif }, this.getHeaders());
+  annulerRendezVous(params: {
+    creneauId: string;
+    timeSlotId: string;
+    userId: string;
+    userType: string;
+    motifAnnulation: string;
+  }): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/annuler`,
+      params,
+      this.getHeaders()
+    );
   }
 
   modifierRendezVous(id: string, data: Partial<RendezVous>): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/modifier`, data, this.getHeaders());
+    return this.http.put(
+      `${this.apiUrl}/${id}/modifier`,
+      data,
+      this.getHeaders()
+    );
   }
 
   creerRendezVous(rdv: Partial<RendezVous>): Observable<RendezVous> {
-    return this.http.post<RendezVous>(this.apiUrl, rdv, this.getHeaders());
+    return this.http.post<RendezVous>(
+      this.apiUrl,
+      rdv,
+      this.getHeaders()
+    );
   }
 
-  /** ✅ Nouvelle méthode pour réserver un créneau et créer un rendez-vous */
   prendreRendezVous(data: {
     creneauId: string;
     timeSlotId: string;
