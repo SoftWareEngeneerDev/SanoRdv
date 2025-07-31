@@ -16,15 +16,19 @@ export class SpecialiteService {
   constructor(private http: HttpClient) {}
 
 getSpecialites(): Observable<Specialite[]> {
-    return this.http.get<{ message: string, specialites: any[] }>(this.apiUrl).pipe(
-      map(response => response.specialites.map(s => ({
-        _id: s._id,
+  return this.http.get<{ message: string, specialites: any[] }>(this.apiUrl).pipe(
+    map(res =>
+      res.specialites.map(s => ({
+        _id: s._id ?? s.id,
         nom: s.nom,
-        description: s.description
-      })))
-    );
-  }
-
+        description: s.description,
+        nombreMedecins: s.nombreMedecins,
+        actif: s.actif,
+        dateCreation: s.dateCreation
+      }))
+    )
+  );
+}
 
 
 

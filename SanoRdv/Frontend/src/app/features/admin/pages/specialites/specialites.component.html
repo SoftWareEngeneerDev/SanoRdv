@@ -30,7 +30,6 @@
             <tr class="border-bottom">
               <th class="fw-semibold">Nom</th>
               <th class="fw-semibold">Description</th>
-              <th class="fw-semibold text-center">Médecins</th>
               <th class="fw-semibold text-end">Actions</th>
             </tr>
           </thead>
@@ -38,13 +37,8 @@
             <tr *ngFor="let specialite of filteredSpecialites" class="border-bottom">
               <td class="align-middle">{{ specialite.nom }}</td>
               <td class="align-middle">{{ specialite.description }}</td>
-              <td class="align-middle text-center">{{ specialite.nombreMedecins }}</td>
               <td class="align-middle text-end">
                 <div class="d-flex justify-content-end gap-2">
-                  <button class="btn btn-sm btn-outline-primary px-3"
-                          (click)="commencerEdition(specialite)">
-                    Modifier
-                  </button>
                   <button class="btn btn-sm btn-outline-danger px-3"
                           (click)="modalSuppression(specialite)">
                     Supprimer

@@ -34,28 +34,6 @@ export class SpecialitesComponent implements OnInit {
     });
   }
 
-  commencerEdition(specialite: any): void {
-   if (specialite && specialite._id) {
-    this.router.navigate(['admin/modifier-specialites', specialite._id]);
-  } else {
-    console.error("L'ID de la spécialité est introuvable", specialite);
-  }
-  }
-
-  annulerEdition(): void {
-    this.specialiteEnEdition = null;
-  }
-
-  validerEdition(): void {
-    if (this.specialiteEnEdition && this.specialiteEnEdition._id) {
-      this.specialiteService
-        .modifierSpecialite(this.specialiteEnEdition._id, this.specialiteEnEdition)
-        .subscribe(() => {
-          this.specialiteEnEdition = null;
-          this.chargerSpecialites();
-        });
-    }
-  }
 
   ajouterSpecialite(): void {
     if (!this.nouvelleSpecialite.nom.trim()) return;

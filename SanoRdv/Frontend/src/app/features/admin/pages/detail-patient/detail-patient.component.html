@@ -1,0 +1,24 @@
+<div class="container mt-4">
+  <h1>Détails du patient</h1>
+
+  <div *ngIf="patient; else loadingOrError" class="patient-details">
+    <div class="d-flex align-items-center mb-4">
+      <img [src]="patient.photo || defaultAvatar" alt="Avatar" class="rounded-circle me-3" width="100" height="100" />
+      <div>
+        <h2>{{ patient.nom }} {{ patient.prenom }}</h2>
+        <p>Email : {{ patient.email }}</p>
+        <p>Téléphone : {{ patient.telephone }}</p>
+        <p>Sexe : {{ patient.sex }}</p>
+        <p >Date de naissance : {{ patient.dateNaissance | date:'dd/MM/yyyy' }}</p>
+        <p >Adresse : {{ patient.adresse }}</p>
+        <p >Localité : {{ patient.localite }}</p>
+        <p >Nationalité : {{ patient.nationalite }}</p>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingOrError>
+    <p *ngIf="isLoading">Chargement des informations...</p>
+    <p *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</p>
+  </ng-template>
+</div>

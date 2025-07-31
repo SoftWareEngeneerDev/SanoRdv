@@ -57,9 +57,11 @@ export class PatientService {
     });
   }
 
-  getPatientById(id: string): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/${id}`);
-  }
+ getPatientById(id: string): Observable<Patient> {
+  return this.http.get<{ success: boolean, data: Patient }>(`${environment.apiUrl}/patients/${id}/info`)
+    .pipe(map(response => response.data));
+}
+
 
   activerPatient(id: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/activation`, {}).pipe(

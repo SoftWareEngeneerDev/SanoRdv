@@ -26,9 +26,10 @@
           Annuler
         </button>
         <button type="button" class="btn btn-primary btn-lg px-4"
-                (click)="mettreAJour()" [disabled]="!specialite.nom.trim()">
+                (click)="mettreAJour()" [disabled]="!specialite.nom?.trim()">
           Mettre à jour
         </button>
+
       </div>
     </div>
   </div>
