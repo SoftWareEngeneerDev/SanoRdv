@@ -5,4 +5,14 @@ export interface RendezVous {
   creneau: string;
   time: string;
   motif: string;
+   _id: string;
+  date: string;
+  agenda?: {
+    medecin?: {
+      nom: string;
+      prenom: string;
+      specialite: string;
+    }
+  };
+  timeSlotId?: string;
 }

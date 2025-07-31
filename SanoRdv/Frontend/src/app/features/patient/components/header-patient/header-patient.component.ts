@@ -12,6 +12,13 @@ export class HeaderPatientComponent implements OnInit {
   searchTerm: string = '';
 
   @Input() isCollapsed: boolean = false;
+  // Dans ton component TS
+isMenuOpen = false;
+
+toggleMenu() {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
 
   constructor(private patientService: PatientService) {}
 
