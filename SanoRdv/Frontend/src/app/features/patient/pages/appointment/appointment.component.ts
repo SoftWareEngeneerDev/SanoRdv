@@ -118,7 +118,7 @@ export class RendezvousComponent implements OnInit {
 
     if (!creneauId || !timeSlotId) {
       alert('Données du rendez-vous incomplètes (creneauId ou timeSlotId manquant).');
-      console.error('❌ creneauId ou timeSlotId manquant:', { creneauId, timeSlotId });
+      console.error(' creneauId ou timeSlotId manquant:', { creneauId, timeSlotId });
       return;
     }
 
