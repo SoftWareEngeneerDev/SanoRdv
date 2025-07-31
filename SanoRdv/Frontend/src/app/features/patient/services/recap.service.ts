@@ -24,7 +24,7 @@ export class RecapService {
     localStorage.setItem(this.patientKey, JSON.stringify(patient));
   }
 
- setCreneau(creneau: { patientId: string; dateSelectionne: Date; slot: any ; timeSlots: any []; idCreneau: string}): void {
+ setCreneau(creneau: { patientId: string; dateSelectionne: Date; slot: any ; timeSlots: any []; idcreneau: string}): void {
   localStorage.setItem(this.creneauKey, JSON.stringify(creneau));
 }
 
@@ -55,16 +55,16 @@ getCreneau(): any {
 
 
   getDate(): string | null {
-    const creneau = this.getCreneau();
-    return creneau ? creneau.date : null;
-  }
+  const creneau = this.getCreneau();
+  return creneau ? creneau.dateSelectionne : null;
+}
 
-  getHeure(): string | null {
-    const creneau = this.getCreneau();
-    return creneau ? creneau.heure : null;
-  }
+ getHeure(): string | null {
+  const creneau = this.getCreneau();
+  return creneau?.slot?.time || null;
+}
 
-  // Clear all
+
   clearData(): void {
     localStorage.removeItem(this.motifKey);
     localStorage.removeItem(this.medecinKey);

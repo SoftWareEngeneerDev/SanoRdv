@@ -1,151 +1,178 @@
 // controllers/rendezvous.controller.js
-import Notification from '../models/notification.model.js';
 import {
   notifPatientConfirmation,
   notifPatientAnnulation,
   notifMedecinConfirmation,
   notifMedecinAnnulation
 } from './notification.controller.js';
-import RendezVous from '../models/rendezvous.model.js';
 import Creneau from '../models/creneau.model.js';
+import Patient from '../models/patient.model.js';
+
+function ajouterDateHeureISO(creneau) {
+  const creneauWithISO = { ...creneau.toObject() };
+
+  creneauWithISO.timeSlots = creneau.timeSlots.map(slot => {
+    try {
+      // Extraire la date sans l'heure
+      const dateStr = new Date(creneau.date).toISOString().split('T')[0];
+      
+      // Vérifie que slot.time est défini et au format HH:mm ou HH:mm:ss
+      if (!slot.time || !/^\d{2}:\d{2}(:\d{2})?$/.test(slot.time)) {
+        throw new Error(`Time format invalide pour slot.time: ${slot.time}`);
+      }
+      
+      // Construire une chaîne ISO complète : "YYYY-MM-DDTHH:mm:ssZ"
+      // Si slot.time ne contient pas les secondes, ajoute ":00"
+      const timeWithSeconds = slot.time.length === 5 ? `${slot.time}:00` : slot.time;
+      
+      // Construire l'objet Date en UTC
+      const dateHeure = new Date(`${dateStr}T${timeWithSeconds}Z`);
+
+      if (isNaN(dateHeure.getTime())) {
+        throw new Error('Date invalide construite');
+      }
+
+      return {
+        ...slot.toObject(),
+        dateHeureISO: dateHeure.toISOString()
+      };
+
+    } catch (err) {
+      console.error('Erreur dans ajouterDateHeureISO pour un slot:', err.message);
+      // En cas d'erreur, retourne slot sans dateHeureISO
+      return {
+        ...slot.toObject(),
+        dateHeureISO: null
+      };
+    }
+  });
+
+  return creneauWithISO;
+}
 
 
-
+//  Prise de rendez-vous
 export const prendreRendezVous = async (req, res) => {
-  try {
-    const { patientId, medecinId, creneauId, time, motif } = req.body;
+  const { creneauId, timeSlotId, patientId, motifRendezVous } = req.body;
 
-    const creneau = await Creneau.findById(creneauId);
+  try {
+    if (!creneauId || !timeSlotId || !patientId || !motifRendezVous) {
+      return res.status(400).json({ message: "Champs requis manquants" });
+    }
+
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient introuvable" });
+    }
+
+    const updatedCreneau = await Creneau.findOneAndUpdate(
+      {
+        _id: creneauId,
+        'timeSlots._id': timeSlotId,
+        'timeSlots.status': 'disponible'
+      },
+      {
+        $set: {
+          'timeSlots.$.status': 'reserve',
+          'timeSlots.$.patientId': patientId,
+          'timeSlots.$.dateReservation': new Date(),
+          'timeSlots.$.motifRendezVous': motifRendezVous
+        }
+      },
+      { new: true }
+    );
+
+    if (!updatedCreneau) {
+      return res.status(400).json({ message: 'Ce créneau est déjà réservé ou indisponible' });
+    }
+
+    // Extraire le timeSlot mis à jour
+    const timeSlot = updatedCreneau.timeSlots.find(slot => slot._id.toString() === timeSlotId);
+    if (!timeSlot) {
+      return res.status(500).json({ message: 'Erreur interne : timeSlot introuvable après mise à jour' });
+    }
+
+    // Calculer la date/heure ISO complète du rendez-vous
+    const dateISO = new Date(
+      new Date(updatedCreneau.date).toISOString().split('T')[0] + 'T' + 
+      (timeSlot.time.length === 5 ? `${timeSlot.time}:00` : timeSlot.time) + 'Z'
+    ).toISOString();
+
+    return res.status(200).json({
+      message: 'Rendez-vous pris avec succès',
+      data: {
+        ...timeSlot.toObject(),
+        dateHeureISO: dateISO
+      }
+    });
+
+  } catch (err) {
+    console.error("Erreur lors de la prise de rendez-vous :", err);
+    return res.status(500).json({ message: 'Erreur serveur', error: err.message });
+  }
+};
+
+
+
+//   Annulation de rendez-vous
+export const annulerRendezVous = async (req, res) => {
+  const { creneauId, timeSlotId, userId, userType, motifAnnulation } = req.body;
+
+  try {
+    const creneau = await Creneau.findById(creneauId).populate('agenda.medecin');
     if (!creneau) {
       return res.status(404).json({ message: 'Créneau introuvable' });
     }
 
-    const slot = creneau.timeSlots.find(s => s.time === time);
-    if (!slot) {
-      return res.status(400).json({ message: 'Heure non trouvée dans ce créneau' });
+    const timeSlot = creneau.timeSlots.id(timeSlotId);
+    if (!timeSlot) {
+      return res.status(404).json({ message: 'Plage horaire introuvable' });
     }
 
-    if (slot.status !== 'disponible') {
-      return res.status(400).json({ message: 'Ce créneau horaire est indisponible.' });
+    if (timeSlot.status !== 'reserve') {
+      return res.status(400).json({ message: 'Ce créneau n’est pas réservé' });
     }
 
-    const existingRdv = await RendezVous.findOne({ creneau: creneauId, time });
-    if (existingRdv) {
-      return res.status(400).json({ message: 'Ce créneau est déjà pris.' });
+    if (userType === 'patient' && timeSlot.patientId?.toString() !== userId) {
+      return res.status(403).json({ message: 'Non autorisé à annuler ce rendez-vous' });
     }
 
-    // Création du RDV
-    const rdv = await RendezVous.create({
-      patient: patientId,
-      medecin: medecinId,
-      creneau: creneauId,
-      date: creneau.date,
-      time,
-      motif,
-      statut: 'confirmé'
-    });
+    // Mise à jour
+    timeSlot.status = 'disponible';
+    timeSlot.patientId = null;
+    timeSlot.dateAnnulation = new Date();
+    timeSlot.motifAnnulation = motifAnnulation || 'Non précisé';
+    timeSlot.annulePar = {
+        id: userId,
+        type: userType === 'patient' ? 'Patient' : 'Medecin' 
+};
 
-    // Mise à jour du créneau
-    slot.status = 'indisponible';
-    slot.patientId = patientId;
+
     await creneau.save();
 
-    // Envoi de notification
-    await notifPatientConfirmation(rdv._id);
-    await notifMedecinConfirmation(rdv._id);
+    await notifPatientAnnulation(creneauId, timeSlotId);
+    await notifMedecinAnnulation(creneauId, timeSlotId);
 
+    await Notification.create({
+      contenu: `Le rendez-vous du ${creneau.date.toLocaleDateString()} à ${timeSlot.time} a été annulé. Motif : ${motifAnnulation}`,
+      canal: 'Système',
+      destinataire: userType === 'patient' ? userId : creneau.agenda.medecin?._id,
+      rendezVous: creneau._id,
+      statut: 'Envoyé',
+      type: 'Annulation',
+      destinataireModel: userType
+    });
 
-    return res.status(201).json({ message: 'Rendez-vous confirmé', rendezVous: rdv, Notification });
-  } catch (error) {
-    console.error('Erreur prise de rendez-vous:', error);
-    return res.status(500).json({ message: 'Erreur serveur' });
-  }
-};
+    return res.status(200).json({
+      message: 'Rendez-vous annulé avec succès',
+      data: timeSlot
+    });
 
-
-
-export const annulerRendezVous = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { motif } = req.body;
-
-    const userId = req.user?.id;
-    const userRole = req.user?.role;
-
-    const rdv = await RendezVous.findById(id);
-    if (!rdv) return res.status(404).json({ message: "Rendez-vous introuvable." });
-
-    const estPatient = rdv.patient.toString() === userId;
-    const estMedecin = rdv.medecin.toString() === userId;
-
-    if (userRole !== 'admin' && !estPatient && !estMedecin) {
-      return res.status(403).json({ message: "Non autorisé à annuler ce rendez-vous." });
-    }
-
-    // Mise à jour du rendez-vous
-    rdv.statut = 'annulé';
-    rdv.annulePar = userId;
-    rdv.motifAnnulation = motif || '';
-    rdv.dateAnnulation = new Date();
-    await rdv.save();
-
-    // Mise à jour du créneau
-    const creneau = await Creneau.findById(rdv.creneau);
-    if (creneau) {
-      const slot = creneau.timeSlots.find(s => s.time === rdv.time);
-      if (slot) {
-        slot.status = 'disponible';
-        slot.patientId = null;
-      }
-      await creneau.save();
-    }
-
-    // Notification d’annulation
-    await notifPatientAnnulation(rdv._id);
-    await notifMedecinAnnulation(rdv._id);
-
-
-    res.status(200).json({ message: 'Rendez-vous annulé avec succès.', rdv, Notification });
   } catch (err) {
-    res.status(500).json({ message: "Erreur serveur", error: err.message });
+    console.error('Erreur lors de l\'annulation :', err);
+    return res.status(500).json({ message: 'Erreur serveur', error: err.message });
   }
 };
-
-
-
-
-export const modifierRendezVous = async (req, res) => {
-  try {
-    const { rendezVousId, userId, newTime, newMotif } = req.body;
-    const rdv = await RendezVous.findById(rendezVousId);
-    if (!rdv) return res.status(404).json({ message: "Rendez-vous introuvable" });
-    if (
-      userId !== rdv.patient.toString() &&
-      userId !== rdv.medecin.toString() &&
-      req.user?.role !== 'admin'
-    ) {
-      return res.status(403).json({ message: "Non autorisé à modifier ce rendez-vous" });
-    }
-    const creneau = await Creneau.findById(rdv.creneau);
-    if (!creneau) return res.status(404).json({ message: "Créneau introuvable" });
-    const oldSlot = creneau.timeSlots.find(s => s.time === rdv.time);
-    if (oldSlot) oldSlot.status = 'disponible';
-    const newSlot = creneau.timeSlots.find(s => s.time === newTime);
-    if (!newSlot || newSlot.status === 'indisponible') {
-      return res.status(400).json({ message: "Nouvelle heure indisponible" });
-    }
-    newSlot.status = 'indisponible';
-    rdv.time = newTime;
-    if (newMotif) rdv.motif = newMotif;
-    await rdv.save();
-    await creneau.save();
-    res.status(200).json({ message: "Rendez-vous modifié", rendezVous: rdv });
-  } catch (error) {
-    console.error("Erreur modification RDV :", error);
-    res.status(500).json({ message: "Erreur serveur" });
-  }
-};
-
 
 
 export const getRendezVousParMedecin = async (req, res) => {
@@ -154,45 +181,80 @@ export const getRendezVousParMedecin = async (req, res) => {
     const { filtre } = req.query;
     const now = new Date();
 
-    const match = { medecin: medecinId };
-
-    if (filtre === 'passe') {
-      match.date = { $lt: now };
-    } else if (filtre === 'futur') {
-      match.date = { $gte: now };
+    if (!medecinId) {
+      return res.status(400).json({ message: "ID du médecin manquant" });
     }
 
-    const rendezVous = await RendezVous.find(match)
-    .populate('patient', 'prenom nom email telephone')
-    .populate('creneau', 'date')
-    .sort({ date: -1, time: -1 });
+    const matchDate = {};
+    if (filtre === 'passe') {
+      matchDate.date = { $lt: now };
+    } else if (filtre === 'futur') {
+      matchDate.date = { $gte: now };
+    }
 
+    const creneaux = await Creneau.find({ ...matchDate })
+      .populate({
+        path: 'agenda',
+        match: { medecin: medecinId },
+        populate: {
+          path: 'medecin',
+          select: 'prenom nom email telephone',
+        },
+      })
+      .populate({
+        path: 'timeSlots.patientId',
+        select: 'prenom nom email telephone',
+      })
+      .sort({ date: -1 });
 
-    console.log("✅ Données rendez-vous envoyées :", rendezVous);
+    const creneauxFiltres = creneaux
+      .filter(c => c.agenda !== null && c.timeSlots.some(ts => ts.patientId))
+      .map(c => {
+        const cWithISO = ajouterDateHeureISO({ ...c.toObject() });
+        cWithISO.timeSlots = cWithISO.timeSlots.filter(ts => ts.patientId);
+        return cWithISO;
+      });
 
-    res.status(200).json(rendezVous);
+    res.status(200).json(creneauxFiltres);
+
   } catch (error) {
-    console.error("💥 Erreur dans getRendezVousParMedecin :", error.message, error.stack); // 🟢 trace complète
+    console.error("💥 Erreur dans getRendezVousParMedecin :", error.message, error.stack);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
 
+
 export const getStatistiquesParMedecin = async (req, res) => {
+  const { medecinId } = req.params;
+
   try {
-    const { medecinId } = req.params;
+    // Étape 1 : récupérer les agendas du médecin
+    const agendas = await Agenda.find({ medecin: medecinId }).select('_id');
+    const agendaIds = agendas.map(a => a._id);
 
-    const total = await RendezVous.countDocuments({ medecin: medecinId });
-    const confirmes = await RendezVous.countDocuments({ medecin: medecinId, statut: 'confirmé' });
-    const annules = await RendezVous.countDocuments({ medecin: medecinId, statut: 'annulé' });
+    // Étape 2 : récupérer les créneaux liés à ces agendas
+    const creneaux = await Creneau.find({ agenda: { $in: agendaIds } });
 
-    return res.status(200).json({
-      total,
-      confirmes,
-      annules
+    // Statistiques
+    let total = 0;
+    let confirmes = 0;
+    let annules = 0;
+
+    creneaux.forEach(cr => {
+      cr.timeSlots.forEach(ts => {
+        if (ts.status === 'reserve') {
+          total++;
+          confirmes++;
+        } else if (ts.status === 'disponible' && ts.patientId === null && ts.annulePar) {
+          annules++;
+        }
+      });
     });
+
+    return res.status(200).json({ total, confirmes, annules });
   } catch (error) {
-    console.error("❌ Erreur lors de la récupération des statistiques :", error);
-    return res.status(500).json({ message: "Erreur serveur", error });
+    console.error("❌ Erreur dans getStatistiquesParMedecin :", error.message);
+    return res.status(500).json({ message: "Erreur serveur" });
   }
 };
 
@@ -204,41 +266,71 @@ export const getRendezVousParPatient = async (req, res) => {
     const { filtre } = req.query;
     const now = new Date();
 
-    const match = { patient: patientId };
-
-    if (filtre === 'passe') {
-      match.date = { $lt: now };
-    } else if (filtre === 'futur') {
-      match.date = { $gte: now };
+    if (!patientId) {
+      return res.status(400).json({ message: "ID patient manquant" });
     }
 
-    const rendezVous = await RendezVous.find(match)
-      .populate('medecin', 'nom prenom email')
-      .populate('creneau', 'date')
-      .sort({ date: -1, time: -1 });
+    const dateFilter = {};
+    if (filtre === 'passe') {
+      dateFilter.date = { $lt: now };
+    } else if (filtre === 'futur') {
+      dateFilter.date = { $gte: now };
+    }
 
+    const creneaux = await Creneau.find({
+      ...dateFilter,
+      'timeSlots.patientId': patientId
+    })
+      .populate({
+        path: 'agenda',
+        populate: {
+          path: 'medecin',
+          select: 'nom prenom email'
+        }
+      })
+      .populate('timeSlots.patientId', 'nom prenom email')
+      .sort({ date: -1 });
 
-      console.log("✅ Données rendez-vous envoyées :", rendezVous);
-      
+    // Filtrer les timeSlots pour ne garder que ceux du patient
+    const creneauxFiltres = creneaux.map(creneau => {
+      const cObj = creneau.toObject();
+      cObj.timeSlots = cObj.timeSlots.filter(ts => ts.patientId?.toString() === patientId);
+      return cObj;
+    });
 
-    res.status(200).json(rendezVous);
+    console.log("✅ Données rendez-vous patient filtrées :", creneauxFiltres);
+
+    res.status(200).json(creneauxFiltres);
   } catch (error) {
-    console.error("Erreur récupération des RDV patient :", error);
+    console.error("💥 Erreur dans getRendezVousParPatient :", error.message, error.stack);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
 
 
+
 export const getRendezVousParId = async (req, res) => {
   try {
     const { id } = req.params;
-    const rdv = await RendezVous.findById(id)
-      .populate('patient')
-      .populate('medecin')
-      .populate('creneau');
 
-    if (!rdv) return res.status(404).json({ message: 'Rendez-vous introuvable' });
-    res.status(200).json(rdv);
+    const creneau = await Creneau.findById(id)
+      .populate({
+        path: 'agenda',
+        populate: { path: 'medecin', select: 'nom prenom email telephone' }
+      })
+      .populate('timeSlots.patientId', 'nom prenom email telephone');
+
+    if (!creneau || !creneau.agenda || !creneau.agenda.medecin) {
+      return res.status(404).json({ message: 'Rendez-vous introuvable' });
+    }
+
+    const hasPatient = creneau.timeSlots.some(ts => ts.patientId != null);
+
+    if (!hasPatient) {
+      return res.status(404).json({ message: 'Rendez-vous introuvable' });
+    }
+
+    res.status(200).json(creneau);
   } catch (error) {
     console.error('Erreur chargement RDV par ID :', error);
     res.status(500).json({ message: 'Erreur serveur' });
@@ -246,43 +338,41 @@ export const getRendezVousParId = async (req, res) => {
 };
 
 
+
 export const getTousLesRendezVousPourAdmin = async (req, res) => {
   try {
     const { filtre } = req.query;
     const now = new Date();
 
-    const match = {};
-
+    // Construction du filtre de date
+    const dateFilter = {};
     if (filtre === 'passe') {
-      match.date = { $lt: now };
+      dateFilter.date = { $lt: now };
     } else if (filtre === 'futur') {
-      match.date = { $gte: now };
+      dateFilter.date = { $gte: now };
     }
 
-    let rendezVous = await RendezVous.find(match)
-      .populate('patient', 'nom prenom email telephone dateNaissance')
-      .populate('medecin', 'nom prenom email specialite')
-      .populate('creneau', 'date')
-      .sort({ date: -1, time: -1 });
+    // Recherche des créneaux avec filtre date
+    const creneaux = await Creneau.find(dateFilter)
+      .populate({
+        path: 'agenda',
+        populate: {
+          path: 'medecin',
+          select: 'nom prenom email specialite'
+        }
+      })
+      .populate({
+        path: 'timeSlots.patientId',
+        select: 'nom prenom email telephone dateNaissance'
+      })
+      .sort({ date: -1 });
 
-    // ⚠️ Filtrage sécurisé pour éviter les erreurs
-    rendezVous = rendezVous.filter((rdv) => {
-      if (!rdv.creneau || !rdv.creneau.date || !rdv.time) return false;
+    // Filtrer uniquement ceux qui ont au moins un timeSlot réservé
+    const creneauxReserves = creneaux.filter(creneau =>
+      creneau.timeSlots.some(ts => ts.status === 'reserve')
+    );
 
-      const rdvDate = new Date(rdv.creneau.date);
-      const [heure, minute] = rdv.time.split(':');
-      rdvDate.setHours(parseInt(heure), parseInt(minute), 0, 0);
-
-      if (filtre === 'passe') {
-        return rdvDate < now;
-      } else if (filtre === 'futur') {
-        return rdvDate >= now;
-      }
-
-      return true;
-    });
-
-    res.status(200).json(rendezVous);
+    res.status(200).json(creneauxReserves);
   } catch (error) {
     console.error("Erreur récupération RDV admin :", error);
     res.status(500).json({ message: "Erreur serveur" });

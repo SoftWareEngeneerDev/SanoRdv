@@ -1,7 +1,7 @@
-
 import mongoose from 'mongoose';
 import Creneau from '../models/creneau.model.js';
 import Patient from '../models/patient.model.js';
+const Types = mongoose.Types;
 // import { retrieveTimeSlotsByDate } from '../utils/genererCreneauxParDate.creneau.js';
 
 
@@ -16,12 +16,13 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
         // const timeSlots = await retrieveTimeSlotsByDate(date);
  
             // 2. Recherche dans la base de données
-            const dateOnly = new Date(date);
+          const dateOnly = new Date(date);
           dateOnly.setHours(0, 0, 0, 0);
 
           let isNewInstance=false; 
           let creneauToRetrieve = null;
-          const creneauExistant = await Creneau.findOne({ agenda: agendaId });
+          const creneauExistant = await Creneau.findOne({ agenda: agendaId,
+          date: dateOnly, });
           console.log('Voici le creneau que j\'ai trouvé:', creneauExistant, agendaId);               
           // 3. Si aucun creneau à cette date alors créons le
           if (creneauExistant) {
@@ -44,6 +45,7 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
                   const timeString = `${hours}:${minutes}`;
                   
                   timeSlots.push({
+                      _id: new Types.ObjectId(),
                       time: timeString,
                       status: 'disponible', // Statut par défaut
                       // Ajoutez d'autres champs requis par votre modèle si nécessaire
@@ -58,24 +60,7 @@ export async function retrieveOrCreateCreneau(agendaId, date) {
           await creneauToRetrieve.save();
 
           }
-        // // 5. Mise à jour ou création
-        // let operationType = 'update';
-        // let creneau;
 
-        // if (existingCreneau) {
-        //     existingCreneau.timeSlots = timeSlots;
-        //     creneau = await existingCreneau.save();
-        // } else {
-        //     operationType = 'create';
-        //     creneau = new Creneau({
-        //         date: new Date(date),
-        //         timeSlots: timeSlots,
-        //         agenda: agendaId
-        //     });
-        //     await creneau.save();
-        // }
-
-        // 6. Retour du résultat
         return {
             isNewCreation: isNewInstance,
             success: true,            
@@ -127,78 +112,6 @@ export async function modifierCreneau(req, res) {
         });
     }
 }
-//-----------------------ReserverCreneau----------------------------
-// POST /api/creneaux/reserver
-export async function reserverCreneau(req, res) {
-    try {
-        const { idCreneau, time, idPatient } = req.body;
-
-        /* ---------- 1.  Vérification minimale ---------- */
-        if (!idCreneau || !time || !idPatient) {
-            return res.status(400).json({
-                success: false,
-                message: "idCreneau, time et idPatient sont requis"
-            });
-        }
-
-        /* ---------- 2.  Récupération du créneau ---------- */
-        const creneau = await Creneau.findById(idCreneau);
-        if (!creneau) {
-            return res.status(404).json({
-                success: false,
-                message: "Créneau introuvable"
-            });
-        }
-
-        /* ---------- 3.  Récupération du patient ---------- */
-        const patient = await Patient.findById(idPatient);
-        if (!patient) {
-            return res.status(404).json({
-                success: false,
-                message: "Patient introuvable"
-            });
-        }
-
-        /* ---------- 4.  Recherche du slot ---------- */
-        const slot = creneau.timeSlots.find(s => s.time === time);
-        if (!slot) {
-            return res.status(404).json({
-                success: false,
-                message: `Aucun slot à ${time} trouvé dans ce créneau`
-            });
-        }
-
-        /* ---------- 5.  Vérification de la disponibilité ---------- */
-        if (slot.status !== "disponible") {
-            return res.status(409).json({
-                success: false,
-                message: `Le slot ${time} n'est plus disponible`
-            });
-        }
-
-        /* ---------- 6.  Réservation ---------- */
-        slot.status   = "reserve";
-        slot.patientId = idPatient;      // <-- Ici on stocke l’ID du patient
-
-        await creneau.save();
-
-        /* ---------- 7.  Réponse ---------- */
-        return res.status(200).json({
-            success: true,
-            data: slot,
-            message: "Réservation effectuée"
-        });
-
-    } catch (err) {
-        console.error("Erreur réservation:", err);
-        return res.status(500).json({
-            success: false,
-            message: "Erreur serveur",
-            error: err.message
-        });
-    }
-}
-//------------------------------------------------------------------
 
 //  Supprimer créneau
 export async function supprimerCreneau(agendaId, date) {
@@ -304,5 +217,6 @@ export default {
   retrieveOrCreateCreneau,
   supprimerCreneau,
   getCreneauxParDate,
-  filtrerCreneauxParStatut
+  filtrerCreneauxParStatut,
+   modifierCreneau
 };

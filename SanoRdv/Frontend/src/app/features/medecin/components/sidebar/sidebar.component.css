@@ -1,4 +1,4 @@
-/* Sidebar normale */
+/* ========== SIDEBAR BASE ========== */
 .patient-sidebar {
   position: fixed;
   top: 0;
@@ -13,37 +13,24 @@
   overflow-x: hidden;
   overflow-y: hidden;
 }
-/* Lien normal avec hauteur réduite */
-.patient-sidebar nav.nav.flex-column a.nav-link {
-  transition: background-color 0.3s ease, color 0.3s ease;
-  border-radius: 9px;
-  padding: 6px 10px; /* <-- hauteur réduite */
-  font-size: 0.95rem; /* facultatif : texte légèrement plus petit */
-}
 
-/* Survol */
+/* Liens */
+.patient-sidebar nav.nav.flex-column a.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 1rem;
+  transition: background 0.3s, color 0.3s;
+}
 .patient-sidebar nav.nav.flex-column a.nav-link:hover {
   background-color: #007AFF;
-  color: white;
-  text-decoration: none;
-  border-radius: 9px;
+  color: #fff;
 }
-
-/* Lien actif */
 .patient-sidebar nav.nav.flex-column a.nav-link.active-link {
   background-color: #007AFF;
-  color: white;
-  border-radius: 9px;
-}
-
-/* Titres */
-h5 {
-  font-size: 18px;
-}
-
-/* Sidebar réduite (collapsed) */
-.patient-sidebar.collapsed {
-  width: 170px;
+  color: #fff;
 }
 
 /* Avatar */
@@ -53,208 +40,127 @@ h5 {
   object-fit: cover;
   border-radius: 10px;
   border: 3px solid white;
-  margin-top: 20px;
-  margin-bottom: 1rem;
-  transition: width 0.3s ease, height 0.3s ease;
+  margin: 20px auto 1rem auto;
+  display: block;
 }
 
-/* Titre SANORDV */
+/* Icône stylo positionnée sur l'avatar */
+.edit-icon {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background-color: #007AFF;
+  color: white;
+  font-size: 14px;
+  padding: 6px;
+  border-radius: 50%;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+.edit-icon:hover {
+  background-color: #005bb5;
+  transform: scale(1.1);
+}
+
+/* Titre */
 .sidebar-title {
   font-size: 1.4rem;
+  text-align: center;
+  margin-bottom: 1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 1rem;
-  text-align: center;
-  padding: 0 0.5rem;
-  user-select: none;
-  width: 100%;
-  transition: opacity 0.3s ease;
 }
 
-/* Liens */
-.nav-link i {
-  font-size: 1.4rem;
-  text-align: center;
+/* Collapse */
+.patient-sidebar.collapsed {
+  width: 80px;
+}
+.patient-sidebar.collapsed .nav-link span {
+  display: none;
+}
+.patient-sidebar.collapsed .sidebar-title {
+  opacity: 0;
 }
 
-.nav-link span,
-.nav-link .link-text,
-.nav-link > *:not(i) {
-  transition: opacity 0.3s ease;
+/* Ajustement avatar et stylo en mode collapsed */
+.patient-sidebar.collapsed .patient-avatar {
+  width: 70px;
+  height: 70px;
+}
+.patient-sidebar.collapsed .edit-icon {
+  font-size: 12px;
+  padding: 4px;
+  bottom: 4px;
+  right: 4px;
 }
 
-/* Style général nav-link */
-.patient-sidebar nav.nav.flex-column a.nav-link {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px 12px;
-}
+/* ========== RESPONSIVE DESIGN ========== */
 
-.patient-sidebar nav.nav.flex-column a.nav-link i {
-  margin-top: 20px;
-  font-size: 1.5rem;
-}
-
-.patient-sidebar nav.nav.flex-column a.nav-link span {
-  margin-top: 20px;
-  display: inline-block;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-/* Edit icon */
-.edit-icon {
-  position: absolute !important;
-  bottom: 8px !important;
-  right: -6px !important;
-  font-size: 0.75rem !important;
-  padding: 1px 3px !important;
-  color: white;
-  border-radius: 50%;
-}
-
-/* ==================== Responsive ==================== */
-
-/* Très petits écrans (0 à 480px) */
-@media (max-width: 480px) {
+/*  Tablettes (≤1024px) */
+@media (max-width: 1024px) {
   .patient-sidebar {
-    width: 120px;
-    padding-left: 0.3rem;
-    padding-right: 0.3rem;
+    width: 200px;
   }
-
-  .patient-avatar {
-    width: 60px;
-    height: 60px;
-    margin-top: 20px;
-    margin-bottom: 1rem;
+  .patient-sidebar.collapsed {
+    width: 70px;
   }
-
-  .sidebar-title {
-    font-size: 0.8rem;
-    text-align: center;
-    margin-bottom: 0.5rem;
-    margin-left: -10px;
-  }
-
-  .nav-link {
-    justify-content: center;
-    padding: 0.8rem 0;
-  }
-
-  .nav-link i {
-    font-size: 1.6rem;
-    text-align: center;
-  }
-
-  .nav-link span,
-  .nav-link .link-text,
-  .nav-link > *:not(i) {
-    display: none !important;
-  }
-
-  .edit-icon {
-    font-size: 1rem;
-    bottom: 1px;
-    right: -6px;
-  }
-
-  h5 {
-    display: none;
-  }
-
-  .collapse-btn {
-    display: none !important;
-  }
-}
-
-/*  Tablettes (481 à 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .patient-sidebar {
-    width: 180px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-
   .patient-avatar {
     width: 80px;
     height: 80px;
   }
-
+  .edit-icon {
+    font-size: 12px;
+    padding: 4px;
+    bottom: 5px;
+    right: 5px;
+  }
   .sidebar-title {
-    font-size: 0.7rem;
-    margin-bottom: 1rem;
-    text-align: center;
+    font-size: 1rem;
   }
-
   .nav-link {
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-    padding: 0.5rem 0.75rem;
-  }
-
-  .nav-link i {
-    font-size: 1.2rem;
-    margin-top: 0;
-    text-align: center;
-  }
-
-  .nav-link span,
-  .nav-link .link-text,
-  .nav-link > *:not(i) {
-    display: inline-block;
     font-size: 0.9rem;
-    margin-top: 0;
-    line-height: 1.2;
-  }
-
-  /* Sidebar pliée */
-  .patient-sidebar.collapsed {
-    width: 100px;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-  }
-
-  .patient-sidebar.collapsed .nav-link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 1rem 0 !important;
-  }
-
-  .patient-sidebar.collapsed .nav-link span,
-  .patient-sidebar.collapsed .nav-link .link-text,
-  .patient-sidebar.collapsed .nav-link > *:not(i) {
-    display: none !important;
+    padding: 8px;
   }
 }
 
-
-/*  Grand écran : Sidebar réduite (collapsed) */
-@media (min-width: 769px) {
-  .patient-sidebar.collapsed {
-    width: 150px;
-    padding-left: 1rem;
-    padding-right: 1rem;
+/*  Mobiles (≤768px) */
+@media (max-width: 768px) {
+  .patient-sidebar {
+    position: fixed;
+    width: 70px; /* Mini sidebar par défaut */
+    padding: 0.5rem;
   }
-
-  .patient-sidebar.collapsed .text-center > div:not(.position-relative),
-  .patient-sidebar.collapsed .nav-link span,
-  .patient-sidebar.collapsed .nav-link .link-text,
-  .patient-sidebar.collapsed .nav-link > *:not(i) {
+  .patient-avatar {
+    width: 50px;
+    height: 50px;
+  }
+  .edit-icon {
+    font-size: 10px;
+    padding: 3px;
+    bottom: 3px;
+    right: 3px;
+  }
+  .sidebar-title {
     display: none;
   }
-
-  .patient-sidebar.collapsed .nav-link {
-    justify-content: center;
-    padding: 1rem 0;
+  .nav-link span {
+    display: none;
   }
+  .nav-link i {
+    font-size: 1.3rem;
+    margin: 0 auto;
+  }
+}
 
-  .patient-sidebar.collapsed .sidebar-title {
-    font-size: 1rem;
+/* Très petits écrans (≤480px) → Sidebar cachée */
+@media (max-width: 480px) {
+  .patient-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .patient-sidebar.active {
+    transform: translateX(0); /* Affichage si bouton menu cliqué */
   }
 }
