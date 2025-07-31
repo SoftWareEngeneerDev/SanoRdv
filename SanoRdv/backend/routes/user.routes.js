@@ -122,7 +122,7 @@ router.post(
       .withMessage('Format d\'email invalide')
       .normalizeEmail()
   ],
-  (req, res, next) => {
+  (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('❌ Erreurs validation forgot-password:', errors.array());

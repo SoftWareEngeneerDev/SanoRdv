@@ -12,6 +12,7 @@ const tokenBlacklist = new Set();
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
+  // 🛑 Vérifie la présence du header et du format "Bearer token"
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ 
       success: false,
@@ -29,6 +30,7 @@ export const authenticate = (req, res, next) => {
   }
 
   try {
+    // ✅ Vérification du token
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = {
       ...decoded,

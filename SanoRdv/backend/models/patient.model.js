@@ -17,7 +17,7 @@ const patientSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    // match: /...regex email.../  // optionnel
+    
   },
   telephone: {
     type: String,
