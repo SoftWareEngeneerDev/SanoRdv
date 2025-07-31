@@ -8,11 +8,6 @@ import {
 import Creneau from '../models/creneau.model.js';
 import Patient from '../models/patient.model.js';
 
-
-
-
-
-
 function ajouterDateHeureISO(creneau) {
   const creneauWithISO = { ...creneau.toObject() };
 
@@ -54,7 +49,6 @@ function ajouterDateHeureISO(creneau) {
 
   return creneauWithISO;
 }
-
 
 
 //  Prise de rendez-vous

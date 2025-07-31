@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Creneau from '../models/creneau.model.js';
 import Patient from '../models/patient.model.js';
+const Types = mongoose.Types;
 // import { retrieveTimeSlotsByDate } from '../utils/genererCreneauxParDate.creneau.js';
 
 
@@ -217,6 +218,5 @@ export default {
   supprimerCreneau,
   getCreneauxParDate,
   filtrerCreneauxParStatut,
-   modifierCreneau,
-  reserverCreneau
+   modifierCreneau
 };
