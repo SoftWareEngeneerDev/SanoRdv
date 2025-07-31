@@ -20,7 +20,7 @@ export interface Notification {
   providedIn: 'root'
 })
 export class NotificationService {
-  private apiUrl = 'http://localhost:3000/api/notifications';
+  private apiUrl = 'https://sanordv.onrender.com/api/notifications';
 
   constructor(private http: HttpClient) {}
 

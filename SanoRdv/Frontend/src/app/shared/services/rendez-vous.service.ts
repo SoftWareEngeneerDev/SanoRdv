@@ -10,7 +10,7 @@ export class RendezVousService {
   private nouveauxRdvSubject = new BehaviorSubject<number>(0);
   nouveauxRdv$ = this.nouveauxRdvSubject.asObservable();
 
-  private apiUrl = 'http://localhost:3000/api/rendezvous';
+  private apiUrl = 'https://sanordv.onrender.com/api/rendezvous';
 
   constructor(private http: HttpClient) {}
 

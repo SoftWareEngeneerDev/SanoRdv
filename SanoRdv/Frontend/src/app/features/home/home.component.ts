@@ -29,7 +29,7 @@ export class HomeComponent implements AfterViewInit, OnInit {
   featuredMedecins: any[] = [];
   loadingMedecins: boolean = false;
 
-  private API_BASE_URL = 'http://localhost:3000';
+  private API_BASE_URL = 'https://sanordv.onrender.com';
   private searchTerms = new Subject<string>();
 
   constructor(private http: HttpClient, private router: Router) {}

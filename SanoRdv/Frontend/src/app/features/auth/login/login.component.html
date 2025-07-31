@@ -1,13 +1,24 @@
 <div class="container">
   <h1>BIENVENUE À SANORDV</h1>
+
   <div class="login-form">
     <h2>SE CONNECTER</h2>
     <p>Besoin d’un compte ? <a routerLink="/auth/register">S’inscrire</a></p>
 
+    <!-- Message de succès -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <!-- Champ Email -->
       <div class="input-group">
-        <label for="UserID">Email ou ID <span class="required">*</span></label>
+        <label for="email">Email <span class="required">*</span></label>
         <div class="input-with-icon">
           <input
             id="UserID"
@@ -15,16 +26,9 @@
             formControlName="UserID"
             placeholder="Email ou ID"
           />
-          <!-- Icône Bootstrap pour l'email, à l'intérieur et à droite -->
           <i
             class="bi bi-envelope"
-            style="
-              position: absolute;
-              right: 10px;
-              top: 50%;
-              transform: translateY(-50%);
-              color: #9e9e9e;
-            "
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #9e9e9e;"
           ></i>
         </div>
       </div>
@@ -40,17 +44,22 @@
             placeholder="Mot de passe"
             class="password-input"
           />
-          <!-- Icône Bootstrap pour afficher/masquer le mot de passe -->
           <i
             class="bi"
             [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
             (click)="togglePasswordVisibility()"
-          ></i><!-- Icône fermée correctement -->
+          ></i>
         </div>
       </div>
 
       <a routerLink="/auth/forgot-password">Mot de passe oublié ?</a>
-      <button type="submit" [disabled]="loginForm.invalid">Connexion</button>
+
+      <!-- Bouton avec loader -->
+      <button type="submit" [disabled]="loginForm.invalid || isSubmitting">
+        <span *ngIf="!isSubmitting">Connexion</span>
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span *ngIf="isSubmitting"> Connexion en cours...</span>
+      </button>
     </form>
   </div>
 </div>

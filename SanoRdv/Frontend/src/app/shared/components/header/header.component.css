@@ -46,9 +46,31 @@
   color: black;
 }
 
+/* --- STYLE POUR LE LIEN ACTIF --- */
+.active-link {
+  background-color: #007aad;  /* bleu plus foncé */
+  color: white !important;
+  border-radius: 5px;
+  padding: 8px 12px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link.active-link:hover {
+  background-color: #005f7f; /* encore plus foncé au hover */
+  color: white !important;
+}
+
+/* Bouton déconnexion */
 button {
   all: unset;
   cursor: pointer;
+  font-weight: 600;
+  color: white;
+  padding: 0;
+}
+
+button:hover {
+  text-decoration: underline;
 }
 
 /* --------- HAMBURGER (PETIT ÉCRAN) --------- */

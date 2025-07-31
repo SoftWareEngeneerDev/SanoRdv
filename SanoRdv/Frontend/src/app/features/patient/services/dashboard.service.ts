@@ -15,7 +15,7 @@ export interface DashboardData {
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = 'http://localhost:3000/api/patient/dashboard';
+  private apiUrl = 'https://sanordv.onrender.com/api/patient/dashboard';
 
   constructor(private http: HttpClient) {}
 

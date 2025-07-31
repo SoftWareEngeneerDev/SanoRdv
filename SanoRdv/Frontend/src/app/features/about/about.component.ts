@@ -160,7 +160,7 @@ export class AboutComponent implements OnInit {
     this.statsLoading = true;
     this.statsError = false;
 
-    this.http.get<any>('http://localhost:3000/api/state/dashboard').subscribe({
+    this.http.get<any>('https://sanordv.onrender.com/api/state/dashboard').subscribe({
       next: (data) => {
         // Mise à jour des valeurs avec les données de l'API
         this.stats[0].number = `${data.medecinsActifs}`; // Médecins actifs

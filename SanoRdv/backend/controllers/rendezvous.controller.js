@@ -309,3 +309,308 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
+
+
+// Récupérer les rendez-vous à venir
+export const getRendezVousAVenir = async (req, res) => {
+  try {
+    const { utilisateurId, typeUtilisateur } = req.query;
+    const maintenant = new Date();
+
+    // Filtres de base pour les rendez-vous futurs
+    let filtreBase = {
+      date: { $gte: maintenant }
+    };
+
+    // Construction de la requête
+    let query = Creneau.find(filtreBase)
+      .populate({
+        path: 'agenda',
+        populate: {
+          path: 'medecin',
+          select: 'nom prenom email telephone specialite cabinet'
+        }
+      })
+      .populate({
+        path: 'timeSlots.patientId',
+        select: 'nom prenom email telephone dateNaissance'
+      })
+      .sort({ date: 1, 'timeSlots.time': 1 }); // Tri croissant pour les futurs
+
+    const creneaux = await query;
+
+    // Filtrage et formatage
+    let creneauxFiltres = creneaux;
+
+    // Filtre par médecin si spécifié
+    if (utilisateurId && typeUtilisateur === 'medecin') {
+      creneauxFiltres = creneaux.filter(creneau => 
+        creneau.agenda && 
+        creneau.agenda.medecin && 
+        creneau.agenda.medecin._id.toString() === utilisateurId
+      );
+    }
+
+    // Filtre par patient si spécifié
+    if (utilisateurId && typeUtilisateur === 'patient') {
+      creneauxFiltres = creneaux.filter(creneau =>
+        creneau.timeSlots.some(ts => 
+          ts.patientId && ts.patientId._id.toString() === utilisateurId
+        )
+      );
+    }
+
+    // Formatage final avec ISO et filtrage des timeSlots réservés
+    const result = creneauxFiltres.map(creneau => {
+      const creneauWithISO = ajouterDateHeureISO(creneau);
+      
+      // Ne garder que les timeSlots réservés
+      creneauWithISO.timeSlots = creneauWithISO.timeSlots.filter(ts => {
+        let garde = ts.status === 'reserve';
+        
+        // Filtre supplémentaire par patient
+        if (utilisateurId && typeUtilisateur === 'patient') {
+          garde = garde && ts.patientId && ts.patientId._id.toString() === utilisateurId;
+        }
+        
+        return garde;
+      });
+
+      return creneauWithISO;
+    }).filter(creneau => creneau.timeSlots.length > 0);
+
+    res.status(200).json({
+      success: true,
+      message: 'Rendez-vous à venir récupérés avec succès',
+      data: result,
+      total: result.length
+    });
+
+  } catch (error) {
+    console.error("💥 Erreur dans getRendezVousAVenir :", error.message, error.stack);
+    res.status(500).json({ 
+      success: false,
+      message: "Erreur lors de la récupération des rendez-vous à venir",
+      error: error.message 
+    });
+  }
+};
+
+// Récupérer les rendez-vous passés
+export const getRendezVousPasses = async (req, res) => {
+  try {
+    const { utilisateurId, typeUtilisateur } = req.query;
+    const maintenant = new Date();
+
+    // Filtres de base pour les rendez-vous passés
+    let filtreBase = {
+      date: { $lt: maintenant }
+    };
+
+    // Construction de la requête
+    let query = Creneau.find(filtreBase)
+      .populate({
+        path: 'agenda',
+        populate: {
+          path: 'medecin',
+          select: 'nom prenom email telephone specialite cabinet'
+        }
+      })
+      .populate({
+        path: 'timeSlots.patientId',
+        select: 'nom prenom email telephone dateNaissance'
+      })
+      .sort({ date: -1, 'timeSlots.time': -1 }); // Tri décroissant pour les passés
+
+    const creneaux = await query;
+
+    // Filtrage
+    let creneauxFiltres = creneaux;
+
+    // Filtre par médecin si spécifié
+    if (utilisateurId && typeUtilisateur === 'medecin') {
+      creneauxFiltres = creneaux.filter(creneau => 
+        creneau.agenda && 
+        creneau.agenda.medecin && 
+        creneau.agenda.medecin._id.toString() === utilisateurId
+      );
+    }
+
+    // Filtre par patient si spécifié
+    if (utilisateurId && typeUtilisateur === 'patient') {
+      creneauxFiltres = creneaux.filter(creneau =>
+        creneau.timeSlots.some(ts => 
+          ts.patientId && ts.patientId._id.toString() === utilisateurId
+        )
+      );
+    }
+
+    // Formatage final
+    const result = creneauxFiltres.map(creneau => {
+      const creneauWithISO = ajouterDateHeureISO(creneau);
+      
+      // Garder tous les timeSlots qui ont été réservés (même annulés)
+      creneauWithISO.timeSlots = creneauWithISO.timeSlots.filter(ts => {
+        let garde = ts.status === 'reserve' || (ts.status === 'disponible' && ts.patientId === null && ts.annulePar);
+        
+        // Filtre supplémentaire par patient
+        if (utilisateurId && typeUtilisateur === 'patient') {
+          garde = garde && (
+            (ts.patientId && ts.patientId._id.toString() === utilisateurId) ||
+            (ts.annulePar && ts.annulePar.id === utilisateurId && ts.annulePar.type === 'patient')
+          );
+        }
+        
+        return garde;
+      });
+
+      return creneauWithISO;
+    }).filter(creneau => creneau.timeSlots.length > 0);
+
+    res.status(200).json({
+      success: true,
+      message: 'Rendez-vous passés récupérés avec succès',
+      data: result,
+      total: result.length
+    });
+
+  } catch (error) {
+    console.error("💥 Erreur dans getRendezVousPasses :", error.message, error.stack);
+    res.status(500).json({ 
+      success: false,
+      message: "Erreur lors de la récupération des rendez-vous passés",
+      error: error.message 
+    });
+  }
+};
+
+// Fonction combinée pour récupérer à la fois futurs et passés
+export const getTousLesRendezVous = async (req, res) => {
+  try {
+    const { utilisateurId, typeUtilisateur } = req.query;
+
+    // Appeler les deux fonctions en parallèle
+    const [rendezVousAVenir, rendezVousPasses] = await Promise.all([
+      getRendezVousAVenirData(utilisateurId, typeUtilisateur),
+      getRendezVousPassesData(utilisateurId, typeUtilisateur)
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Tous les rendez-vous récupérés avec succès',
+      data: {
+        aVenir: rendezVousAVenir,
+        passes: rendezVousPasses
+      },
+      total: {
+        aVenir: rendezVousAVenir.length,
+        passes: rendezVousPasses.length,
+        total: rendezVousAVenir.length + rendezVousPasses.length
+      }
+    });
+
+  } catch (error) {
+    console.error("💥 Erreur dans getTousLesRendezVous :", error.message);
+    res.status(500).json({ 
+      success: false,
+      message: "Erreur lors de la récupération de tous les rendez-vous",
+      error: error.message 
+    });
+  }
+};
+
+// Fonctions utilitaires pour récupérer les données sans réponse HTTP
+async function getRendezVousAVenirData(utilisateurId, typeUtilisateur) {
+  const maintenant = new Date();
+  
+  let query = Creneau.find({ date: { $gte: maintenant } })
+    .populate({
+      path: 'agenda',
+      populate: {
+        path: 'medecin',
+        select: 'nom prenom email telephone specialite'
+      }
+    })
+    .populate({
+      path: 'timeSlots.patientId',
+      select: 'nom prenom email telephone'
+    })
+    .sort({ date: 1, 'timeSlots.time': 1 });
+
+  const creneaux = await query;
+  
+  return filtrerEtFormaterRendezVous(creneaux, utilisateurId, typeUtilisateur, 'futur');
+}
+
+async function getRendezVousPassesData(utilisateurId, typeUtilisateur) {
+  const maintenant = new Date();
+  
+  let query = Creneau.find({ date: { $lt: maintenant } })
+    .populate({
+      path: 'agenda',
+      populate: {
+        path: 'medecin',
+        select: 'nom prenom email telephone specialite'
+      }
+    })
+    .populate({
+      path: 'timeSlots.patientId',
+      select: 'nom prenom email telephone'
+    })
+    .sort({ date: -1, 'timeSlots.time': -1 });
+
+  const creneaux = await query;
+  
+  return filtrerEtFormaterRendezVous(creneaux, utilisateurId, typeUtilisateur, 'passe');
+}
+
+// Fonction utilitaire pour filtrer et formater
+function filtrerEtFormaterRendezVous(creneaux, utilisateurId, typeUtilisateur, type) {
+  let creneauxFiltres = creneaux;
+
+  // Filtre par médecin
+  if (utilisateurId && typeUtilisateur === 'medecin') {
+    creneauxFiltres = creneaux.filter(creneau => 
+      creneau.agenda && 
+      creneau.agenda.medecin && 
+      creneau.agenda.medecin._id.toString() === utilisateurId
+    );
+  }
+
+  // Filtre par patient
+  if (utilisateurId && typeUtilisateur === 'patient') {
+    creneauxFiltres = creneaux.filter(creneau =>
+      creneau.timeSlots.some(ts => 
+        (ts.patientId && ts.patientId._id.toString() === utilisateurId) ||
+        (ts.annulePar && ts.annulePar.id === utilisateurId && ts.annulePar.type === 'patient')
+      )
+    );
+  }
+
+  // Formatage final
+  return creneauxFiltres.map(creneau => {
+    const creneauWithISO = ajouterDateHeureISO(creneau);
+    
+    creneauWithISO.timeSlots = creneauWithISO.timeSlots.filter(ts => {
+      let garde = false;
+      
+      if (type === 'futur') {
+        garde = ts.status === 'reserve';
+      } else if (type === 'passe') {
+        garde = ts.status === 'reserve' || (ts.status === 'disponible' && ts.annulePar);
+      }
+      
+      // Filtre supplémentaire par patient
+      if (utilisateurId && typeUtilisateur === 'patient') {
+        garde = garde && (
+          (ts.patientId && ts.patientId._id.toString() === utilisateurId) ||
+          (ts.annulePar && ts.annulePar.id === utilisateurId && ts.annulePar.type === 'patient')
+        );
+      }
+      
+      return garde;
+    });
+
+    return creneauWithISO;
+  }).filter(creneau => creneau.timeSlots.length > 0);
+}

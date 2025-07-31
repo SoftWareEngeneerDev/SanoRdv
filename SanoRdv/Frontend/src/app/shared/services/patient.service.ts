@@ -7,7 +7,7 @@ import { Patient } from '../models/patient.model';
   providedIn: 'root',
 })
 export class PatientService {
-  private apiUrl = 'http://localhost:3000/api/patients';
+  private apiUrl = 'https://sanordv.onrender.com/api/patients';
 
   constructor(private http: HttpClient) {}
 
@@ -35,7 +35,7 @@ export class PatientService {
 
   // medecin.service.ts
 obtenirAgenda(date: string, medecinId: string): Observable<any> {
-  return this.http.post(`http://localhost:3000/api/agenda/afficherAgenda`, { date, medecinId });
+  return this.http.post(`https://sanordv.onrender.com/api/agenda/afficherAgenda`, { date, medecinId });
 }
 
 }

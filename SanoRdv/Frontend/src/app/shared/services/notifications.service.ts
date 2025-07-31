@@ -9,7 +9,7 @@ import { environment } from 'src/environment/environments';
   providedIn: 'root'
 })
 export class NotificationsService {
-  private apiUrl = 'http://localhost:3000/api/rendezvous';
+  private apiUrl = 'https://sanordv.onrender.com/api/rendezvous';
 
   private notifications: Notification[] = [];
 

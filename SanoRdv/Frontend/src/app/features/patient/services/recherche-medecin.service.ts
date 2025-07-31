@@ -24,7 +24,7 @@ export class RechercheMedecinService {
   nextLetters$ = this.nextLettersSubject.asObservable();
   medecinDetails$ = this.medecinDetailsSubject.asObservable();
 
-  private readonly baseUrl = 'http://localhost:3000/api/recherche';
+  private readonly baseUrl = 'https://sanordv.onrender.com/api/recherche';
 
   constructor(private http: HttpClient) {}
 
@@ -46,7 +46,7 @@ export class RechercheMedecinService {
       .set('fuzzyEnabled', 'true')
       .set('phoneticEnabled', 'true');
 
-    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
+    this.http.get('https://sanordv.onrender.com/api/recherche/recherche-avancee', { params }).subscribe({
       next: (data: any) => {
         console.log('Données reçues du backend:', data);
 
@@ -85,7 +85,7 @@ export class RechercheMedecinService {
       .set('fuzzyEnabled', 'true')
       .set('phoneticEnabled', 'true');
 
-    this.http.get('http://localhost:3000/api/recherche/recherche-avancee', { params }).subscribe({
+    this.http.get('https://sanordv.onrender.com/api/recherche/recherche-avancee', { params }).subscribe({
       next: (data: any) => {
         console.log('Données reçues pour autocomplétion:', data);
 

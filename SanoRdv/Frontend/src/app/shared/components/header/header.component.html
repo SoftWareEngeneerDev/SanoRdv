@@ -9,7 +9,7 @@
 
     <!-- Menu normal (grand écran) -->
     <nav class="nav desktop-nav">
-      <a routerLink="/" routerLinkActive="active-link" class="nav-link">ACCUEIL</a>
+      <a routerLink="/" routerLinkActive="active-link" class="nav-link" [routerLinkActiveOptions]="{ exact: true }">ACCUEIL</a>
       <a routerLink="/about" routerLinkActive="active-link" class="nav-link">A-PROPOS</a>
       <a routerLink="/auth/register" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">INSCRIPTION</a>
       <a routerLink="/auth/login" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">CONNEXION</a>
@@ -19,8 +19,8 @@
     <!-- Menu latéral pour petit écran -->
     <div class="side-menu" [class.show]="isMenuOpen">
       <a (click)="toggleMenu()" class="close-btn">×</a>
-      <a routerLink="/" routerLinkActive="active-link" class="nav-link">ACCUEIL</a>
-      <a routerLink="/a-propos" routerLinkActive="active-link" class="nav-link">A-PROPOS</a>
+      <a routerLink="/" routerLinkActive="active-link" class="nav-link" [routerLinkActiveOptions]="{ exact: true }">ACCUEIL</a>
+      <a routerLink="/about" routerLinkActive="active-link" class="nav-link">A-PROPOS</a>
       <a routerLink="/auth/register" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">INSCRIPTION</a>
       <a routerLink="/auth/login" routerLinkActive="active-link" class="nav-link" *ngIf="!isLogged">CONNEXION</a>
       <a (click)="logout()" class="nav-link" *ngIf="isLogged"><button>DÉCONNEXION</button></a>

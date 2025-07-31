@@ -10,8 +10,8 @@ import { environment } from '../../../../environment/environments';
 })
 export class CreneauService {
 
-  private apiUrl = 'http://localhost:3000/api/creneaux';
-  private apibaseUrl = 'http://localhost:3000/api/medecin/:id/agenda'
+  private apiUrl = 'https://sanordv.onrender.com/api/creneaux';
+  private apibaseUrl = 'https://sanordv.onrender.com/api/medecin/:id/agenda'
 
   constructor(private http: HttpClient) {}
 
@@ -63,7 +63,7 @@ reserverCreneau(idCreneau: string, time: string, idPatient: string) {
 
 
  afficherAgenda(data: any): Observable<any> {
-  return this.http.post('http://localhost:3000/api/agenda/afficherAgenda', data);
+  return this.http.post('https://sanordv.onrender.com/api/agenda/afficherAgenda', data);
 }
 
 

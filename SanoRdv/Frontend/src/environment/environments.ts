@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api' // ✅ Utilisé dans le service
+  apiUrl: 'https://sanordv.onrender.com/api' // ✅ Utilisé dans le service
 };

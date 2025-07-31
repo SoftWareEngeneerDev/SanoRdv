@@ -48,8 +48,8 @@ export class AuthService {
     throw new Error('Method not implemented.');
   }
 
-  private baseUrl = 'http://localhost:3000/api/auth';
-  private url = 'http://localhost:3000/api/patients';
+  private baseUrl = 'https://sanordv.onrender.com/api/auth';
+  private url = 'https://sanordv.onrender.com/api/patients';
   private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   constructor(private http: HttpClient) {}
@@ -139,7 +139,7 @@ export class AuthService {
   }
 
   loginMedecin(credentials: Login): Observable<any> {
-    return this.http.post<any>('http://localhost:3000/api/medecins/login', credentials, {
+    return this.http.post<any>('https://sanordv.onrender.com/api/medecins/login', credentials, {
       headers: this.headers
     }).pipe(
       tap(res => {
