@@ -131,75 +131,75 @@ export async function modifierCreneau(req, res) {
 
 //-----------------------ReserverCreneau----------------------------
 // POST /api/creneaux/reserver
-// export async function reserverCreneau(req, res) {
-//     try {
-//         const { idcreneau, time, idPatient } = req.body;
+export async function reserverCreneau(req, res) {
+    try {
+        const { idcreneau, time, idPatient } = req.body;
 
-//         /* ---------- 1.  Vérification minimale ---------- */
-//         if (!idcreneau || !time || !idPatient) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "idcreneau, time et idPatient sont requis"
-//             });
-//         }
+        /* ---------- 1.  Vérification minimale ---------- */
+        if (!idcreneau || !time || !idPatient) {
+            return res.status(400).json({
+                success: false,
+                message: "idcreneau, time et idPatient sont requis"
+            });
+        }
 
-//         /* ---------- 2.  Récupération du créneau ---------- */
-//         const creneau = await Creneau.findById(idcreneau);
-//         if (!creneau) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "Créneau introuvable"
-//             });
-//         }
+        /* ---------- 2.  Récupération du créneau ---------- */
+        const creneau = await Creneau.findById(idcreneau);
+        if (!creneau) {
+            return res.status(404).json({
+                success: false,
+                message: "Créneau introuvable"
+            });
+        }
 
-//         /* ---------- 3.  Récupération du patient ---------- */
-//         const patient = await Patient.findById(idPatient);
-//         if (!patient) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "Patient introuvable"
-//             });
-//         }
+        /* ---------- 3.  Récupération du patient ---------- */
+        const patient = await Patient.findById(idPatient);
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                message: "Patient introuvable"
+            });
+        }
 
-//         /* ---------- 4.  Recherche du slot ---------- */
-//         const slot = creneau.timeSlots.find(s => s.time === time);
-//         if (!slot) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: `Aucun slot à ${time} trouvé dans ce créneau`
-//             });
-//         }
+        /* ---------- 4.  Recherche du slot ---------- */
+        const slot = creneau.timeSlots.find(s => s.time === time);
+        if (!slot) {
+            return res.status(404).json({
+                success: false,
+                message: `Aucun slot à ${time} trouvé dans ce créneau`
+            });
+        }
 
-//         /* ---------- 5.  Vérification de la disponibilité ---------- */
-//         if (slot.status !== "disponible") {
-//             return res.status(409).json({
-//                 success: false,
-//                 message: `Le slot ${time} n'est plus disponible`
-//             });
-//         }
+        /* ---------- 5.  Vérification de la disponibilité ---------- */
+        if (slot.status !== "disponible") {
+            return res.status(409).json({
+                success: false,
+                message: `Le slot ${time} n'est plus disponible`
+            });
+        }
 
-//         /* ---------- 6.  Réservation ---------- */
-//         slot.status   = "reserve";
-//         slot.patientId = idPatient;      // <-- Ici on stocke l’ID du patient
+        /* ---------- 6.  Réservation ---------- */
+        slot.status   = "reserve";
+        slot.patientId = idPatient;      // <-- Ici on stocke l’ID du patient
 
-//         await creneau.save();
+        await creneau.save();
 
-//         /* ---------- 7.  Réponse ---------- */
-//         return res.status(200).json({
-//             success: true,
-//             data: slot,
-//             message: "Réservation effectuée"
-//         });
+        /* ---------- 7.  Réponse ---------- */
+        return res.status(200).json({
+            success: true,
+            data: slot,
+            message: "Réservation effectuée"
+        });
 
-//     } catch (err) {
-//         console.error("Erreur réservation:", err);
-//         return res.status(500).json({
-//             success: false,
-//             message: "Erreur serveur",
-//             error: err.message
-//         });
-//     }
-// }
+    } catch (err) {
+        console.error("Erreur réservation:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Erreur serveur",
+            error: err.message
+        });
+    }
+}
 //------------------------------------------------------------------
 
 
@@ -311,5 +311,5 @@ export default {
   getCreneauxParDate,
   filtrerCreneauxParStatut,
    modifierCreneau,
-  // reserverCreneau
+  reserverCreneau
 };
