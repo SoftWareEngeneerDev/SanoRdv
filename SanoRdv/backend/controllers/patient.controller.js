@@ -397,7 +397,8 @@ export const getPatientInfo = async (req, res) => {
   try {
     const { patientId } = req.params;
     
-    const patient = await Patient.findById(patientId, 'nom prenom email');
+    const patient = await Patient.findById(patientId).select('-motDePasse -__v');
+
     
     if (!patient) {
       return res.status(404).json({

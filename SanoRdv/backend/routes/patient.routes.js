@@ -79,4 +79,5 @@ router.get('/:patientId/basic', getPatientInfo);
 // Modifier profil patient (avec upload photo optionnel)
 router.put('/me/:id', upload.single('photo'), updateProfile);
 
+
 export default router;

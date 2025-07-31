@@ -175,3 +175,38 @@ export const supprimerSpecialite = async (req, res) => {
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 };
+
+
+export const getSpecialiteById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: 'ID de spécialité requis.' });
+    }
+
+    const specialite = await Specialite.findById(id);
+
+    if (!specialite) {
+      return res.status(404).json({ message: 'Spécialité non trouvée.' });
+    }
+
+    return res.status(200).json({
+      message: 'Spécialité récupérée avec succès',
+      specialite: {
+        id: specialite._id,
+        nom: specialite.nom,
+        description: specialite.description,
+        actif: specialite.actif,
+        dateCreation: specialite.dateCreation
+      }
+    });
+
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la spécialité:', error);
+    return res.status(500).json({
+      message: 'Erreur serveur lors de la récupération de la spécialité',
+      erreur: process.env.NODE_ENV === 'development' ? error.message : 'Erreur interne'
+    });
+  }
+};

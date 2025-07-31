@@ -4,7 +4,8 @@ import {
   listerSpecialites,
   modifierSpecialite,
   desactiverSpecialite,
-  supprimerSpecialite
+  supprimerSpecialite,
+  getSpecialiteById
 } from '../controllers/specialite.controller.js';
 import { authentifier, estAdmin } from '../middlewares/auth.middleware.js';
 
@@ -23,7 +24,7 @@ router.post('/', authentifier, estAdmin, ajouterSpecialite);
  * @access  Public
  */
 router.get('/', listerSpecialites);
-
+router.get('/:id', getSpecialiteById);
 /**
  * @route   PUT /api/specialites/:id
  * @desc    Modifier une spécialité
