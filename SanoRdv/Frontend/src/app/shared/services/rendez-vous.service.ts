@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RendezVous } from '../../shared/models/rdv-model';
 import { environment } from '../../../environment/environments';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +11,7 @@ export class RendezVousService {
   private nouveauxRdvSubject = new BehaviorSubject<number>(0);
   nouveauxRdv$ = this.nouveauxRdvSubject.asObservable();
 
-  private apiUrl = `${environment.apiUrl}/rendezvous`; 
+  private apiUrl = `${environment.apiUrl}/rendezvous`;
 
   constructor(private http: HttpClient) {}
 
@@ -56,5 +57,15 @@ export class RendezVousService {
 
   creerRendezVous(rdv: Partial<RendezVous>): Observable<RendezVous> {
     return this.http.post<RendezVous>(this.apiUrl, rdv, this.getHeaders());
+  }
+
+  /** ✅ Nouvelle méthode pour réserver un créneau et créer un rendez-vous */
+  prendreRendezVous(data: {
+    creneauId: string;
+    timeSlotId: string;
+    patientId: string;
+    motifRendezVous: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}`, data, this.getHeaders());
   }
 }

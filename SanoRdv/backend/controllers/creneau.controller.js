@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 import Creneau from '../models/creneau.model.js';
 import Patient from '../models/patient.model.js';
