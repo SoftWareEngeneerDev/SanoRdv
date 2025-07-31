@@ -23,7 +23,8 @@ body {
   max-width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: auto;
-  margin-top: 50px;
+  margin-top: 80px;
+  margin-bottom: 30px;
 }
 
 .login-form {
@@ -177,6 +178,7 @@ button:hover {
   .container {
     width: 90%;
     padding: 30px;
+    
   }
 
   h1 {
@@ -197,7 +199,7 @@ button:hover {
   .container {
     width: 95%;
     padding: 20px;
-    margin-top: 30px;
+    margin-top: 80px;
   }
 
   h1 {

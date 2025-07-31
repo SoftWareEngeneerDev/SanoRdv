@@ -43,7 +43,7 @@ const modelPatientEmail = (creneau, timeSlot, status) => `
     <p>Bonjour ${timeSlot.patientId.nom} ${timeSlot.patientId.prenom},</p>
     <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
       <p><strong>Statut:</strong> ${status.toUpperCase()}</p>
-      <p><strong>Date et heure :</strong> ${DateTime.fromISO(creneau.dateHeureISO).setLocale('fr').toLocaleString(DateTime.DATETIME_FULL)}</p>
+      <p><strong>Date et heure :</strong> ${timeSlot.time}</p>
       <p><strong>Médecin:</strong> Dr. ${creneau.agenda.medecin.nom} ${creneau.agenda.medecin.prenom}</p>
       ${status === 'annulé' ? '<p><strong>Motif:</strong> Veuillez contacter le secrétariat</p>' : ''}
     </div>
@@ -57,7 +57,7 @@ const modelMedecinEmail = (creneau, timeSlot, status) => `
     <h2 style="color: #2c3e50;">Rendez-vous ${status}</h2>
     <p>Dr. ${creneau.agenda.medecin.nom} ${creneau.agenda.medecin.prenom},</p>
     <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-      <p><strong>Date et heure :</strong> ${DateTime.fromISO(creneau.dateHeureISO).setLocale('fr').toLocaleString(DateTime.DATETIME_FULL)}</p>
+      <p><strong>Date et heure :</strong> ${creneau.dateHeureISO,':', timeSlot.time}</p>
       <p><strong>Heure:</strong> ${timeSlot.time}</p>
       ${status === 'annulé' ? '<p><strong>Motif:</strong> Le patient a annulé</p>' : ''}
     </div>
@@ -102,7 +102,13 @@ const templates = {
 const envoieNotification = async (creneauId, timeSlotId, recipientType, notificationType) => {
   // On récupère le creneau avec le timeSlot spécifique et les relations patient/medecin
   const creneau = await Creneau.findById(creneauId)
-    .populate('agenda.medecin')
+    .populate({
+    path: 'agenda',
+    populate: {
+      path: 'medecin',
+      select: 'nom prenom email'
+    }
+  })
     .populate('timeSlots.patientId');
 
   if (!creneau) throw new Error('Créneau non trouvé');
@@ -110,11 +116,20 @@ const envoieNotification = async (creneauId, timeSlotId, recipientType, notifica
   // Trouver le timeSlot ciblé
   const timeSlot = creneau.timeSlots.id(timeSlotId);
   if (!timeSlot) throw new Error('TimeSlot non trouvé');
+  // console.log("timeSlot:", timeSlot);
+  // console.log("patientId:", timeSlot.patientId);
+  // console.log("Type patientId:", typeof timeSlot.patientId);
+  // console.log("patientId:", timeSlot.patientId);
+  // console.log("agenda.medecin:", creneau.agenda?.medecin);
 
   // Identifier le destinataire (patient ou medecin)
   const recipient = recipientType === 'patient' ? timeSlot.patientId : creneau.agenda.medecin;
 
   if (!recipient) throw new Error(`${recipientType} non trouvé`);
+  //-----------------------------
+  if (!timeSlot.patientId || !creneau.agenda?.medecin) {
+  throw new Error(`Données manquantes pour le ${recipientType}`);
+ }
 
   // Ajout du champ dateHeureISO
   const dateHeureISO = combineDateTimeISO(creneau.date, timeSlot.time);
