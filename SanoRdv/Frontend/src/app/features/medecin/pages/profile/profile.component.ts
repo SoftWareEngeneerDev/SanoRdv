@@ -58,7 +58,7 @@ export class ProfileComponent {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.profile.photo = e.target.result; // stocké en base64
+        this.profile.photo = e.target.result;
       };
       reader.readAsDataURL(file);
     }

@@ -156,9 +156,14 @@
 
 /* Très petits écrans (≤480px) → Sidebar cachée */
 @media (max-width: 480px) {
-  .patient-sidebar {
+  /* .patient-sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+  } */
+  .patient-sidebar {
+    position: fixed;
+    width: 70px; /* Mini sidebar par défaut */
+    padding: 0.5rem;
   }
   .patient-sidebar.active {
     transform: translateX(0); /* Affichage si bouton menu cliqué */

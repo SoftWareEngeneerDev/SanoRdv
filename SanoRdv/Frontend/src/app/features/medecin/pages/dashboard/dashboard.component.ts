@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit {
     this.dayNumber = today.getDate();
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    console.log("👤 Utilisateur depuis localStorage :", user);
+    console.log(" Utilisateur depuis localStorage :", user);
     const medecinId = user._id;
 
     if (medecinId) {

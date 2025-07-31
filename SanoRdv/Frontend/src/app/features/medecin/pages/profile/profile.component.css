@@ -4,8 +4,7 @@
   padding: 20px;
   font-family: Arial, sans-serif;
   position: absolute;
-  top: 80px;
-  left: 350px;
+  margin: 80px 0 0 300px;
   background-color: #f8f9fa;
   border-radius: 10px;
 }
@@ -89,4 +88,33 @@ textarea {
   color: white;
   border-radius: 5px;
   cursor: pointer;
+}
+
+
+@media (min-width: 600px) and (max-width: 768px) {
+  .profile-container {
+    margin-left: 60px;
+    width: 500px;
+  }
+}
+
+@media (min-width: 430px) and (max-width: 599px) {
+  .profile-container {
+    margin-left: 60px;
+    width: 350px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+   .profile-container {
+    margin-left: 200px;
+    width: 550px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1275px) {
+   .profile-container {
+    margin-left: 250px;
+    width: 600px;
+  }
 }
