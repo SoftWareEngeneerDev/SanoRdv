@@ -15,8 +15,6 @@ agenda: any;
   IDmedecin?: string;
   medecinId?: string;
 rendezVousId?: string;
-creneauId?: string;
-timeSlotId?: string
 }
 
 

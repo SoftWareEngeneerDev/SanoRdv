@@ -156,25 +156,28 @@ export const annulerRendezVous = async (req, res) => {
       return res.status(403).json({ message: 'Non autorisé à annuler ce rendez-vous' });
     }
 
-    // Mise à jour
+    // 🔒 Sauvegarder patientId AVANT de l'effacer
+    const ancienPatientId = timeSlot.patientId;
+
+    try {
+      await notifPatientAnnulation(creneauId, timeSlotId, ancienPatientId); // 👈 envoie patientId manuellement
+      await notifMedecinAnnulation(creneauId, timeSlotId);
+    } catch (e) {
+      console.warn("Erreur envoi notifications : ", e.message);
+    }
+
+    // Mise à jour du timeSlot
     timeSlot.status = 'disponible';
     timeSlot.patientId = null;
     timeSlot.dateAnnulation = new Date();
     timeSlot.motifAnnulation = motifAnnulation || 'Non précisé';
     timeSlot.annulePar = {
-        id: userId,
-        type: userType === 'patient' ? 'Patient' : 'Medecin' 
-};
-
+      id: userId,
+      type: userType === 'patient' ? 'Patient' : 'Medecin'
+    };
 
     await creneau.save();
-
-    try {
-      await notifPatientAnnulation(creneauId, timeSlotId);
-      await notifMedecinAnnulation(creneauId, timeSlotId);
-    } catch (e) {
-      console.warn("Erreur envoi notifications : ", e.message);
-    }
+    
 
     return res.status(200).json({
       message: 'Rendez-vous annulé avec succès',
