@@ -12,6 +12,8 @@ export interface RendezVous {
   IDmedecin?: string;
   medecinId?: string;
 rendezVousId?: string;
+creneauId?: string;
+timeSlotId?: string
 }
 
 

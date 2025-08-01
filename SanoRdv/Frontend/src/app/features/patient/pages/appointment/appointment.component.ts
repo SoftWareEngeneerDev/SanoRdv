@@ -12,12 +12,7 @@ import { Modal } from 'bootstrap';
   styleUrls: ['./appointment.component.css']
 })
 export class RendezvousComponent implements OnInit {
-modifierRdv(arg0: string) {
-throw new Error('Method not implemented.');
-}
-formatDate(arg0: string) {
-throw new Error('Method not implemented.');
-}
+
   rendezvousAVenir: RendezVous[] = [];
   rendezvousPasses: RendezVous[] = [];
   loading = false;
@@ -27,6 +22,7 @@ throw new Error('Method not implemented.');
 
   // Modal d'annulation
   rdvASupprimerId: string | null = null;
+  rdvCreneauId: string | null = null; // <- Ajouté pour corriger l'erreur TS
   motifs: string[] = ['Indisponibilité', 'Erreur de prise', 'Problème personnel'];
   motifSelectionne: string = '';
   autreMotif: string = '';
@@ -54,10 +50,10 @@ throw new Error('Method not implemented.');
 
         this.loading = false;
       },
-      // error: () => {
-      //   this.error = 'Erreur lors du chargement des rendez-vous.';
-      //   this.loading = false;
-      // }
+      error: () => {
+        this.error = 'Erreur lors du chargement des rendez-vous.';
+        this.loading = false;
+      }
     });
   }
 
@@ -66,8 +62,13 @@ throw new Error('Method not implemented.');
     this.ongletActif = onglet;
   }
 
-  annulerRdv(id: string): void {
-    this.rdvASupprimerId = id;
+  annulerRdv(timeSlotId: string): void {
+    this.rdvASupprimerId = timeSlotId;
+
+    // Recherche du créneau parent du rendez-vous
+    const rdv = this.rendezvousAVenir.find(r => r.id.toString() === timeSlotId);
+    this.rdvCreneauId = rdv?.creneauId?.toString() ?? null;
+
     this.motifSelectionne = '';
     this.autreMotif = '';
 
@@ -78,44 +79,59 @@ throw new Error('Method not implemented.');
     }
   }
 
- confirmerAnnulation(): void {
-  if (!this.rdvASupprimerId) return;
+  confirmerAnnulation(): void {
+    if (!this.rdvASupprimerId || !this.rdvCreneauId) return;
 
-  const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
+    const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
 
-  if (!motif || motif.trim() === '') {
-    alert('Veuillez sélectionner ou préciser un motif.');
-    return;
+    if (!motif || motif.trim() === '') {
+      alert('Veuillez sélectionner ou préciser un motif.');
+      return;
+    }
+
+    const idNumber = Number(this.rdvASupprimerId);
+
+    this.rendezVousService.annulerRendezVous(this.rdvCreneauId, this.rdvASupprimerId, motif).subscribe({
+      next: () => {
+        forkJoin([
+          this.notificationsService.envoyerNotificationAnnulationPatient(idNumber),
+          this.notificationsService.envoyerNotificationAnnulationMedecin(idNumber)
+        ]).subscribe({
+          next: () => {
+            this.rendezvousAVenir = this.rendezvousAVenir.filter(rdv => String(rdv.id) !== this.rdvASupprimerId);
+
+            const modalElement = document.getElementById('annulationModal');
+            if (modalElement) {
+              const modal = Modal.getInstance(modalElement);
+              if (modal) modal.hide();
+            }
+
+            this.router.navigate(['/patient/appointment']);
+          },
+          error: () => {
+            alert("Erreur lors de l'envoi des notifications d'annulation.");
+          }
+        });
+      },
+      error: () => {
+        alert("Une erreur est survenue lors de l'annulation.");
+      }
+    });
   }
 
-  // Convertir l'id string en number pour les notifications
-  const idNumber = Number(this.rdvASupprimerId);
+  modifierRdv(id: string): void {
+    this.router.navigate(['/patient/modifier-rdv', id]);
+  }
 
-  this.rendezVousService.annulerRendezVous(this.rdvASupprimerId, motif).subscribe({
-    next: () => {
-      forkJoin([
-        this.notificationsService.envoyerNotificationAnnulationPatient(idNumber),
-        this.notificationsService.envoyerNotificationAnnulationMedecin(idNumber)
-      ]).subscribe({
-        next: () => {
-          this.rendezvousAVenir = this.rendezvousAVenir.filter(rdv => String(rdv.id) !== this.rdvASupprimerId);
-
-          const modalElement = document.getElementById('annulationModal');
-          if (modalElement) {
-            const modal = Modal.getInstance(modalElement);
-            if (modal) modal.hide();
-          }
-          this.router.navigate(['/patient/appointment']);
-        },
-        error: () => {
-          alert("Erreur lors de l'envoi des notifications d'annulation.");
-        }
-      });
-    },
-    error: () => {
-      alert("Une erreur est survenue lors de l'annulation.");
-    }
-  });
-}
-
+  formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleString('fr-FR', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
 }

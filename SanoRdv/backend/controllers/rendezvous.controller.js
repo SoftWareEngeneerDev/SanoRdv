@@ -65,47 +65,57 @@ export const prendreRendezVous = async (req, res) => {
       return res.status(404).json({ message: "Patient introuvable" });
     }
 
-    const updatedCreneau = await Creneau.findOneAndUpdate(
-      {
-        _id: creneauId,
-        'timeSlots._id': timeSlotId,
-        'timeSlots.status': 'disponible'
-      },
-      {
-        $set: {
-          'timeSlots.$.status': 'reserve',
-          'timeSlots.$.patientId': patientId,
-          'timeSlots.$.dateReservation': new Date(),
-          'timeSlots.$.motifRendezVous': motifRendezVous
-        }
-      },
-      { new: true }
-    );
-
-    if (!updatedCreneau) {
-      return res.status(400).json({ message: 'Ce créneau est déjà réservé ou indisponible' });
+    // Récupérer le créneau complet
+    const creneau = await Creneau.findById(creneauId);
+    if (!creneau) {
+      return res.status(404).json({ message: "Créneau introuvable" });
     }
 
-    // Extraire le timeSlot mis à jour
-    const timeSlot = updatedCreneau.timeSlots.find(slot => slot._id.toString() === timeSlotId);
+    // Chercher le timeSlot dans ce créneau
+    const timeSlot = creneau.timeSlots.id(timeSlotId);
     if (!timeSlot) {
-      return res.status(500).json({ message: 'Erreur interne : timeSlot introuvable après mise à jour' });
+      return res.status(404).json({ message: 'TimeSlot non trouvé dans ce créneau' });
     }
 
-    // Envoi de notifications
+    // Vérifier que le timeSlot est disponible
+    if (timeSlot.status !== 'disponible') {
+      return res.status(400).json({ message: 'Ce timeSlot est déjà réservé ou indisponible' });
+    }
+
+    // Mettre à jour uniquement ce timeSlot dans le document en mémoire
+    timeSlot.status = 'reserve';
+    timeSlot.patientId = patientId;
+    timeSlot.dateReservation = new Date();
+    timeSlot.motifRendezVous = motifRendezVous;
+
+    // Sauvegarder la modification (update whole document)
+    await creneau.save();
+
+    // Envoi notifications
     try {
       await notifPatientConfirmation(creneauId, timeSlotId);
       await notifMedecinConfirmation(creneauId, timeSlotId);
     } catch (notifError) {
       console.error('Erreur lors de l’envoi des notifications :', notifError);
-      // pas de retour ici, pour ne pas bloquer la réservation
     }
 
-    // Calculer la date/heure ISO complète du rendez-vous
-    const dateISO = new Date(
-      new Date(updatedCreneau.date).toISOString().split('T')[0] + 'T' + 
-      (timeSlot.time.length === 5 ? `${timeSlot.time}:00` : timeSlot.time) + 'Z'
-    ).toISOString();
+    // Calculer dateHeureISO
+    let dateISO = null;
+    try {
+      const datePart = new Date(creneau.date).toISOString().split('T')[0];
+      const rawHour = timeSlot.time.padStart(5, '0');
+      const finalTime = rawHour.length === 5 ? `${rawHour}:00` : rawHour;
+      const fullDateStr = `${datePart}T${finalTime}Z`;
+
+      const fullDate = new Date(fullDateStr);
+      if (isNaN(fullDate.getTime())) {
+        throw new Error('Date finale invalide : ' + fullDateStr);
+      }
+      dateISO = fullDate.toISOString();
+    } catch (e) {
+      console.error('⛔ Erreur de construction de date ISO :', e.message);
+      return res.status(500).json({ message: 'Erreur de date du créneau', error: e.message });
+    }
 
     return res.status(200).json({
       message: 'Rendez-vous pris avec succès',
