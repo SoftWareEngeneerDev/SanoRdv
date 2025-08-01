@@ -1,4 +1,7 @@
 export interface RendezVous {
+  creneauId: string;
+  timeSlotId: any;
+agenda: any;
   _id: number;
   id: number;
   date: string;
