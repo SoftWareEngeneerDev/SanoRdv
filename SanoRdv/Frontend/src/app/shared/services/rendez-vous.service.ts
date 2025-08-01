@@ -8,23 +8,25 @@ import { environment } from '../../../environment/environments';
   providedIn: 'root'
 })
 export class RendezVousService {
+  private apiUrl = `${environment.apiUrl}/rendezvous`;
+
   private nouveauxRdvSubject = new BehaviorSubject<number>(0);
   nouveauxRdv$ = this.nouveauxRdvSubject.asObservable();
 
-  private apiUrl = `${environment.apiUrl}/rendezvous`;
-
   constructor(private http: HttpClient) {}
 
+  // === HEADERS ===
   private getHeaders(): { headers: HttpHeaders } {
     const token = localStorage.getItem('token') || '';
     return {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }),
     };
   }
 
+  // === COMPTEUR NOUVEAUX RDV ===
   increment(): void {
     this.nouveauxRdvSubject.next(this.nouveauxRdvSubject.value + 1);
   }
@@ -40,6 +42,8 @@ export class RendezVousService {
     this.nouveauxRdvSubject.next(0);
   }
 
+  // === RDV ===
+
   getAllRendezVous(): Observable<RendezVous[]> {
     return this.http.get<RendezVous[]>(this.apiUrl, this.getHeaders());
   }
@@ -51,34 +55,8 @@ export class RendezVousService {
     );
   }
 
-  annulerRendezVous(params: {
-    creneauId: string;
-    timeSlotId: string;
-    userId: string;
-    userType: string;
-    motifAnnulation: string;
-  }): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/annuler`,
-      params,
-      this.getHeaders()
-    );
-  }
-
-  modifierRendezVous(id: string, data: Partial<RendezVous>): Observable<any> {
-    return this.http.put(
-      `${this.apiUrl}/${id}/modifier`,
-      data,
-      this.getHeaders()
-    );
-  }
-
   creerRendezVous(rdv: Partial<RendezVous>): Observable<RendezVous> {
-    return this.http.post<RendezVous>(
-      this.apiUrl,
-      rdv,
-      this.getHeaders()
-    );
+    return this.http.post<RendezVous>(this.apiUrl, rdv, this.getHeaders());
   }
 
   prendreRendezVous(data: {
@@ -89,6 +67,25 @@ export class RendezVousService {
   }): Observable<any> {
     return this.http.post(`${this.apiUrl}`, data, this.getHeaders());
   }
+
+  annulerRendezVous(params: {
+    creneauId: string;
+    timeSlotId: string;
+    userId: string;
+    userType: string;
+    motifAnnulation: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/annuler`, params, this.getHeaders());
+  }
+
+  modifierRendezVous(id: string, data: Partial<RendezVous>): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/modifier`, data, this.getHeaders());
+  }
+
+
+
+
+
 }
 
 
