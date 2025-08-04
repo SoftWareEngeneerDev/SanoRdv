@@ -68,10 +68,10 @@ export class RendezvousComponent implements OnInit {
 
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Erreur lors du chargement des rendez-vous.';
-        this.loading = false;
-      }
+      // error: () => {
+      //   this.error = 'Erreur lors du chargement des rendez-vous.';
+      //   this.loading = false;
+      // }
     });
   }
 
@@ -145,7 +145,7 @@ export class RendezvousComponent implements OnInit {
 
         this.loadRendezvous();
         this.message = 'Rendez-vous annulé avec succès.';
-        setTimeout(() => (this.message = ''), 5000);
+        setTimeout(() => (this.message = ''), 1000);
       },
       error: (err) => {
         console.error('Erreur lors de l’annulation :', err);

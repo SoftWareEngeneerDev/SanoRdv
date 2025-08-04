@@ -101,47 +101,34 @@ export class CreneauComponent implements OnInit {
   }
 
   isReserved(horaire: string): boolean {
-
     return this.listeDeSlots.some(slot => slot.time === horaire && slot.status === 'reserve');
   }
 
-  // selectCreneau(creneauString: string): void {
-  //   this.listeDeSlots.forEach(slot => {
-  //     if (slot.time === creneauString) {
-  //       if (slot.status === 'disponible') {
-  //         slot.status = 'reserve';
-  //         slot.patientId = this.patientId;
-  //         this.selectedSlot = slot;
-  //       }
-  //     }
-  //   });
-
-  //   this.listeDeSlots.forEach(slot => {
-  //     if (slot.time !== this.selectedSlot.time) {
-  //       slot.status = 'disponible';
-  //       slot.patientId = '';
-  //     }
-  //   });
-  // }
-
-
   selectCreneau(creneauString: string): void {
-  const slotSelectionne = this.listeDeSlots.find(slot => slot.time === creneauString && slot.status === 'disponible');
+    const slotSelectionne = this.listeDeSlots.find(slot => slot.time === creneauString);
 
-  if (!slotSelectionne) {
-    alert("Ce créneau n'est plus disponible.");
-    return;
+    if (!slotSelectionne) {
+      alert("Ce créneau n'est plus disponible.");
+      return;
+    }
+
+    if (slotSelectionne.status === 'disponible') {
+      slotSelectionne.status = 'reserve';
+      slotSelectionne.patientId = this.patientId;
+      this.selectedSlot = slotSelectionne;
+
+      this.listeDeSlots.forEach(slot => {
+        if (slot.time !== slotSelectionne.time) {
+          slot.status = 'disponible';
+          slot.patientId = '';
+        }
+      });
+    } else if (slotSelectionne.status === 'reserve' && slotSelectionne.patientId === this.patientId) {
+      this.selectedSlot = slotSelectionne;
+    } else {
+      alert("Ce créneau est déjà réservé par un autre patient.");
+    }
   }
-
-  this.selectedSlot = slotSelectionne;
-
-  // Optionnel : visuellement, si tu veux indiquer le slot sélectionné
-  this.listeDeSlots.forEach(slot => {
-    slot.isSelected = slot._id === this.selectedSlot._id;
-  });
-}
-
-
 
   retourMotif(): void {
     this.router.navigate(['/patient/motif', this.medecinId, this.patientId]);
