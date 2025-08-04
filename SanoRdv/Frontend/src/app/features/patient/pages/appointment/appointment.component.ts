@@ -15,17 +15,13 @@ export class RendezvousComponent implements OnInit {
   rendezvousPasses: RendezVous[] = [];
   loading = false;
   error = '';
-  message: string = '';
-
+  message = '';
   ongletActif: 'avenir' | 'passes' = 'avenir';
 
-  // Modal d'annulation
   rdvASupprimer: RendezVous | null = null;
   motifs: string[] = ['Indisponibilité', 'Erreur de prise', 'Problème personnel'];
-  motifSelectionne: string = '';
-  autreMotif: string = '';
-  patient: any;
-  medecin: any;
+  motifSelectionne = '';
+  autreMotif = '';
 
   constructor(
     private rendezVousService: RendezVousService,
@@ -40,6 +36,7 @@ export class RendezvousComponent implements OnInit {
       localStorage.removeItem('confirmationMessage');
       setTimeout(() => (this.message = ''), 5000);
     }
+
     this.loadRendezvous();
   }
 
@@ -50,14 +47,25 @@ export class RendezvousComponent implements OnInit {
       return;
     }
 
-    this.error = '';
     this.loading = true;
+    this.error = '';
 
     this.rendezVousService.getRendezVousByPatient(patientId).subscribe({
       next: (data) => {
         const now = new Date();
-        this.rendezvousAVenir = data.filter(rdv => new Date(rdv.date) >= now);
-        this.rendezvousPasses = data.filter(rdv => new Date(rdv.date) < now);
+
+        console.log("RDV reçus:", data);
+
+        this.rendezvousAVenir = data.filter(rdv => {
+          if (!rdv.date) return false;
+          return new Date(rdv.date) >= now;
+        });
+
+        this.rendezvousPasses = data.filter(rdv => {
+          if (!rdv.date) return false;
+          return new Date(rdv.date) < now;
+        });
+
         this.loading = false;
       },
       error: () => {
@@ -73,7 +81,6 @@ export class RendezvousComponent implements OnInit {
   }
 
   annulerRdv(rdv: RendezVous): void {
-    console.log('Rdv sélectionné pour annulation:', rdv);
     this.rdvASupprimer = rdv;
     this.motifSelectionne = '';
     this.autreMotif = '';
@@ -85,13 +92,11 @@ export class RendezvousComponent implements OnInit {
     }
   }
 
-    confirmerAnnulation(): void {
+  confirmerAnnulation(): void {
     if (!this.rdvASupprimer) return;
 
-    console.log('rdvASupprimer complet:', this.rdvASupprimer);
-
     const motif = this.motifSelectionne === 'autre' ? this.autreMotif : this.motifSelectionne;
-    if (!motif || motif.trim() === '') {
+    if (!motif.trim()) {
       alert('Veuillez sélectionner ou préciser un motif.');
       return;
     }
@@ -102,7 +107,6 @@ export class RendezvousComponent implements OnInit {
       return;
     }
 
-    // Récupération sécurisée du timeSlotId
     let timeSlotId: string | undefined;
     const ts = this.rdvASupprimer.timeSlotId;
 
@@ -117,8 +121,7 @@ export class RendezvousComponent implements OnInit {
     const creneauId = this.rdvASupprimer.creneauId || this.rdvASupprimer._id?.toString();
 
     if (!creneauId || !timeSlotId) {
-      alert('Données du rendez-vous incomplètes (creneauId ou timeSlotId manquant).');
-      console.error(' creneauId ou timeSlotId manquant:', { creneauId, timeSlotId });
+      alert('Données du rendez-vous incomplètes.');
       return;
     }
 
@@ -130,10 +133,9 @@ export class RendezvousComponent implements OnInit {
       motifAnnulation: motif
     }).subscribe({
       next: () => {
-        const creneauIdNumber = typeof creneauId === 'string' ? parseInt(creneauId, 10) : creneauId;
-
-        this.notificationsService.envoyerNotificationAnnulationPatient(creneauIdNumber).subscribe();
-        this.notificationsService.envoyerNotificationAnnulationMedecin(creneauIdNumber).subscribe();
+        const idAsNumber = typeof creneauId === 'string' ? parseInt(creneauId, 10) : creneauId;
+        this.notificationsService.envoyerNotificationAnnulationPatient(idAsNumber).subscribe();
+        this.notificationsService.envoyerNotificationAnnulationMedecin(idAsNumber).subscribe();
 
         const modalElement = document.getElementById('annulationModal');
         if (modalElement) {
@@ -146,22 +148,21 @@ export class RendezvousComponent implements OnInit {
         setTimeout(() => (this.message = ''), 5000);
       },
       error: (err) => {
-        console.error('Erreur lors de l\'annulation:', err);
-        alert('Une erreur est survenue lors de l\'annulation.');
+        console.error('Erreur lors de l’annulation :', err);
+        alert('Erreur lors de l’annulation.');
       }
     });
   }
 
-
   modifierRdv(rdv: RendezVous): void {
-    if (!rdv.agenda?.medecin?._id) {
-      alert('Médecin non disponible pour ce rendez-vous.');
-      return;
-    }
-
     const patientId = localStorage.getItem('patientId');
     if (!patientId) {
       alert('Patient non connecté.');
+      return;
+    }
+
+    if (!rdv.agenda?.medecin?._id) {
+      alert('Médecin non disponible pour ce rendez-vous.');
       return;
     }
 
@@ -173,15 +174,27 @@ export class RendezvousComponent implements OnInit {
     );
   }
 
-  formatDate(dateString: string): string {
+  formatDate(dateString: string, time?: string): string {
+    if (!dateString) return 'Date inconnue';
+
     const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
+    let formatted = date.toLocaleDateString('fr-FR', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
+
+    if (time) {
+      formatted += ` à ${time}`;
+    } else {
+      formatted += ` à ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    return formatted;
+  }
+
+  trackByRdvId(index: number, rdv: RendezVous): string | number {
+    return rdv._id || index;
   }
 }
