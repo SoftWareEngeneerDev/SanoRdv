@@ -1,3 +1,6 @@
+// 
+
+
 import express from 'express';
 import {
   notifPatientConfirmation,
@@ -5,14 +8,12 @@ import {
   notifPatientRappel,
   notifMedecinConfirmation,
   notifMedecinAnnulation,
-  scheduleRappels
+  getNotifications
 } from '../controllers/notification.controller.js'; 
-import { getNotifications } from '../controllers/notification.controller.js';
 
 const router = express.Router();
 
-// Routes pour les notifications
-// Notification de confirmation pour le patient
+// --- Notifications Patient ---
 router.post('/notification/patient/confirmation', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
@@ -23,18 +24,6 @@ router.post('/notification/patient/confirmation', async (req, res) => {
   }
 });
 
-// Notification de confirmation pour le médecin
-router.post('/notification/medecin/confirmation', async (req, res) => {
-  const { creneauId, timeSlotId } = req.body;
-  try {
-    await notifMedecinConfirmation(creneauId, timeSlotId);
-    res.status(200).json({ success: true, message: 'Notification de confirmation envoyée au médecin.' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// Notification d'annulation pour le patient
 router.post('/notification/patient/annulation', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
@@ -45,18 +34,6 @@ router.post('/notification/patient/annulation', async (req, res) => {
   }
 });
 
-// Notification d'annulation pour le médecin
-router.post('/notification/medecin/annulation', async (req, res) => {
-  const { creneauId, timeSlotId } = req.body;
-  try {
-    await notifMedecinAnnulation(creneauId, timeSlotId);
-    res.status(200).json({ success: true, message: 'Notification d\'annulation envoyée au médecin.' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// Notification de rappel pour le patient
 router.post('/notification/patient/rappel', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
@@ -67,29 +44,45 @@ router.post('/notification/patient/rappel', async (req, res) => {
   }
 });
 
-// Route pour récupérer les notifications d'un patient ou d'un médecin
-router.get('/notification/:type/:id', async (req, res) => {
-  const { type, id } = req.params; // Récupère le type (patient/medecin) et l'ID
+// --- Notifications Médecin ---
+router.post('/notification/medecin/confirmation', async (req, res) => {
+  const { creneauId, timeSlotId } = req.body;
   try {
-    // Vérifiez que le type est valide
+    await notifMedecinConfirmation(creneauId, timeSlotId);
+    res.status(200).json({ success: true, message: 'Notification de confirmation envoyée au médecin.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post('/notification/medecin/annulation', async (req, res) => {
+  const { creneauId, timeSlotId } = req.body;
+  try {
+    await notifMedecinAnnulation(creneauId, timeSlotId);
+    res.status(200).json({ success: true, message: 'Notification d\'annulation envoyée au médecin.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// --- Récupération des notifications ---
+router.get('/notification/:type/:id', async (req, res) => {
+  const { type, id } = req.params;
+  try {
     if (!['patient', 'medecin'].includes(type)) {
       return res.status(400).json({ success: false, message: 'Le type de destinataire doit être "patient" ou "medecin".' });
     }
 
-    // Utilisez le contrôleur pour récupérer les notifications du destinataire
     const notifications = await getNotifications(type, id);
 
     if (!notifications.length) {
       return res.status(404).json({ success: false, message: `Aucune notification trouvée pour ce ${type}.` });
     }
 
-    return res.status(200).json({ success: true, notifications });
+    res.status(200).json({ success: true, notifications });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
-// Route pour récupérer les notifications d'un patient ou d'un médecin
-router.get('/:type/:id', getNotifications);
 
 export default router;

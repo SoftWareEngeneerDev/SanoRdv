@@ -1,20 +1,14 @@
 export interface Notification {
-id?: string;
-  IDpatient?: string;
-  message?: string;
-  date?: string;
-  medecinId?: string;
+  _id: string;
+  canal: 'Email' | 'SMS';
+  type: 'Confirmation' | 'Annulation' | 'Rappel';
+  statut: 'En attente' | 'Envoyé' | 'Échec';
+  rendezVous: any; // ou type `Creneau` si tu veux typer précisément
+  destinataire: string;
+  destinataireModel: 'patient' | 'medecin';
+  createdAt: string;
+  dateNotification?: string;
+  read?: boolean;             // ← Ajouté
+  contenu?: string;           // ← Ajouté si utilisé côté backend
   medecin?: string;
-  dateRdv?: string;
-  dateNotification: string;
-  read?: boolean;
-  canal?: string;
-  details?: string;
-   rendezVousId?: string;
-   type?:
-    | 'rappel'
-    | 'mise_a_jour'
-    | 'confirmation'
-    | 'annulation'
-    | 'profil';
 }
