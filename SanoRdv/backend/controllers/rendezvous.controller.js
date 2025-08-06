@@ -177,7 +177,7 @@ export const annulerRendezVous = async (req, res) => {
     };
 
     await creneau.save();
-    
+
 
     return res.status(200).json({
       message: 'Rendez-vous annulé avec succès',
@@ -339,6 +339,7 @@ export const getRendezVousParPatient = async (req, res) => {
             date: new Date(`${date.toISOString().split('T')[0]}T${ts.time}:00`),
             time: ts.time,
             medecin: {
+              _id: agenda?.medecin?._id?.toString() || '',
               nom: agenda?.medecin?.nom || '',
               prenom: agenda?.medecin?.prenom || '',
               email: agenda?.medecin?.email || '',
@@ -395,6 +396,8 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
     const { filtre } = req.query;
     const now = new Date();
 
+    console.log("Filtre demandé:", filtre);
+
     // Construction du filtre de date
     const dateFilter = {};
     if (filtre === 'passe') {
@@ -418,10 +421,15 @@ export const getTousLesRendezVousPourAdmin = async (req, res) => {
       })
       .sort({ date: -1 });
 
+      console.log("Nombre de créneaux récupérés:", creneaux.length);
+
+
     // Filtrer uniquement ceux qui ont au moins un timeSlot réservé
     const creneauxReserves = creneaux.filter(creneau =>
       creneau.timeSlots.some(ts => ts.status === 'reserve')
     );
+
+    console.log("Créneaux avec réservation:", creneauxReserves.length);
 
     res.status(200).json(creneauxReserves);
   } catch (error) {
