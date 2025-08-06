@@ -9,34 +9,17 @@ import { Router } from '@angular/router';
   styleUrls: ['./notifications.component.css']
 })
 export class NotificationsComponent implements OnInit {
-  notifications: Notification[] = [
-    // {
-    //   id: '2',
-    //   message: 'Rappel : Rendez-vous avec Dr. Martin demain à 10h.',
-    //   dateNotification: new Date(Date.now() - 86400000).toISOString(),
-    //   type: 'rappel',
-    //   medecin: 'Dr. Martin',
-    //   read: false
-    // },
-    // {
-    //   id: '2',
-    //   message: 'Rappel : Rendez-vous avec Dr. Martin demain à 10h.',
-    //   dateNotification: new Date(Date.now() - 86400000).toISOString(),
-    //   type: 'rappel',
-    //   medecin: 'Dr. Martin',
-    //   read: false
-    // },
-
-  ];
-
-  unreadCount = this.notifications.filter(n => !n.read).length;
+  notifications: Notification[] = [];
+  notificationsGroupes: { type: string, notifications: Notification[] }[] = [];
+  unreadCount = 0;
   voirPlusMap: { [id: string]: boolean } = {};
 
   messageSuccess = '';
   messageError = '';
 
-  //  Ajout pour les groupes
-  notificationsGroupes: { type: string, notifications: Notification[] }[] = [];
+  // Récupérer les infos utilisateur depuis localStorage ou service auth
+  userId = localStorage.getItem('userId') || '';
+  userType = (localStorage.getItem('userType') || 'patient') as 'patient' | 'medecin';
 
   constructor(
     private notificationsService: NotificationsService,
@@ -44,37 +27,47 @@ export class NotificationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.grouperNotificationsParType();
-    this.loadNotifications();
+    if (this.userId && this.userType) {
+      this.loadNotifications();
+    } else {
+      this.messageError = 'Utilisateur non identifié.';
+    }
   }
 
-  retourDashboard() {
-    this.router.navigate(['/dashboard/patients']);
-  }
+  loadNotifications(): void {
+    this.notificationsService.getNotifications(this.userType, this.userId).subscribe({
+      next: (res) => {
+        if (!res.success || !res.notifications) {
+          this.messageError = 'Erreur lors de la récupération des notifications.';
+          this.notifications = [];
+          this.notificationsGroupes = [];
+          return;
+        }
 
-  loadNotifications() {
-    this.notificationsService.fetchNotifications().subscribe(() => {
-      const allNotifs = this.notificationsService.getNotifications();
-      this.notifications = allNotifs.sort(
-        (a, b) => new Date(b.dateNotification).getTime() - new Date(a.dateNotification).getTime()
-      );
-      this.unreadCount = this.notifications.filter(n => !n.read).length;
+        // Trier par date (du plus récent au plus ancien)
+        this.notifications = res.notifications.sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
 
-      this.grouperNotificationsParType();
+        this.unreadCount = this.notifications.filter(n => !n.read).length;
+        this.grouperNotificationsParType();
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des notifications :', err);
+        this.messageError = 'Impossible de charger les notifications.';
+      }
     });
   }
 
-  //  Regroupement des notifications par type
   grouperNotificationsParType(): void {
     const groupesMap: { [type: string]: Notification[] } = {};
 
     this.notifications.forEach(n => {
-       if (n.type) {
-      if (!groupesMap[n.type]) {
-        groupesMap[n.type] = [];
+      const type = n.type?.toLowerCase() || 'autre';
+      if (!groupesMap[type]) {
+        groupesMap[type] = [];
       }
-      groupesMap[n.type].push(n);
-    }
+      groupesMap[type].push(n);
     });
 
     this.notificationsGroupes = Object.entries(groupesMap).map(([type, notifications]) => ({
@@ -83,36 +76,64 @@ export class NotificationsComponent implements OnInit {
     }));
   }
 
-  getIconClass(type: string): string {
-    switch (type) {
+  toggleVoirPlus(notif: Notification): void {
+    if (!notif._id) return;
+
+    const estOuvert = this.voirPlusMap[notif._id] ?? false;
+    this.voirPlusMap[notif._id] = !estOuvert;
+
+    // Si on ouvre une notif non lue, on la marque comme lue
+    if (!estOuvert && !notif.read) {
+      notif.read = true;
+      this.unreadCount = this.notifications.filter(n => !n.read).length;
+
+      this.notificationsService.markAsRead(notif._id).subscribe({
+        next: () => {},
+        error: () => {
+          this.messageError = 'Erreur lors de la mise à jour de la notification.';
+        }
+      });
+    }
+  }
+
+  getIconClass(type?: string): string {
+    const t = type?.toLowerCase() || '';
+    switch (t) {
       case 'rappel': return 'bi bi-calendar-event text-info';
-       case 'annulation': return 'bi bi-x-circle-fill text-danger';
+      case 'annulation': return 'bi bi-x-circle-fill text-danger';
+      case 'confirmation': return 'bi bi-check-circle-fill text-success';
       default: return 'bi bi-info-circle text-secondary';
     }
   }
 
-  getTitre(type: string): string {
-    switch (type) {
-      case 'rappel': return 'Rappel';
-       case 'annulation': return 'Annulation';
-      default: return 'Notification';
+  getTitre(type?: string): string {
+    const t = type?.toLowerCase() || '';
+    switch (t) {
+      case 'rappel': return 'Rappels';
+      case 'annulation': return 'Annulations';
+      case 'confirmation': return 'Confirmations';
+      default: return 'Autres notifications';
     }
   }
 
   getMessage(notif: Notification): string {
-    const date = this.formatDate(notif.dateNotification);
-    switch (notif.type) {
+    const date = this.formatDate(notif.dateNotification || notif.createdAt || '');
+    const type = notif.type?.toLowerCase() || '';
+    switch (type) {
       case 'rappel':
-        return notif.message || `Rappel : Rendez-vous avec le ${notif.medecin} le ${date}.`;
-         case 'annulation':
-        return notif.message || `Votre rendez-vous avec le ${notif.medecin} le ${date} a été annulé.`;
+        return notif.contenu || `Rappel : Rendez-vous prévu le ${date}.`;
+      case 'annulation':
+        return notif.contenu || `Votre rendez-vous a été annulé (${date}).`;
+      case 'confirmation':
+        return notif.contenu || `Votre rendez-vous est confirmé pour le ${date}.`;
       default:
-        return notif.message || 'Vous avez une nouvelle notification.';
+        return notif.contenu || 'Nouvelle notification reçue.';
     }
   }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
     return date.toLocaleString('fr-FR', {
       day: '2-digit',
       month: 'long',
@@ -122,19 +143,7 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  toggleVoirPlus(notif: Notification) {
-    if (!notif.id) return;
-    const estOuvert = this.voirPlusMap[notif.id] ?? false;
-    if (!estOuvert && !notif.read) {
-      notif.read = true;
-      this.unreadCount = this.notifications.filter(n => !n.read).length;
-
-      // Appel backend actif
-      this.notificationsService.markAsRead(notif.id).subscribe(() => {
-        notif.read = true;
-        this.loadNotifications();
-      });
-    }
-    // this.voirPlusMap[notif.id] = !estOuvert;
+  retourDashboard(): void {
+    this.router.navigate(['/dashboard', this.userType === 'patient' ? 'patients' : 'medecins']);
   }
 }

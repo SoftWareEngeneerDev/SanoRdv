@@ -27,9 +27,13 @@ export class RecapitulatifComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     this.motif = this.recapService.getMotif() || '';
     this.medecin = this.recapService.getMedecin();
     this.creneau = this.recapService.getCreneau();
+    console.log("slot complet:", this.creneau.slot);
+    console.log("slot._id:", this.creneau.slot._id);
+
   }
 
   retour(): void {
@@ -51,10 +55,12 @@ export class RecapitulatifComponent implements OnInit {
     const data = {
       creneauId: this.creneau.idcreneau,
       timeSlotId: this.creneau.slot._id,
-      patientId: this.creneau.slot.patientId,
+      patientId: this.creneau.patientId,
       motifRendezVous: this.motif
     };
-
+   
+    console.log('Données envoyées au backend:', data);
+    
     this.rendezVousService.prendreRendezVous(data).subscribe({
       next: () => {
         console.log("Rendez-vous pris avec succès");

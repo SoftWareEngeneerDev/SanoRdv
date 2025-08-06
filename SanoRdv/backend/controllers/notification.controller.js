@@ -154,7 +154,7 @@ const envoieNotification = async (creneauId, timeSlotId, recipientType, notifica
     rendezVous: creneauId,
     statut: 'En attente',
     type: notificationType,
-    destinataireModel: recipientType
+    destinataireModel: recipientType.toLowerCase()
   });
 
   await notification.save();
@@ -217,7 +217,12 @@ export const scheduleRappels = async () => {
 // Controller pour récupérer les notifications d'un patient ou d'un médecin
 export const getNotifications = async (req, res) => {
   try {
-    const { type, id } = req.params;
+    const type = req.params.type?.toLowerCase();
+    const id = req.params.id;
+    console.log("Requête reçue pour type:", type, "et id:", id);
+    console.log("req.params:", req.params);
+
+
 
     if (!['patient', 'medecin'].includes(type)) {
       return res.status(400).json({
@@ -256,7 +261,7 @@ export const getNotifications = async (req, res) => {
         );
       }
     });
-
+    console.log("Notifications trouvées :", notifications.length);
     return res.status(200).json({
       success: true,
       count: notifications.length,
@@ -271,3 +276,4 @@ export const getNotifications = async (req, res) => {
     });
   }
 };
+

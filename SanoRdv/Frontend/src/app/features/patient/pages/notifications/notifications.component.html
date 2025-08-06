@@ -31,7 +31,7 @@
             <p class="mb-1">{{ getMessage(notif) }}</p>
 
             <!-- Date -->
-            <small class="text-muted">{{ formatDate(notif.dateNotification) }}</small>
+            <small class="text-muted">{{ formatDate(notif.dateNotification || notif.createdAt || '') }}</small>
 
             <!-- Séparateur (sauf pour la dernière) -->
             <hr *ngIf="i < groupe.notifications.length - 1" />
