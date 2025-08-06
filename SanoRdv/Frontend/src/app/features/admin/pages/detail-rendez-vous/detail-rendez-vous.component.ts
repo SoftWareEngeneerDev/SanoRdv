@@ -63,6 +63,10 @@ import { ActivatedRoute } from '@angular/router';
 import { RendezVousService } from '../../services/rendez-vous.service';
 import { RendezVous } from '../../models/rendez-vous.model';
 
+interface RendezVousAvecDateHeure extends RendezVous {
+  dateHeure: Date;
+}
+
 @Component({
   selector: 'app-detail-rendez-vous',
   templateUrl: './detail-rendez-vous.component.html',
@@ -70,7 +74,7 @@ import { RendezVous } from '../../models/rendez-vous.model';
 })
 export class DetailRendezVousComponent implements OnInit {
 
-  rendezVous: RendezVous | null = null;
+  rendezVous: RendezVousAvecDateHeure | null = null;
   chargement = true;
   erreur: string | null = null;
 
@@ -91,7 +95,6 @@ export class DetailRendezVousComponent implements OnInit {
       next: (rendezVous) => {
         this.rendezVous = {
           ...rendezVous,
-
           dateHeure: new Date(`${rendezVous.creneau.date}T${rendezVous.time}`),
           patient: {
             ...rendezVous.patient,
@@ -108,15 +111,15 @@ export class DetailRendezVousComponent implements OnInit {
   }
 
   formaterDateFrancais(date: Date | string, time: string): string {
-  const dateTime = new Date(`${date}T${time}`);
-  return dateTime.toLocaleDateString('fr-FR', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
+    const dateTime = new Date(`${date}T${time}`);
+    return dateTime.toLocaleDateString('fr-FR', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
 
 }

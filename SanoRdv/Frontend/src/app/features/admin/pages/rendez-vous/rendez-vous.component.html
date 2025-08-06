@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<!-- <div class="container mt-4">
   <h1 class="mb-4">Gestion des Rendez-vous</h1>
 
   <div class="card mb-4">
@@ -86,7 +86,7 @@
 </div>
 
 <!-- Modal d'annulation -->
-<div class="modal fade" id="annulationModal" tabindex="-1" aria-labelledby="annulationModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="annulationModal" tabindex="-1" aria-labelledby="annulationModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border border-danger">
       <div class="modal-header bg-white border-bottom-0">
@@ -118,5 +118,112 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
+ -->
 
+
+ <div class="container mt-4">
+  <h1 class="mb-4">Gestion des Rendez-vous</h1>
+
+  <!-- 🔍 Recherche -->
+  <form (submit)="searchRendezVous(); $event.preventDefault()" class="card mb-4" role="search">
+    <div class="card-body">
+      <div class="input-group">
+        <input
+          type="search"
+          id="search"
+          class="form-control"
+          placeholder="Rechercher un médecin ou un patient"
+          [(ngModel)]="searchTerm"
+          name="searchTerm"
+          aria-label="Champ de recherche"
+          (input)="searchRendezVous()"
+        />
+        <button class="btn btn-outline-secondary" type="submit">
+          <i class="bi bi-search"></i> Rechercher
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- 📋 Liste des rendez-vous -->
+  <div class="card">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Liste des Rendez-vous</h5>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" aria-describedby="table-infos">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Patient</th>
+              <th scope="col">Médecin</th>
+              <th scope="col">Date / Heure</th>
+              <th scope="col">Status</th>
+              <th scope="col" class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rendezVous of filteredRendezVous">
+              <td>
+                <strong>{{ rendezVous.patient.nomComplet }}</strong><br />
+                <small class="text-muted">Né le {{ rendezVous.patient.dateNaissance | date:'dd/MM/yyyy' }}</small>
+              </td>
+              <td>
+                <strong>{{ rendezVous.medecin.nom }} {{ rendezVous.medecin.prenom }}</strong><br />
+                <small class="text-muted">{{ rendezVous.medecin.specialite }}</small>
+              </td>
+              <td>{{ formaterDateFrancais(rendezVous.date) }}</td>
+              <td>
+                <span class="badge rounded-pill {{ getStatusClass(rendezVous.status) }}">
+                  {{ rendezVous.status }}
+                </span>
+              </td>
+              <td class="text-end">
+                <!-- Modifier -->
+                <button
+                  *ngIf="rendezVous.status === 'annulé'"
+                  class="btn btn-sm btn-outline-primary me-1"
+                  [routerLink]="['/admin/rendezvous/modifier', rendezVous.id]"
+                >
+                  <i class="bi bi-pencil"></i> Modifier
+                </button>
+
+                <!-- Voir -->
+                <button
+                  class="btn btn-sm btn-outline-primary me-1"
+                  [routerLink]="['/admin/detail-rendez-vous', rendezVous.id]"
+                >
+                  <i class="bi bi-eye"></i> Voir
+                </button>
+                <!-- Annuler -->
+                <button
+                  *ngIf="rendezVous.status === 'confirmé'"
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="ouvrirAnnulationModal(rendezVous.id)"
+                >
+                  <i class="bi bi-x-circle"></i> Annuler
+                </button>
+              </td>
+            </tr>
+
+            <!-- Aucun résultat -->
+            <tr *ngIf="filteredRendezVous.length === 0 && !chargement">
+              <td colspan="5" class="text-center py-4 text-muted">Aucun rendez-vous trouvé</td>
+            </tr>
+
+            <!-- Spinner -->
+            <tr *ngIf="chargement">
+              <td colspan="5" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status" aria-live="polite">
+                  <span class="visually-hidden">Chargement...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
