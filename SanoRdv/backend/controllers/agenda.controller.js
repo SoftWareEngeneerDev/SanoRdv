@@ -63,7 +63,7 @@ export async function creerAgenda(req, res) {
                 path: 'creneaux',
                 select: 'date timeSlots' // Seulement les champs nécessaires
             });
-
+console.log("Date envoyée au client:", agendaComplet.date);
         return res.status(201).json({ 
             success: true,
             message: "Agenda créé avec succès",

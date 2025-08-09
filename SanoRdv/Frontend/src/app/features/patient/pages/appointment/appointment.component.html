@@ -1,3 +1,151 @@
+<!-- <div class="pt-5 mt-5 form-container">
+
+  <!-- CONTENEUR AVEC BORDURE BLEUE -->
+  <!-- <div class="onglets-container">
+
+    <!-- ENCADRÉ BLEU POUR ONGLET COLLÉS -->
+    <!-- <div class="tabs-wrapper">
+      <div class="nav custom-tab d-flex" role="tablist">
+        <a
+          class="nav-item nav-link"
+          href="#"
+          [class.active]="ongletActif === 'avenir'"
+          (click)="selectOnglet($event, 'avenir')"
+        >
+          Rendez-vous à venir
+        </a>
+        <a
+          class="nav-item nav-link"
+          href="#"
+          [class.active]="ongletActif === 'passes'"
+          (click)="selectOnglet($event, 'passes')"
+        >
+          Rendez-vous passés
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENU DES ONGLETS -->
+    <!-- <div class="tab-content p-3">
+
+      <!-- RDV à venir -->
+      <!-- <div *ngIf="ongletActif === 'avenir'">
+        <div *ngIf="loading" class="text-center">Chargement des rendez-vous...</div>
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+        <table *ngIf="!loading && rendezvousAVenir.length > 0" class="table table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>Date & Heure</th>
+              <th>Médecin</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rdv of rendezvousAVenir">
+              <td>{{ formatDateSafe(rdv.fullDateTime) }}</td>
+              <td>
+                {{ rdv.medecin.nom }} {{ rdv.medecin.prenom }}<br />
+                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
+              </td>
+              <td> -->
+
+                <!------------ Boutons -------------- -->
+<!-- 
+               <button
+  class="btn btn-warning btn-sm me-2"
+  (click)="modifierRdv(rdv)"
+>
+  Modifier
+</button>
+
+  <button class="btn btn-danger btn-sm" (click)="annulerRdv(rdv)">Annuler</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!loading && rendezvousAVenir.length === 0" class="text-muted">
+          Aucun rendez-vous à venir.
+        </div>
+      </div> -->
+
+      <!-- RDV passés -->
+      <!-- <div *ngIf="ongletActif === 'passes'">
+        <div *ngIf="loading" class="text-center">Chargement des rendez-vous...</div>
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+        <table *ngIf="!loading && rendezvousPasses.length > 0" class="table table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>Date & Heure</th>
+              <th>Médecin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rdv of rendezvousPasses">
+              <td>{{ formatDateSafe(rdv.fullDateTime) }}</td>
+              <td>
+                {{ rdv.medecin.nom }} {{ rdv.medecin.prenom }}<br />
+                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!loading && rendezvousPasses.length === 0" class="text-muted">
+          Aucun rendez-vous passé.
+        </div>
+      </div>
+
+    </div> -->
+
+  <!-- </div> fin onglets-container -->
+
+<!-- </div> fin form-container -->
+
+
+<!-- Modal d'annulation -->
+<!-- <div class="modal fade" id="annulationModal" tabindex="-1" aria-labelledby="annulationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border border-danger">
+      <div class="modal-header bg-white border-bottom-0">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-triangle-fill text-danger fs-3 me-2"></i>
+          <h5 class="modal-title fw-bold" id="annulationModalLabel">Confirmation d'annulation</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Ce rendez-vous vous est confirmé. Êtes-vous sûr de vouloir l'annuler ? Cette action notifiera le patient et le médecin.</p>
+
+        <div class="mb-3">
+          <label for="motif" class="form-label fw-bold text-primary">Motif d’annulation</label>
+          <select class="form-select" [(ngModel)]="motifSelectionne" id="motif">
+            <option value="">-- Choisissez un motif --</option>
+            <option *ngFor="let motif of motifs" [value]="motif">{{ motif }}</option>
+            <option value="autre">Autre motif</option>
+          </select>
+        </div>
+
+        <div *ngIf="motifSelectionne === 'autre'" class="mb-3">
+          <input type="text" class="form-control" [(ngModel)]="autreMotif" placeholder="Précisez le motif" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn btn-danger" (click)="confirmerAnnulation()">Confirmer l'annulation</button>
+      </div>
+    </div>
+  </div>
+<!-- </div> --> --> --> --> -->
+ -->
+
+
+
+
+
+
 <div class="pt-5 mt-5 form-container">
 
   <!-- CONTENEUR AVEC BORDURE BLEUE -->
@@ -45,8 +193,8 @@
             <tr *ngFor="let rdv of rendezvousAVenir">
               <td>{{ formatDate(rdv.date) }}</td>
               <td>
-                {{ rdv.agenda?.medecin?.nom }} {{ rdv.agenda?.medecin?.prenom }}<br />
-                <small class="text-muted">{{ rdv.agenda?.medecin?.specialite }}</small>
+                {{ rdv.medecin.nom }} {{ rdv.medecin.prenom }}<br />
+                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
               </td>
               <td>
 
@@ -89,8 +237,8 @@
             <tr *ngFor="let rdv of rendezvousPasses">
               <td>{{ formatDate(rdv.date) }}</td>
               <td>
-                {{ rdv.agenda?.medecin?.nom }} {{ rdv.agenda?.medecin?.prenom }}<br />
-                <small class="text-muted">{{ rdv.agenda?.medecin?.specialite }}</small>
+                {{ rdv.medecin.nom }} {{ rdv.medecin.prenom }}<br />
+                <small class="text-muted">{{ rdv.medecin.specialite }}</small>
               </td>
             </tr>
           </tbody>

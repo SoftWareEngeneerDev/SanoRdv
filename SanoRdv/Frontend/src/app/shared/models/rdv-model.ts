@@ -8,7 +8,8 @@ agenda: any;
   date: string;
   medecin: {
     nom: string;
-    specialite?: string;
+    prenom: string;
+    specialite: string;
   };
   status?: string;
   IDpatient?: string;
@@ -16,6 +17,8 @@ agenda: any;
   IDmedecin?: string;
   medecinId?: string;
 rendezVousId?: string;
+creneau?: { _id: string };
+  timeSlot?: { _id: string };
 }
 
 

@@ -3,12 +3,13 @@ export interface Notification {
   canal: 'Email' | 'SMS';
   type: 'Confirmation' | 'Annulation' | 'Rappel';
   statut: 'En attente' | 'Envoyé' | 'Échec';
-  rendezVous: any; // ou type `Creneau` si tu veux typer précisément
+  rendezVous: any; 
   destinataire: string;
   destinataireModel: 'patient' | 'medecin';
   createdAt: string;
   dateNotification?: string;
-  read?: boolean;             // ← Ajouté
-  contenu?: string;           // ← Ajouté si utilisé côté backend
+  read?: boolean;             
+  contenu?: string;           
   medecin?: string;
+  message?: string;
 }

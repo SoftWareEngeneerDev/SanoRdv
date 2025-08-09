@@ -34,6 +34,18 @@ export class RecapService {
 }
 
 
+// recap.service.ts (extrait)
+private dateHeureISO: string | null = null;
+
+setDateHeureISO(dateHeureISO: string) {
+  this.dateHeureISO = dateHeureISO;
+}
+
+getDateHeureISO(): string | null {
+  return this.dateHeureISO;
+}
+
+
   // Getters
   getMotif(): string {
     return localStorage.getItem(this.motifKey) || '';

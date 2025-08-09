@@ -17,7 +17,7 @@ const router = express.Router();
 router.post('/', prendreRendezVous);
 
 // ✔️ Annuler un rendez-vous
-router.patch('/annuler/:id', annulerRendezVous);
+router.patch('/annuler/:id', authentifier, annulerRendezVous);
 
 
 // ✔️ Liste des RDV d’un médecin

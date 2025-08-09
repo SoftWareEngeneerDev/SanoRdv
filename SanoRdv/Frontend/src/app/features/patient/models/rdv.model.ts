@@ -19,4 +19,5 @@ export interface RendezVous {
   date: string;
   agenda?: Agenda;
   timeSlotId?: string;
+  prenom: string;
 }
