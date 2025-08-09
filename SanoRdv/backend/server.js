@@ -52,8 +52,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   app.use('/api/rendezvous', rendezvousRoutes);  // Routes pour les rendez-vous
   app.use('/api/creneaux', creneauRouter); // Routes pour les créneaux horaires
   app.use('/api/agenda', agendaRouter);   // Routes pour l'agenda
-  app.use('/api/notifications', notificationRouter); // Routes pour les notifications
-  app.use('/api/rendezvous', rendezvousRoutes);
+  app.use('/api/notification', notificationRouter); // Routes pour les notifications
   app.use('/api/state', stateRouter)
 
 

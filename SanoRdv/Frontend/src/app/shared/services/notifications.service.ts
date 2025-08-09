@@ -15,7 +15,7 @@ interface NotificationResponse {
   providedIn: 'root'
 })
 export class NotificationsService {
-  private apiUrl = `${environment.apiUrl}/notifications`;
+  private apiUrl = 'http://localhost:3000/api';
 
   private notifications: Notification[] = [];
   private unreadCountSubject = new BehaviorSubject<number>(0);
@@ -36,44 +36,46 @@ export class NotificationsService {
   /**
    * Récupère les notifications du patient actuellement connecté
    */
-  fetchNotifications(): Observable<NotificationResponse> {
-    const patientId = localStorage.getItem('patientId');
-    if (!patientId) {
-      console.warn('Patient non connecté');
-      return of({ success: false, count: 0, notifications: [] });
-    }
+  // fetchNotifications(): Observable<NotificationResponse> {
+  //   const patientId = localStorage.getItem('patientId');
+  //   if (!patientId) {
+  //     console.warn('Patient non connecté');
+  //     return of({ success: false, count: 0, notifications: [] });
+  //   }
 
-    return this.http
-      .get<NotificationResponse>(`${this.apiUrl}/patient/${patientId}`, this.getHeaders())
-      .pipe(
-        tap((response) => {
-          const notifs = response.notifications || [];
-          if (!Array.isArray(notifs)) {
-            console.warn('Réponse inattendue : notifications n\'est pas un tableau', notifs);
-            return;
-          }
+  //   return this.http
+  //     .get<NotificationResponse>(`${this.apiUrl}/patient/${patientId}`, this.getHeaders())
+  //     .pipe(
+  //       tap((response) => {
+  //         const notifs = response.notifications || [];
+  //         if (!Array.isArray(notifs)) {
+  //           console.warn('Réponse inattendue : notifications n\'est pas un tableau', notifs);
+  //           return;
+  //         }
 
-          // Nettoyage et tri
-          this.notifications = this.cleanOldNotifications(notifs).sort((a, b) => {
-            const dateA = new Date(a.dateNotification ?? a.createdAt ?? 0).getTime();
-            const dateB = new Date(b.dateNotification ?? b.createdAt ?? 0).getTime();
-            return dateB - dateA;
-          });
+  //         // Nettoyage et tri
+  //         this.notifications = this.cleanOldNotifications(notifs).sort((a, b) => {
+  //           const dateA = new Date(a.dateNotification ?? a.createdAt ?? 0).getTime();
+  //           const dateB = new Date(b.dateNotification ?? b.createdAt ?? 0).getTime();
+  //           return dateB - dateA;
+  //         });
 
-          this.updateUnreadCount();
-        })
-      );
-  }
+  //         this.updateUnreadCount();
+  //       })
+  //     );
+  // }
 
   /**
    * Récupère les notifications d’un utilisateur (ex: patient ou médecin)
    */
-  getNotifications(type: 'patient' | 'medecin', id: string): Observable<{ success: boolean, count: number, notifications: Notification[] }> {
-    return this.http.get<{ success: boolean, count: number, notifications: Notification[] }>(
-      `${this.apiUrl}/${type}/${id}`
-    );
-  }
+  getNotificationsForPatient(patientId: string): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/notification/patient/${patientId}`);
+}
 
+  getNotificationsForMedecin(medecinId: string): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/notification/patient/${medecinId}`);
+}
+ 
   /**
    * Marque une notification comme lue
    */

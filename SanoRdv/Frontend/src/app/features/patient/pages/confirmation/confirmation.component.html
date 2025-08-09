@@ -1,33 +1,30 @@
 <div class="confirmation-container">
-  <div class="icon-check">
-    ✓
-  </div>
+  <div class="icon-check">✓</div>
 
   <h2 class="title">Rendez-vous confirmé !</h2>
 
-   <p class="message">
+  <p class="message" *ngIf="selectedDate">
     Votre consultation avec
     <strong>Dr. {{ medecin?.nom }} {{ medecin?.prenom }}</strong>
     est confirmée pour le
-    <strong>{{ selectedDate| date: 'EEEE d MMMM yyyy' : '' : 'fr' }} à {{  heure }}</strong>.
+    <strong>{{ selectedDate | date: 'EEEE d MMMM yyyy' : '' : 'fr' }} à {{ selectedDate | date:'HH:mm' }}</strong>.
+  </p>
+
+  <p class="message" *ngIf="!selectedDate">
+    Les informations du rendez-vous ne sont pas disponibles pour le moment.
   </p>
 
   <div class="info-box">
     <h3>Informations importantes :</h3>
     <ul>
       <li>Présentez-vous 10 minutes avant l'heure du RDV</li>
-      <li>Apportez vos carnet, dernieres ordonnances et derniers examens</li>
+      <li>Apportez vos carnet, dernières ordonnances et derniers examens</li>
       <li>Annulation possible jusqu'à 24h avant</li>
     </ul>
   </div>
 
   <div class="btn-group">
-    <button class="btn btn-outline" (click)="goToAccueil()">
-      RETOUR À LA PAGE D'ACCUEIL
-    </button>
-    <button class="btn btn-primary" (click)="goToListeRdv()">
-      RETOUR À LA LISTE DE MES RDV
-    </button>
+    <button class="btn btn-outline" (click)="goToAccueil()">RETOUR À LA PAGE D'ACCUEIL</button>
+    <button class="btn btn-primary" (click)="goToListeRdv()">RETOUR À LA LISTE DE MES RDV</button>
   </div>
 </div>
-

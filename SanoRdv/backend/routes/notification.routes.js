@@ -14,7 +14,7 @@ import {
 const router = express.Router();
 
 // --- Notifications Patient ---
-router.post('/notification/patient/confirmation', async (req, res) => {
+router.post('/patient/confirmation', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
     await notifPatientConfirmation(creneauId, timeSlotId);
@@ -24,7 +24,7 @@ router.post('/notification/patient/confirmation', async (req, res) => {
   }
 });
 
-router.post('/notification/patient/annulation', async (req, res) => {
+router.post('/patient/annulation', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
     await notifPatientAnnulation(creneauId, timeSlotId);
@@ -34,7 +34,7 @@ router.post('/notification/patient/annulation', async (req, res) => {
   }
 });
 
-router.post('/notification/patient/rappel', async (req, res) => {
+router.post('/patient/rappel', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
     await notifPatientRappel(creneauId, timeSlotId);
@@ -45,7 +45,7 @@ router.post('/notification/patient/rappel', async (req, res) => {
 });
 
 // --- Notifications Médecin ---
-router.post('/notification/medecin/confirmation', async (req, res) => {
+router.post('/medecin/confirmation', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
     await notifMedecinConfirmation(creneauId, timeSlotId);
@@ -55,7 +55,7 @@ router.post('/notification/medecin/confirmation', async (req, res) => {
   }
 });
 
-router.post('/notification/medecin/annulation', async (req, res) => {
+router.post('/medecin/annulation', async (req, res) => {
   const { creneauId, timeSlotId } = req.body;
   try {
     await notifMedecinAnnulation(creneauId, timeSlotId);
@@ -66,23 +66,26 @@ router.post('/notification/medecin/annulation', async (req, res) => {
 });
 
 // --- Récupération des notifications ---
-router.get('/notification/:type/:id', async (req, res) => {
-  const { type, id } = req.params;
-  try {
-    if (!['patient', 'medecin'].includes(type)) {
-      return res.status(400).json({ success: false, message: 'Le type de destinataire doit être "patient" ou "medecin".' });
-    }
+// router.get('/:type/:id', async (req, res) => {
+//   const { type, id } = req.params;
+//   try {
+//     if (!['patient', 'medecin'].includes(type)) {
+//       return res.status(400).json({ success: false, message: 'Le type de destinataire doit être "patient" ou "medecin".' });
+//     }
 
-    const notifications = await getNotifications(type, id);
+//     const notifications = await getNotifications(type, id);
 
-    if (!notifications.length) {
-      return res.status(404).json({ success: false, message: `Aucune notification trouvée pour ce ${type}.` });
-    }
+//     if (!notifications.length) {
+//       return res.status(404).json({ success: false, message: `Aucune notification trouvée pour ce ${type}.` });
+//     }
 
-    res.status(200).json({ success: true, notifications });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
+//     res.status(200).json({ success: true, notifications });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
+
+router.get('/:type/:id', getNotifications);
+
 
 export default router;

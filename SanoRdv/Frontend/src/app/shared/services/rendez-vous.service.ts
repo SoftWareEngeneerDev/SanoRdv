@@ -48,16 +48,13 @@ export class RendezVousService {
     return this.http.get<RendezVous[]>(this.apiUrl, this.getHeaders());
   }
 
-  getRendezVousByPatient(patientId: string): Observable<RendezVous[]> {
+  getRendezVousParPatient(patientId: string): Observable<RendezVous[]> {
     return this.http.get<RendezVous[]>(
       `${this.apiUrl}/patient/${patientId}`,
       this.getHeaders()
     );
   }
 
-  creerRendezVous(rdv: Partial<RendezVous>): Observable<RendezVous> {
-    return this.http.post<RendezVous>(this.apiUrl, rdv, this.getHeaders());
-  }
 
   prendreRendezVous(data: {
     creneauId: string;
@@ -68,21 +65,31 @@ export class RendezVousService {
     return this.http.post(`${this.apiUrl}`, data, this.getHeaders());
   }
 
+
+  
   annulerRendezVous(params: {
-    creneauId: string;
-    timeSlotId: string;
-    userId: string;
-    userType: string;
-    motifAnnulation: string;
-  }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/annuler`, params, this.getHeaders());
-  }
+  creneauId: string;
+  timeSlotId: string;
+  userId: string;
+  userType: string;
+  motifAnnulation: string;
+}): Observable<any> {
+  const { timeSlotId, ...body } = params;  // extraire timeSlotId pour l’URL
+
+  return this.http.patch(
+    `${this.apiUrl}/annuler/${timeSlotId}`,  // timeSlotId dans l’URL
+    body,                                   // creneauId, userId, userType, motif dans le corps
+    this.getHeaders()
+  );
+}
+
+
+
+
 
   modifierRendezVous(id: string, data: Partial<RendezVous>): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/modifier`, data, this.getHeaders());
   }
-
-
 
 
 

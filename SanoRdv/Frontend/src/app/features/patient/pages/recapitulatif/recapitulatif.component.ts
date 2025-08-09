@@ -62,28 +62,15 @@ export class RecapitulatifComponent implements OnInit {
     console.log('Données envoyées au backend:', data);
     
     this.rendezVousService.prendreRendezVous(data).subscribe({
-      next: () => {
-        console.log("Rendez-vous pris avec succès");
-        console.log("On va envoyer la notification au patient...");
+  next: () => {
+    console.log("Rendez-vous pris avec succès");
+    this.router.navigate(['/patient/confirmation']);
+  },
+  error: (err) => {
+    console.error("Erreur lors de la prise de rendez-vous", err);
+    alert("Une erreur est survenue lors de la prise de rendez-vous. Veuillez réessayer.");
+  }
+});
 
-        this.notificationsService.envoyerNotificationPriseRdvPatient({
-          creneauId: data.creneauId,
-          timeSlotId: data.timeSlotId
-        }).subscribe({
-          next: () => {
-            console.log('Notification envoyée au patient.');
-            this.router.navigate(['/patient/confirmation']);
-          },
-          error: (err: any) => {
-            console.error('Erreur lors de l\'envoi de la notification:', err);
-            this.router.navigate(['/patient/confirmation']);
-          }
-        });
-      },
-      error: (err) => {
-        console.error("Erreur lors de la prise de rendez-vous", err);
-        alert("Une erreur est survenue lors de la prise de rendez-vous. Veuillez réessayer.");
-      }
-    });
   }
 }

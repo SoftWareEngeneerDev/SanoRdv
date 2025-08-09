@@ -123,7 +123,7 @@ const envoieNotification = async (creneauId, timeSlotId, recipientType, notifica
   // console.log("agenda.medecin:", creneau.agenda?.medecin);
 
   // Identifier le destinataire (patient ou medecin)
-  const recipient = recipientType === 'Patient' ? timeSlot.patientId : creneau.agenda.medecin;
+  const recipient = recipientType.toLowerCase() === 'patient' ? timeSlot.patientId : creneau.agenda.medecin;
 
   if (!recipient) throw new Error(`${recipientType} non trouvé`);
   //-----------------------------
