@@ -182,11 +182,11 @@ a {
 /* Responsive Design */
 
 /* En mode paysage */
-@media (min-width: 550px) and (max-width: 768px) {
+@media (min-width: 250px) and (max-width: 768px) {
 
   .dashboard-container {
-    left: 35%;
-    top: 12%;
+    left: 150px;
+    top: 80px;
   }
 
   .stats-grid {
@@ -207,12 +207,12 @@ a {
 }
 
 /* Pour les tablettes */
-@media (min-width: 769px) and (max-width: 1100px) {
+@media (min-width: 769px) and (max-width: 1024px) {
 
   .dashboard-container {
-    left: 25%;
-    top: 12%;
-    /* max-width: 700px; */
+    left: 230px;
+    top: 80px;
+    max-width: 500px;
   }
   .stats-grid {
   display: flex; 
@@ -223,15 +223,17 @@ a {
 }
 
 /* Pour les grands ecrans */
-@media (min-width: 1101px) and (max-width: 1279px) {
+@media (min-width: 1025px) and (max-width: 1275px) {
 
-  /* .dashboard-container {
-    left: 35%;
-    top: 12%;
+  .dashboard-container {
+    left: 290px;
+    top: 80px;
   }
 
   .stats-grid {
-    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px;
   }
 
   .stat-card {
@@ -244,5 +246,5 @@ a {
 
   .section-title {
     font-size: 20px;
-  } */
+  }
 }

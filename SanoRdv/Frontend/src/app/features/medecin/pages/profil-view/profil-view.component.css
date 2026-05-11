@@ -4,8 +4,7 @@
   padding: 20px;
   font-family: Arial, sans-serif;
   position: absolute;
-  top: 80px;
-  left: 350px;
+  margin: 80px 0 0 300px;
   background-color: #f8f9fa;
   border-radius: 10px;
 }
@@ -33,6 +32,7 @@
 .speciality {
   color: #007bff;
   margin-top: 5px;
+  font-weight: bold;
 }
 
 .info-boxes {
@@ -44,16 +44,12 @@
 .box {
   background: #f2f2f2;
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   flex: 1;
 }
 
 .full {
   margin-top: 20px;
-}
-
-hr {
-  margin: 30px 0 10px;
 }
 
 .actions {
@@ -67,4 +63,40 @@ hr {
   padding: 10px 20px;
   border-radius: 6px;
   text-decoration: none;
+}
+.edit-btn:hover {
+  background-color: white;
+  color: black;
+}
+
+
+@media (min-width: 600px) and (max-width: 768px) {
+  .view-container {
+    margin-left: 60px;
+    width: 500px;
+  }
+}
+
+@media (min-width: 430px) and (max-width: 599px) {
+  .view-container {
+    margin-left: 60px;
+    width: 350px;
+  }
+  .info-boxes {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+   .view-container {
+    margin-left: 200px;
+    width: 550px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1275px) {
+   .view-container {
+    margin-left: 250px;
+    width: 600px;
+  }
 }

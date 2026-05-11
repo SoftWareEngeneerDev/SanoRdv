@@ -1,19 +1,20 @@
-body {
+/* body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f7fa;
   color: #333;
-}
+} */
 
 .container {
-  width: 1000px;
+  max-width: 1000px;
   margin: 0 auto;
-  background: white;
+  background-color: #f8f9fa;
   padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  /* box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05); */
   position: absolute;
-  top: 65px;
+  top: 75px;
   left: 250px;
+  min-height: 50vh;
 }
 
 h1 {
@@ -185,48 +186,23 @@ table {
 
 
 /* ----------- RESPONSIVE DESIGN ----------- */
-
-/* Tablettes (≤1024px) */
-@media (max-width: 1024px) {
-  /* .container {
-    width: 90%;
-    left: 5%;
-    top: 80px;
-    padding: 20px;
-  }
-
-  .search-box {
-    width: 100%;
-    flex-direction: row;
-    height: auto;
-    top: 0;
-    left: 0;
-  }
-
-  .modal-content {
-    width: 80%;
-  }
-
-  table th, table td {
-    font-size: 14px;
-    padding: 10px;
-  } */
-}
 /* Si la sidebar est réduite à 100px */
 .layout-collapsed .container {
   margin-left: 100px;
   max-width: calc(100% - 120px);
 }
 
-
-
-
-
 @media (min-width: 550px) and (max-width: 768px) {
+  .container{
+    position: absolute;
+    left: 150px;
+    top: 500px;
+  }
 
   .dashboard-container {
-    left: 35%;
-    top: 12%;
+    /* position: absolute; */
+    left: 150px;
+    top: 500px;
   }
 
   .stats-grid {
